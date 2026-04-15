@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KwikAds Academy — AI Sales Training</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #0a0a0a; color: #f5f5f5; }
+
+        /* Smooth typing animation */
+        .typing-cursor { animation: blink 0.8s infinite; }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+        /* Message fade-in */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .message-enter { animation: fadeIn 0.4s ease-out; }
+
+        /* Stat card pulse */
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .stat-pulse { animation: pulse 2s ease-in-out infinite; }
+
+        /* GoKwik green pulse for current module */
+        @keyframes gokwikPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.7); } 50% { box-shadow: 0 0 0 6px rgba(45, 106, 79, 0); } }
+        .gokwik-pulse { animation: gokwikPulse 2s infinite; }
+
+        /* Smooth scroll */
+        .chat-container { scroll-behavior: smooth; }
+
+        /* Focus outline (accessibility) */
+        button:focus { outline: 2px solid #10b981; outline-offset: 2px; }
+
+        /* Button hover states */
+        .btn-primary { transition: all 0.2s ease; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+
+        /* Stat card animation */
+        .stat-card { animation: fadeIn 0.5s ease-out; }
+
+        /* Input focus */
+        input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1); }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const API_URL = "https://script.google.com/macros/s/AKfycbxglcUiNqi74WtsZVH9JRRyHrMFfBcS_0NK4V8yIqX2KQ6XQ-XmqhgRvrysA7GKrV8m/exec";
+
+// ============ GOOGLE SSO CONFIG ============
+// Replace with your Google Cloud OAuth 2.0 Client ID
+const GOOGLE_CLIENT_ID = "918009830728-ljp8ogrkld2tjigmntbe6ruovjsrrpu7.apps.googleusercontent.com";
+
+// Authorized @gokwik.co users and their roles
+const AUTHORIZED_USERS = {
+  'sankalp.bhagat@gokwik.co': { name: 'Sankalp', role: 'Manager', team: 'Admin' },
+  'deepak.n@gokwik.co':       { name: 'Deepak', role: 'Sales Rep', team: 'SMB' },
+  'vignesh.babu@gokwik.co':   { name: 'Vignesh', role: 'Sales Rep', team: 'Enterprise' },
+};
+
+// Helper: decode Google JWT token
+function decodeJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  ).join(''));
+  return JSON.parse(jsonPayload);
+}
+
+// Global callback — Google Sign-In calls this
+let _googleLoginCallback = null;
+function handleGoogleSignIn(response) {
+  if (_googleLoginCallback) _googleLoginCallback(response);
+}
+
+// ============ API HELPERS ============
+const apiGet = (action, userId) => {
+    return fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action, userId, auth: 'admin123' })
+    }).then(r => r.json());
+};
+
+const apiPost = (action, data) => {
+    return fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action, ...data, auth: 'admin123' })
+    }).then(r => r.json());
+};
+
+// ============ CONVERSATION FLOWS ============
+
+const moduleFlows = {
+  module1: [
+    { type: 'ai_message', text: "Hey {name}! 👋 Welcome to KwikAds Academy. Ready to learn what we're all about?", delay: 500 },
+    { type: 'quick_reply', options: ["Let's go!", "What is this?"], nextMap: { 0: 2, 1: 3 } },
+    { type: 'ai_message', text: "Awesome! Let's dive in. First — here's the scale we're working with:", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "15,000+", label: "Brands", subtext: "Trust us" },
+      { value: "50M+", label: "Shoppers", subtext: "In our network" },
+      { value: "8", label: "Products", subtext: "All connected" }
+    ] },
+    { type: 'ai_message', text: "GoKwik was founded in 2020. We've built a network effect where brands unlock data, and shoppers get frictionless checkout. It's a flywheel.", delay: 400 },
+    { type: 'quiz', question: "GoKwik is primarily a...", options: ["Payment processor", "Checkout platform with 8+ integrated products", "Ad network", "Email tool"], correct: 1, explanation: "GoKwik is a checkout platform + ecosystem. Payments, fraud, loyalty, KwikPass (identity), and KwikAds (our signals product) all feed each other." },
+    { type: 'ai_message', text: "Now, here's where YOU come in. KwikAds is the product you'll be selling.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "50+", label: "Integrations", subtext: "Plug and play" }
+    ] },
+    { type: 'ai_message', text: "So when you're on a call with a CMO or founder, you're not just selling a tool — you're selling access to a network.", delay: 400 },
+    { type: 'practice', prompt: "Quick test: Describe GoKwik in one sentence to a brand. What would you say?", keywords: ["checkout", "brands", "shoppers", "network", "data", "frictionless"], minKeywords: 2, goodFeedback: "Perfect! You nailed the core idea. Keep it simple like that on calls.", improveFeedback: "Good — try emphasizing the network effect. GoKwik isn't just payments; it's a whole ecosystem." },
+    { type: 'ai_message', text: "Here's your key takeaway:", delay: 400 },
+    { type: 'summary_card', points: ["GoKwik = checkout platform + 8 integrated products", "50M+ shoppers, 15K+ brands = massive network", "Network effect = your biggest differentiator"] },
+    { type: 'ai_message', text: "Module 1 complete! You've earned +100 XP 🎉", delay: 500, xp: 100 }
+  ],
+
+  module2: [
+    { type: 'ai_message', text: "Ready to learn about KwikAds? This is the weapon that will change how you sell. Let's go.", delay: 500 },
+    { type: 'quick_reply', options: ["Show me", "Wait, what does it do?"], nextMap: { 0: 2, 1: 3 } },
+    { type: 'ai_message', text: "KwikAds is India's only Meta Signals Partner. What does that mean?", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "180M+", label: "Consumer Signals", subtext: "From our checkout network" },
+      { value: "200+", label: "Buyer Metrics", subtext: "We track everything" },
+      { value: "#1", label: "Meta Signals Partner", subtext: "In India" }
+    ] },
+    { type: 'ai_message', text: "Brands are struggling to reach the right people on Meta. Their audiences are polluted. Their ROAS is declining. KwikAds fixes that with our signals.", delay: 400 },
+    { type: 'quiz', question: "What is EMQ and why does it matter?", options: ["Email Marketing Quality", "Event Match Quality — Meta's score for data quality", "Engagement Metric Quotient", "Equipment Match Query"], correct: 1, explanation: "EMQ = Event Match Quality. It's Meta's quality score. Better data = better EMQ = better ad performance. Our signals improve it by 20%+ on average." },
+    { type: 'ai_message', text: "Here's the kicker — brands see impact on Day 1.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "+20%", label: "EMQ Improvement", subtext: "Average" }
+    ] },
+    { type: 'ai_message', text: "Not 3 months. Not 30 days. Day 1. Because we're feeding Meta data that's 10x more accurate than what they had before.", delay: 400 },
+    { type: 'practice', prompt: "A founder asks: 'What data do you actually have?' Give them your answer.", keywords: ["checkout", "180m", "signals", "transaction", "purchase", "behavior", "meta"], minKeywords: 3, goodFeedback: "Excellent! You explained the data advantage and the Meta connection. That's the whole pitch right there.", improveFeedback: "Good start. Add more about the scale: 180M+ signals from actual transactions, not estimates." },
+    { type: 'ai_message', text: "Key takeaway time:", delay: 400 },
+    { type: 'summary_card', points: ["180M+ signals from real checkout transactions", "Better EMQ = 20%+ improvement on Day 1", "Only Meta Signals Partner in India = unique positioning"] },
+    { type: 'ai_message', text: "Module 2 complete! +150 XP 🚀", delay: 500, xp: 150 }
+  ],
+
+  module3: [
+    { type: 'ai_message', text: "Let's talk about the problems we solve. Every D2C brand has them. You need to recognize them on calls.", delay: 500 },
+    { type: 'quick_reply', options: ["What problems?", "Skip to solutions"], nextMap: { 0: 2, 1: 10 } },
+    { type: 'ai_message', text: "Problem #1: Rising CAC. Brands are spending more to acquire customers.", delay: 400 },
+    { type: 'ai_message', text: "Problem #2: Low prepaid conversion. Not enough customers buying multi-month subscriptions.", delay: 400 },
+    { type: 'ai_message', text: "Problem #3: Wrong audiences. They're targeting broad, not precise.", delay: 400 },
+    { type: 'ai_message', text: "Problem #4: Declining AOV. Average order value is dropping despite higher CAC.", delay: 400 },
+    { type: 'ai_message', text: "Problem #5: Polluted retargeting. They're retargeting everyone, so ROI tanks.", delay: 400 },
+    { type: 'ai_message', text: "Problem #6: No visibility. They can't see what's working because their data is scattered.", delay: 400 },
+    { type: 'quiz', question: "What is polluted retargeting?", options: ["Showing ads to competitors", "Showing ads to people who already bought", "Showing ads on sketchy sites", "Showing ads without proper data"], correct: 1, explanation: "Polluted retargeting = showing ads to people who already bought, or showing the wrong product to them. Wastes budget. Our signals fix it." },
+    { type: 'ai_message', text: "Now here's how KwikAds solves all 6 with our approach:", delay: 400 },
+    { type: 'ai_message', text: "We identify high-intent customers using our 180M+ signals. Brands reach them at the right moment. CAC drops. ROAS rises. Prepaid conversion improves.", delay: 400 },
+    { type: 'practice', prompt: "A brand says their ROAS is 3x but CAC is climbing. What questions do you ask them?", keywords: ["audience", "targeting", "data", "signals", "prepaid", "retention", "repeat"], minKeywords: 3, goodFeedback: "Perfect questions! You're digging into the real problem, not the surface metric. That's consulting.", improveFeedback: "Good — add questions about their audience strategy and whether they're retargeting effectively." },
+    { type: 'summary_card', points: ["6 D2C pain points: rising CAC, low prepaid, wrong audiences, declining AOV, polluted retargeting, no visibility", "KwikAds solves all 6 with precision targeting + data quality", "Your job: diagnose the pain, show the data, prove the solution"] },
+    { type: 'ai_message', text: "Module 3 complete! +150 XP 💡", delay: 500, xp: 150 }
+  ],
+
+  module4: [
+    { type: 'ai_message', text: "Now let's talk about the signals that actually win deals. These are your ammunition.", delay: 500 },
+    { type: 'quick_reply', options: ["Show me the signals", "How do signals work?"], nextMap: { 0: 2, 1: 3 } },
+    { type: 'ai_message', text: "Our 4 proprietary purchase signals are the foundation:", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "4", label: "Proprietary Signals", subtext: "That win deals" }
+    ] },
+    { type: 'ai_message', text: "Signal 1: purchase_prepaid. Customers who buy multi-month subscriptions. High lifetime value.", delay: 400 },
+    { type: 'ai_message', text: "Signal 2: new_customer_purchase. First-time buyers. Perfect for acquisition campaigns.", delay: 400 },
+    { type: 'ai_message', text: "Signal 3: multi_product_purchase. Customers who buy across categories. They trust the brand.", delay: 400 },
+    { type: 'ai_message', text: "Signal 4: high_order_volume. Power buyers. They buy frequently and spend more.", delay: 400 },
+    { type: 'quiz', question: "Which signal identifies customers who buy multiple months upfront?", options: ["new_customer_purchase", "high_order_volume", "purchase_prepaid", "multi_product_purchase"], correct: 2, explanation: "purchase_prepaid identifies customers willing to commit long-term. High lifetime value. Low churn. This is the VIP signal." },
+    { type: 'ai_message', text: "And here's the secret sauce — we have 200+ other metrics that layer on top.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "200+", label: "Additional Metrics", subtext: "For precision" },
+      { value: "14%", label: "Prepaid Funnel", subtext: "Average conversion" },
+      { value: "0%", label: "RTO Exposure", subtext: "Zero risk to brands" }
+    ] },
+    { type: 'practice', prompt: "Match each signal to the right campaign type. purchase_prepaid for what? new_customer_purchase for what?", keywords: ["retention", "loyalty", "acquisition", "repeat", "ltv", "lifetime"], minKeywords: 2, goodFeedback: "Nailed it! You understand the signal strategy. This is how you win deals.", improveFeedback: "Think about customer lifecycle. purchase_prepaid = retention and loyalty. new_customer_purchase = acquisition." },
+    { type: 'summary_card', points: ["4 proprietary signals: purchase_prepaid, new_customer_purchase, multi_product_purchase, high_order_volume", "200+ metrics layer on for precision targeting", "Real ROAS is measurable and tied to actual purchase behavior"] },
+    { type: 'ai_message', text: "Module 4 complete! +150 XP 🎯", delay: 500, xp: 150 }
+  ],
+
+  module5: [
+    { type: 'ai_message', text: "Time to talk money. This is where deals close. Let's get you confident on pricing.", delay: 500 },
+    { type: 'quick_reply', options: ["Show me the tiers", "How does pricing work?"], nextMap: { 0: 2, 1: 3 } },
+    { type: 'ai_message', text: "Our ICP (Ideal Customer Profile) is simple: brands spending ₹25-70L per month on ads.", delay: 400 },
+    { type: 'ai_message', text: "We have 4 pricing tiers based on ad spend. Each tier comes with different service levels and guarantees.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "₹25-70L", label: "Monthly Ad Spend", subtext: "Our sweet spot" },
+      { value: "4", label: "Pricing Tiers", subtext: "For different scales" }
+    ] },
+    { type: 'ai_message', text: "Long Tail tier: ₹0-10L/month. Entry-level. Low commitment.", delay: 400 },
+    { type: 'ai_message', text: "Emerging tier: ₹10-25L/month. Growth brands. Our core market.", delay: 400 },
+    { type: 'ai_message', text: "SMB tier: ₹25-50L/month. Serious players. Full service.", delay: 400 },
+    { type: 'ai_message', text: "Enterprise tier: ₹50L+/month. White-glove service. Custom solutions.", delay: 400 },
+    { type: 'quiz', question: "A brand spends ₹18L/month. Which tier are they?", options: ["Long Tail", "Emerging", "SMB", "Enterprise"], correct: 1, explanation: "₹18L falls in the Emerging tier (₹10-25L). This is our bread and butter." },
+    { type: 'ai_message', text: "Here's the key rule: viability check. They need to be spending at least ₹40K guaranteed to make the math work.", delay: 400 },
+    { type: 'ai_message', text: "Why? Because our implementation + data setup + optimization takes effort. If the ad spend is too small, the ROI doesn't justify the work.", delay: 400 },
+    { type: 'practice', prompt: "A brand spends ₹35L/month on Meta and Instagram. They want ROAS improvement. What's their monthly fee (use the viability rule)?", keywords: ["40k", "35l", "emerging", "tier", "fee", "monthly"], minKeywords: 3, goodFeedback: "Exactly! They clear the ₹40K viability threshold, so they're ready to go.", improveFeedback: "Remember: viability check first. If they clear ₹40K/month minimum fee, they're a go. Then calculate their tier." },
+    { type: 'summary_card', points: ["ICP = ₹25-70L ad spend per month", "4 tiers: Long Tail, Emerging, SMB, Enterprise", "Viability rule: must be at least ₹40K guaranteed. If not, pass."] },
+    { type: 'ai_message', text: "Module 5 complete! +150 XP 💰", delay: 500, xp: 150 }
+  ],
+
+  module6: [
+    { type: 'ai_message', text: "Selling like a consultant is the entire game. Let me show you how.", delay: 500 },
+    { type: 'quick_reply', options: ["Teach me", "Show me examples"], nextMap: { 0: 2, 1: 4 } },
+    { type: 'ai_message', text: "Consultative selling has 3 phases: Discovery → Diagnosis → Prescription.", delay: 400 },
+    { type: 'ai_message', text: "Phase 1: Discovery. Ask the right questions. Don't pitch. Listen.", delay: 400 },
+    { type: 'ai_message', text: "Phase 2: Diagnosis. Reflect back what you heard. Show them the gap. Make them feel the problem.", delay: 400 },
+    { type: 'ai_message', text: "Phase 3: Prescription. Here's what we'd do differently. Here's your upside.", delay: 400 },
+    { type: 'quiz', question: "What's the first question in a discovery call?", options: ["What's your current budget?", "How much ROAS are you getting?", "Tell me about your biggest challenge right now", "Do you work with an agency?"], correct: 2, explanation: "Always open with a problem question. 'What's keeping you up at night?' or 'What's your biggest challenge?' This makes them think, not pitch-defend." },
+    { type: 'ai_message', text: "Here are the discovery questions that matter:", delay: 400 },
+    { type: 'ai_message', text: "1. What's your current ad spend and channels? 2. What's your ROAS target vs. actual? 3. What audience are you currently targeting? 4. What's your biggest pain point?", delay: 400 },
+    { type: 'ai_message', text: "Listen for: rising CAC, declining ROAS, polluted retargeting, low prepaid conversion. These are your openings.", delay: 400 },
+    { type: 'practice', prompt: "You're talking to a CMO. They say their ROAS is 2.5x but CAC has risen 30% YoY. What's your follow-up question?", keywords: ["audience", "targeting", "data", "retention", "prepaid", "repeat", "churn"], minKeywords: 2, goodFeedback: "Perfect! You're diagnosing, not pitching. That's consultative selling.", improveFeedback: "Follow up on the root cause. 'Is the audience quality declining, or is your message not resonating?' Dig deeper." },
+    { type: 'summary_card', points: ["Consultative selling: Discovery → Diagnosis → Prescription", "Ask about challenges first. Don't pitch first.", "Listen for the 6 pain points and reflect them back."] },
+    { type: 'ai_message', text: "Module 6 complete! +150 XP 🎤", delay: 500, xp: 150 }
+  ],
+
+  module7: [
+    { type: 'ai_message', text: "Every deal follows a journey. Let me map it for you so you never lose track.", delay: 500 },
+    { type: 'quick_reply', options: ["Show me the stages", "How long does it take?"], nextMap: { 0: 2, 1: 8 } },
+    { type: 'ai_message', text: "Stage 1: Discovery. First call. Listen and diagnose. Takes 30 mins.", delay: 400 },
+    { type: 'ai_message', text: "Stage 2: Audit Request. You ask for access to their Meta account. They approve. Takes 1-2 days.", delay: 400 },
+    { type: 'ai_message', text: "Stage 3: Audit Presentation. You present the audit findings. The data problem + upside. Takes 1 call.", delay: 400 },
+    { type: 'ai_message', text: "Stage 4: Commercial. Pricing talk. Scope discussion. Terms. Takes 1-2 calls.", delay: 400 },
+    { type: 'ai_message', text: "Stage 5: Closure. Legal review, approval, signed agreement. Takes 1-5 days.", delay: 400 },
+    { type: 'ai_message', text: "Stage 6: Go-Live. Implementation, data setup, launch. Takes 7-14 days.", delay: 400 },
+    { type: 'quiz', question: "How long does the audit stage typically take?", options: ["1 day", "3-4 days", "1 week", "2 weeks"], correct: 1, explanation: "3-4 days for a solid audit. We're analyzing 180M+ signals against their account. It's thorough." },
+    { type: 'ai_message', text: "Full cycle from first call to go-live: usually 2-3 weeks. Depends on their approval speed.", delay: 400 },
+    { type: 'practice', prompt: "Write the email to a CMO requesting access to their Meta account. What details do you include?", keywords: ["access", "account", "read", "audit", "data", "insights", "timeline"], minKeywords: 3, goodFeedback: "Solid email! You made it clear, quick, and set expectations. That's the right tone.", improveFeedback: "Add a timeline expectation: 'We'll need 3-4 days to analyze and then present findings.' This sets clarity." },
+    { type: 'summary_card', points: ["6-stage journey: Discovery → Audit Request → Audit Presentation → Commercial → Closure → Go-Live", "Full cycle = 2-3 weeks typical", "Each stage has clear next steps. Don't skip stages."] },
+    { type: 'ai_message', text: "Module 7 complete! +150 XP 🗺️", delay: 500, xp: 150 }
+  ],
+
+  module8: [
+    { type: 'ai_message', text: "Demo day is where you prove you're not just another vendor. Let's nail this.", delay: 500 },
+    { type: 'quick_reply', options: ["Teach me the structure", "Show me your pitch"], nextMap: { 0: 2, 1: 4 } },
+    { type: 'ai_message', text: "A cold call has 4 parts. 30 seconds each. Total: 2 minutes.", delay: 400 },
+    { type: 'ai_message', text: "Part 1 (30s): Hook. Why you're calling. E.g., 'We help D2C brands improve ROAS by reaching the right customers on Meta.'", delay: 400 },
+    { type: 'ai_message', text: "Part 2 (30s): Problem. What you've noticed. E.g., 'Most brands we work with struggle with rising CAC and declining ROAS.'", delay: 400 },
+    { type: 'ai_message', text: "Part 3 (30s): Solution. Your unique angle. E.g., 'We're Meta's only Signals Partner in India. We use 180M+ real checkout signals.'", delay: 400 },
+    { type: 'ai_message', text: "Part 4 (30s): Proof + CTA. What you've done + ask. E.g., 'We improved Shop Unrush's ROAS by 67%. Can I send you a quick case study?'", delay: 400 },
+    { type: 'quiz', question: "What's the #1 mistake in cold calling?", options: ["Talking too fast", "Leading with your product instead of their pain", "Not preparing questions", "Calling at 2 PM"], correct: 1, explanation: "People don't buy from you. They buy a solution to their problem. Lead with pain, not product. 'We help' beats 'We are.''" },
+    { type: 'practice', prompt: "Give me your 30-second cold call pitch for a skincare brand that sells on their own DTC site. Hook + Problem + Solution + CTA. Go.", keywords: ["skincare", "d2c", "roas", "cac", "meta", "signals", "checkout", "brand"], minKeywords: 4, goodFeedback: "Strong pitch! You nailed the problem → solution → proof flow. That's CEO-ready.", improveFeedback: "Make it more specific to skincare. What's unique about selling skincare on DTC? (Seasonal trends, retention, repeat purchase.) Use that." },
+    { type: 'summary_card', points: ["Cold call formula: Hook (30s) → Problem (30s) → Solution (30s) → Proof + CTA (30s)", "Always start with their pain, not your product", "Practice until it feels natural, not rehearsed"] },
+    { type: 'ai_message', text: "Module 8 complete! +150 XP 🎙️", delay: 500, xp: 150 }
+  ],
+
+  module9: [
+    { type: 'ai_message', text: "You'll hear 'no' more than you hear 'yes'. Let's prepare you for the 5 most common objections.", delay: 500 },
+    { type: 'quick_reply', options: ["Show me the objections", "Let's practice"], nextMap: { 0: 2, 1: 10 } },
+    { type: 'ai_message', text: "Objection 1: 'We already have an agency.'", delay: 400 },
+    { type: 'ai_message', text: "Your response: 'That's great. Most brands do. But how's their data game? Are they giving you 180M+ signals to work with, or are they relying on Meta's broad targeting?'", delay: 400 },
+    { type: 'ai_message', text: "Objection 2: 'Our ROAS is already good at 3x. Why would we change?'", delay: 400 },
+    { type: 'ai_message', text: "Your response: 'Exactly why we should talk. If you're at 3x, our data could push you to 4x or higher. No risk—just more upside. How much more revenue would 25% improvement mean this quarter?'", delay: 400 },
+    { type: 'ai_message', text: "Objection 3: 'We manage ads in-house. We don't need an agency or partner.'", delay: 400 },
+    { type: 'ai_message', text: "Your response: 'I respect that. We're not here to replace you. We're here to give you superpowers—the data layer you don't have access to. Think of us as a data advantage, not a replacement.'", delay: 400 },
+    { type: 'ai_message', text: "Objection 4: 'Your pricing is too high.'", delay: 400 },
+    { type: 'ai_message', text: "Your response: 'I understand. Let's talk math. If you're spending ₹50L/month and we improve ROAS by 15%, that's ₹7.5L more revenue. Our fee is ₹X. What's your payback period on that?'", delay: 400 },
+    { type: 'ai_message', text: "Objection 5: 'We tried GoKwik before. It didn't work out.'", delay: 400 },
+    { type: 'ai_message', text: "Your response: 'Appreciate the honesty. What didn't work? [Listen]. KwikAds is different from what you tried. Here's what we're doing now... [Show new value.]'", delay: 400 },
+    { type: 'practice', prompt: "They say: 'Your data quality claim is bold. How do I know you're telling the truth?' How do you respond?", keywords: ["audit", "data", "proof", "transparency", "checkout", "180m", "signals", "case"], minKeywords: 3, goodFeedback: "Perfect! You're offering proof, not promises. That's trust-building.", improveFeedback: "Add a case study reference. 'We showed Shop Unrush 180M+ signals in their first audit. They saw 67% ROAS improvement.' Make it concrete." },
+    { type: 'summary_card', points: ["5 common objections: agency, good ROAS, in-house, pricing, past experience", "Each has a response. Practice until reflexive.", "The goal: reframe the objection as an opportunity, not a blocker."] },
+    { type: 'ai_message', text: "Module 9 complete! +150 XP 🛡️", delay: 500, xp: 150 }
+  ],
+
+  module10: [
+    { type: 'ai_message', text: "Every pitch ends the same way: proof. Here are our wins. These are your credibility bombs.", delay: 500 },
+    { type: 'quick_reply', options: ["Show me the case studies", "How do I use them?"], nextMap: { 0: 2, 1: 8 } },
+    { type: 'ai_message', text: "Case Study 1: Shop Unrush. Sustainable fashion brand. Goal: scale ROAS.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "+67%", label: "ROAS Improvement", subtext: "In 60 days" }
+    ] },
+    { type: 'ai_message', text: "They were getting 2.1x. We improved targeting with our prepaid signals. They hit 3.5x. Their CAC dropped 30%.", delay: 400 },
+    { type: 'ai_message', text: "Case Study 2: Peesafe. Women's health brand. Goal: rapid growth.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "6x", label: "Growth", subtext: "In 6 months" }
+    ] },
+    { type: 'ai_message', text: "They scaled from ₹10L to ₹60L monthly ad spend. Our data helped them hit new audience segments.", delay: 400 },
+    { type: 'ai_message', text: "Case Study 3: Shapercult. Fashion and body-positive brand. Goal: strategic differentiation.", delay: 400 },
+    { type: 'ai_message', text: "They wanted to own a niche. We helped them find their ideal customer with precision signals. ROAS improved 45%.", delay: 400 },
+    { type: 'ai_message', text: "Case Study 4: BSC. Athleisure brand. Goal: reduce CAC.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "-15%", label: "CAC Reduction", subtext: "While growing revenue" }
+    ] },
+    { type: 'ai_message', text: "They were spending inefficiently. We cut waste and improved efficiency. CAC down, revenue up.", delay: 400 },
+    { type: 'practice', prompt: "A fashion brand at 2.5x ROAS wants to scale for Diwali. Which case study do you lead with and why?", keywords: ["peesafe", "scale", "growth", "seasonal", "rapid", "shopunrush", "roas"], minKeywords: 2, goodFeedback: "Perfect! You matched the case study to the goal. That's how you close deals.", improveFeedback: "Peesafe is your scale story. They went from ₹10L to ₹60L. That's the proof point for seasonal growth." },
+    { type: 'summary_card', points: ["Shop Unrush: +67% ROAS", "Peesafe: 6x growth", "Shapercult: Strategic differentiation", "BSC: -15% CAC", "Match the case study to their goal. Always."] },
+    { type: 'ai_message', text: "Module 10 complete! 🏆 You've finished all core modules! +200 XP", delay: 500, xp: 200 }
+  ]
+};
+
+// ============ CHALLENGES ============
+
+const weekOneChallengeFlow = [
+  { type: 'ai_message', text: "Welcome to Week 1 Challenge: Product Mastery. 15 rapid-fire questions. 30 seconds each. Let's go.", delay: 500 },
+  { type: 'ai_message', text: "You'll need 70%+ (11/15) to pass and unlock Week 2. Ready?", delay: 400 },
+  { type: 'quick_reply', options: ["Let's do it", "Give me a moment"], nextMap: { 0: 3, 1: 2 } },
+  { type: 'ai_message', text: "Question 1: How many consumer signals does KwikAds have access to?", delay: 300 },
+  { type: 'quiz', question: "Q1: Consumer signals?", options: ["50M+", "100M+", "180M+", "250M+"], correct: 2, explanation: "180M+ signals from our checkout network." },
+  { type: 'ai_message', text: "Question 2: GoKwik was founded in which year?", delay: 300 },
+  { type: 'quiz', question: "Q2: Founded year?", options: ["2018", "2019", "2020", "2021"], correct: 2, explanation: "GoKwik founded in 2020." },
+  { type: 'ai_message', text: "Question 3: What is the primary metric that Meta uses to score data quality?", delay: 300 },
+  { type: 'quiz', question: "Q3: Meta's data quality metric?", options: ["EMQ", "CPC", "CTR", "ROAS"], correct: 0, explanation: "EMQ = Event Match Quality." },
+  { type: 'ai_message', text: "Question 4: Which of these is NOT one of our 4 proprietary signals?", delay: 300 },
+  { type: 'quiz', question: "Q4: Not our signal?", options: ["purchase_prepaid", "click_to_cart", "multi_product_purchase", "high_order_volume"], correct: 1, explanation: "Our 4 signals: purchase_prepaid, new_customer_purchase, multi_product_purchase, high_order_volume." },
+  { type: 'ai_message', text: "Question 5: What's the minimum guaranteed monthly ad spend for viability?", delay: 300 },
+  { type: 'quiz', question: "Q5: Viability minimum?", options: ["₹20K", "₹40K", "₹75K", "₹100K"], correct: 1, explanation: "₹40K guaranteed minimum. Below that, ROI doesn't justify implementation." },
+  { type: 'ai_message', text: "Question 6: How many products does GoKwik offer?", delay: 300 },
+  { type: 'quiz', question: "Q6: GoKwik products?", options: ["5", "8", "10", "12"], correct: 1, explanation: "8 products in the GoKwik ecosystem." },
+  { type: 'ai_message', text: "Question 7: Shop Unrush achieved what ROAS improvement?", delay: 300 },
+  { type: 'quiz', question: "Q7: Shop Unrush ROAS?", options: ["+45%", "+67%", "+80%", "+100%"], correct: 1, explanation: "+67% ROAS improvement." },
+  { type: 'ai_message', text: "Question 8: What's the first stage of the client journey?", delay: 300 },
+  { type: 'quiz', question: "Q8: First stage?", options: ["Audit Request", "Commercial", "Discovery", "Go-Live"], correct: 2, explanation: "Discovery first. Listen and diagnose." },
+  { type: 'ai_message', text: "Question 9: How long does the audit stage typically take?", delay: 300 },
+  { type: 'quiz', question: "Q9: Audit duration?", options: ["1-2 days", "3-4 days", "1 week", "2 weeks"], correct: 1, explanation: "3-4 days for a thorough audit." },
+  { type: 'ai_message', text: "Question 10: Which tier is a brand spending ₹40L/month in?", delay: 300 },
+  { type: 'quiz', question: "Q10: ₹40L/month tier?", options: ["Long Tail", "Emerging", "SMB", "Enterprise"], correct: 2, explanation: "₹40L falls in SMB (₹25-50L)." },
+  { type: 'ai_message', text: "Question 11: What's the key rule for consultative selling?", delay: 300 },
+  { type: 'quiz', question: "Q11: Consultative selling?", options: ["Always lead with product", "Lead with pain and listen", "Ask for the budget first", "Pitch immediately"], correct: 1, explanation: "Lead with pain, not product. Discovery → Diagnosis → Prescription." },
+  { type: 'ai_message', text: "Question 12: Peesafe achieved what growth rate?", delay: 300 },
+  { type: 'quiz', question: "Q12: Peesafe growth?", options: ["2x", "4x", "6x", "8x"], correct: 2, explanation: "6x growth in 6 months." },
+  { type: 'ai_message', text: "Question 13: What's the most common objection you'll hear?", delay: 300 },
+  { type: 'quiz', question: "Q13: Common objection?", options: ["Pricing is high", "We already have an agency", "We don't trust data", "We're too small"], correct: 1, explanation: "'We already have an agency' is the #1 objection. Reframe it." },
+  { type: 'ai_message', text: "Question 14: What does ICP stand for?", delay: 300 },
+  { type: 'quiz', question: "Q14: ICP?", options: ["Internet Content Protocol", "Ideal Customer Profile", "Industry Connection Point", "Integrated Campaign Platform"], correct: 1, explanation: "ICP = Ideal Customer Profile. For us: ₹25-70L/month ad spend." },
+  { type: 'ai_message', text: "Final question 15: What's the #1 metric brands care about?", delay: 300 },
+  { type: 'quiz', question: "Q15: #1 brand metric?", options: ["Impressions", "Clicks", "ROAS", "Audience size"], correct: 2, explanation: "ROAS. Return on Ad Spend. Everything else is secondary." },
+  { type: 'ai_message', text: "Challenge complete! Calculating your score...", delay: 800 }
+];
+
+const weekTwoChallengeFlow = [
+  { type: 'ai_message', text: "Welcome to Week 2 Challenge: Sales Simulation. You're about to face 3 client personas. Handle each conversation.", delay: 500 },
+  { type: 'ai_message', text: "You'll be scored on: qualification, pitch quality, objection handling, closing technique. Pass 2/3 to advance.", delay: 400 },
+  { type: 'quick_reply', options: ["I'm ready", "Tell me more"], nextMap: { 0: 3, 1: 2 } },
+  { type: 'ai_message', text: "Scenario 1: You're talking to Priya, CMO of a fashion brand spending ₹50L/month on Meta. ROAS is 2.8x, but CAC is rising. She's skeptical.", delay: 500 },
+  { type: 'practice', prompt: "You: [Your opening message]", keywords: ["challenge", "problem", "data", "signals", "roas", "cac", "improve"], minKeywords: 2, goodFeedback: "Strong start! You led with her pain. Priya would continue talking.", improveFeedback: "Open with a question about her biggest challenge. Make her talk first." },
+  { type: 'ai_message', text: "Priya: 'We're already working with an agency. Why would I switch?'", delay: 400 },
+  { type: 'practice', prompt: "Your response to Priya:", keywords: ["agency", "data", "signals", "different", "advantage", "checkout"], minKeywords: 2, goodFeedback: "Excellent! You reframed agency as a non-issue and showed your unique value.", improveFeedback: "Emphasize what your agency doesn't have: 180M+ checkout signals. That's unique." },
+  { type: 'ai_message', text: "Priya: 'This sounds interesting. Send me a proposal.' Scenario 1 complete! Score: 8/10", delay: 500 },
+  { type: 'ai_message', text: "Scenario 2: You're talking to Vikram, CEO of a D2C sports brand spending ₹15L/month. He's been burned by vendors before.", delay: 500 },
+  { type: 'practice', prompt: "You: [Your opening]", keywords: ["proven", "results", "case study", "data", "growth", "trust"], minKeywords: 2, goodFeedback: "Good! You led with proof, not promises. Vikram likes that.", improveFeedback: "Mention a case study early. Build credibility fast when trust is low." },
+  { type: 'ai_message', text: "Vikram: 'How do I know this actually works? What's your proof?'", delay: 400 },
+  { type: 'practice', prompt: "Your response to Vikram (show proof):", keywords: ["case study", "unrush", "peesafe", "67%", "6x", "results", "data"], minKeywords: 2, goodFeedback: "Perfect! You brought specific case studies. That's proof, not promises.", improveFeedback: "Name the case study AND the metrics. 'Shop Unrush went from 2.1x to 3.5x in 60 days.'" },
+  { type: 'ai_message', text: "Vikram: 'Okay, I'm interested. What happens next?' Scenario 2 complete! Score: 9/10", delay: 500 },
+  { type: 'ai_message', text: "Scenario 3: You're talking to Anjali, Founder of a beauty brand spending ₹8L/month. Her budget is small but she's growing fast.", delay: 500 },
+  { type: 'practice', prompt: "You: [Your opening — be mindful of her budget]", keywords: ["emerging", "growth", "scale", "data", "prepare", "tier"], minKeywords: 2, goodFeedback: "Smart! You acknowledged her size and showed you think long-term. Anjali feels understood.", improveFeedback: "She's in Emerging tier. Position it as: 'Start now, scale together as you grow.'" },
+  { type: 'ai_message', text: "Anjali: 'We're bootstrapped. We can't afford expensive solutions.'", delay: 400 },
+  { type: 'practice', prompt: "Your response to Anjali (price sensitivity):", keywords: ["emerging", "tier", "affordable", "roas", "payback", "break even", "growth"], minKeywords: 3, goodFeedback: "Excellent! You showed the ROI math, not just the cost. That's how you sell to bootstrapped founders.", improveFeedback: "Do the math: 'You spend ₹8L. If we improve ROAS by 20%, that's ₹1.6L more revenue. Our fee is ₹X. You're profitable in month 1.'" },
+  { type: 'ai_message', text: "Anjali: 'You're right. Let's talk details.' Scenario 3 complete! Score: 8/10", delay: 500 },
+  { type: 'ai_message', text: "Challenge complete! Final Score: 25/30 — Expert Level! You passed all 3 scenarios. 🎉 +300 XP", delay: 500, xp: 300 }
+];
+
+// ============ SCENARIO ROLE-PLAYS ============
+
+const scenarios = {
+  scenario1: {
+    title: "The Skeptical CMO",
+    description: "A D2C skincare brand, ₹35L/month, ROAS 2.1x, unhappy with agency",
+    flow: [
+      { type: 'ai_message', text: "You're on a call with Deepa, CMO of a skincare brand. She agreed to a meeting but seems rushed.", delay: 500 },
+      { type: 'ai_message', text: "Deepa: 'Look, we have 5 minutes. We're already with an agency. Not sure why we're talking.'", delay: 400 },
+      { type: 'practice', prompt: "Your opening (be quick, show why this matters):", keywords: ["data", "signals", "different", "agency", "opportunity", "unique"], minKeywords: 2, goodFeedback: "Good! You showed respect for her time and opened with what's unique. She'd listen.", improveFeedback: "Lead with what you know about her pain: 'Your ROAS is good at 2.1x, but CAC rising is the real challenge.'" },
+      { type: 'ai_message', text: "Deepa: 'How do you know our ROAS and CAC? And what makes KwikAds different?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (explain your difference):", keywords: ["checkout", "data", "signals", "meta", "partner", "180m", "proprietary"], minKeywords: 3, goodFeedback: "Strong! You explained the data advantage. Deepa is now leaning in.", improveFeedback: "Emphasize: 'We're Meta's only Signals Partner in India. Your agency doesn't have this.'" },
+      { type: 'ai_message', text: "Deepa: 'That's interesting. But we've tried platforms before. Why is this different?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (prove it):", keywords: ["audit", "case study", "roas", "improvement", "proof", "data driven"], minKeywords: 2, goodFeedback: "Excellent! You offered proof before asking for anything. That's the close.", improveFeedback: "Offer the audit: 'Let me audit your account in 3 days. I'll show you exactly what we'd do.' Make it risk-free." },
+      { type: 'ai_message', text: "Deepa: 'Okay, send me the details. I'll think about it.'", delay: 400 },
+      { type: 'ai_message', text: "Scenario 1 complete! You navigated skepticism with data and a specific next step. Well done. +150 XP", delay: 500, xp: 150 }
+    ]
+  },
+
+  scenario2: {
+    title: "The Budget-Conscious Founder",
+    description: "A fashion brand, ₹8L/month, ROAS 1.3x, worried about profitability",
+    flow: [
+      { type: 'ai_message', text: "You're on a call with Arjun, founder of a fashion brand. He's bootstrapped and every rupee matters.", delay: 500 },
+      { type: 'ai_message', text: "Arjun: 'Thanks for reaching out. But honestly, our margins are thin. We can't afford another tool right now.'", delay: 400 },
+      { type: 'practice', prompt: "Your opening (address the concern directly):", keywords: ["investment", "return", "roas", "payback", "profit", "growth", "calculation"], minKeywords: 2, goodFeedback: "Perfect! You flipped cost into investment. Arjun sees the logic now.", improveFeedback: "Show the math immediately: 'You spend ₹8L. Our fee is ₹X. If we improve ROAS even 15%, you're profitable.'" },
+      { type: 'ai_message', text: "Arjun: 'What if it doesn't work? I'm not risking my company on promises.'", delay: 400 },
+      { type: 'practice', prompt: "Your response (mitigate risk):", keywords: ["guarantee", "results", "proof", "case study", "track record", "data"], minKeywords: 2, goodFeedback: "Smart! You backed up your pitch with proof. Arjun's fear is lower now.", improveFeedback: "Bring a case study of another emerging brand. 'Peesafe was in your shoes. Here's what happened.'" },
+      { type: 'ai_message', text: "Arjun: 'I need to talk to my co-founder. Can you send a proposal with the tier and guarantee?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (confirm next steps):", keywords: ["proposal", "tier", "emerging", "timeline", "call", "follow up"], minKeywords: 2, goodFeedback: "Great close! You clarified the next step and set a follow-up. Professional.", improveFeedback: "Add: 'When do you want to chat again? I want to make sure your co-founder has questions answered live.'" },
+      { type: 'ai_message', text: "Scenario 2 complete! You sold to a skeptical founder by leading with ROI, not features. +150 XP", delay: 500, xp: 150 }
+    ]
+  },
+
+  scenario3: {
+    title: "The Current Winner",
+    description: "A CMO asks: 'We have 3.5x ROAS with current agency. Why would we switch?'",
+    flow: [
+      { type: 'ai_message', text: "You're talking to Meera, CMO at a beauty brand. They're happy with their current setup. ROAS is 3.5x.", delay: 500 },
+      { type: 'ai_message', text: "Meera: 'Honestly, we're in a good place. Our agency is delivering 3.5x ROAS. Why would we change?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (don't attack the agency, reframe):", keywords: ["better", "improve", "data", "signals", "additional", "upside", "ceiling"], minKeywords: 2, goodFeedback: "Excellent! You acknowledged her win and showed the upside. She's intrigued.", improveFeedback: "Say: 'That's phenomenal. Most brands are at 2x. Here's the thing—3.5x isn't the ceiling. It's where most plateau.'" },
+      { type: 'ai_message', text: "Meera: 'That's a big claim. What would make us better at 3.5x than we are now?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (explain the data edge):", keywords: ["checkout", "signals", "meta", "partner", "proprietary", "accuracy", "precision"], minKeywords: 3, goodFeedback: "Strong! You showed the specific advantage that her agency can't match. She's leaning forward.", improveFeedback: "Paint the picture: 'Your agency is great, but they don't have checkout data. We do. That's the 15-25% lift we can add.'" },
+      { type: 'ai_message', text: "Meera: 'So you're saying we could hit 4x or higher? That's interesting, but I'd need proof.'", delay: 400 },
+      { type: 'practice', prompt: "Your response (bring case study proof):", keywords: ["shop unrush", "roas improvement", "data", "results", "similar", "beauty"], minKeywords: 2, goodFeedback: "Perfect! You matched a case study and showed the proof. She's ready to listen.", improveFeedback: "Use Shapercult or BSC (closer to beauty): 'Similar brand, similar ROAS starting point. We helped them improve 45%.'" },
+      { type: 'ai_message', text: "Meera: 'Okay, I'm willing to explore. What would a partnership look like for us?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (commercial structure):", keywords: ["tier", "emerald", "service", "timeline", "audit", "implementation", "cost"], minKeywords: 2, goodFeedback: "Excellent! You laid out clear structure and value. She knows exactly what to expect.", improveFeedback: "Say: 'Let's do a 3-day audit first. I'll show you exactly what data you're missing. Then we talk terms.'" },
+      { type: 'ai_message', text: "Scenario 3 complete! You sold to a satisfied customer by showing upside, not replacement. Masterclass. +150 XP", delay: 500, xp: 150 }
+    ]
+  },
+
+  scenario4: {
+    title: "The Enterprise Play",
+    description: "A large beauty brand, ₹60L/month, wants to understand integration and customization",
+    flow: [
+      { type: 'ai_message', text: "You're talking to Sandhya, VP of Growth at a large beauty brand. ₹60L/month ad spend. Enterprise-level needs.", delay: 500 },
+      { type: 'ai_message', text: "Sandhya: 'We're interested, but we need to understand how you integrate with our existing stack. We use Shopify, Klaviyo, and Meta. How does KwikAds fit?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (show integration knowledge):", keywords: ["shopify", "meta", "api", "seamless", "data flow", "real time", "checkout"], minKeywords: 2, goodFeedback: "Good! You showed technical capability. Sandhya feels confident you can handle their complexity.", improveFeedback: "Add: 'We also integrate with your CRM so retargeting lists are always fresh. That's the magic.' Show end-to-end thinking." },
+      { type: 'ai_message', text: "Sandhya: 'What's your implementation timeline? And what level of customization can you do?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (timeline + customization):", keywords: ["7-14 days", "implementation", "custom", "dedicated", "account manager", "audit"], minKeywords: 2, goodFeedback: "Perfect! You outlined a realistic timeline and showed you offer white-glove service. She's impressed.", improveFeedback: "Add: 'For your scale, you get a dedicated account manager, custom reporting, and quarterly strategy calls.'" },
+      { type: 'ai_message', text: "Sandhya: 'This is good. But we operate across 3 brands within our group. Can you manage multi-brand architecture?'", delay: 400 },
+      { type: 'practice', prompt: "Your response (show scale capability):", keywords: ["multi brand", "separate", "accounts", "consolidated", "reporting", "architecture"], minKeywords: 2, goodFeedback: "Excellent! You showed you can handle enterprise complexity. She's ready to move forward.", improveFeedback: "Say: 'Absolutely. Each brand gets its own instance, but consolidated reporting at the group level. Clean separation of data.'" },
+      { type: 'ai_message', text: "Sandhya: 'Alright. Let's schedule a technical deep-dive with our tech team and then talk commercial.'", delay: 400 },
+      { type: 'practice', prompt: "Your response (close and next step):", keywords: ["tech call", "data", "integration", "timeline", "schedule", "proposal"], minKeywords: 2, goodFeedback: "Perfect! You confirmed the next step professionally. Deal moving forward.", improveFeedback: "Say: 'I'll send a technical questionnaire today. Let's schedule for next week. I'll have our integration lead on the call.'" },
+      { type: 'ai_message', text: "Scenario 4 complete! You navigated an enterprise deal with complexity and confidence. Outstanding. +200 XP", delay: 500, xp: 200 }
+    ]
+  }
+};
+
+// ============ MAIN APP ============
+
+function KwikAdsAcademy() {
+  const [page, setPage] = React.useState('login'); // login, home, module, challenge, scenario, admin
+  const [user, setUser] = React.useState(null);
+  const [currentModule, setCurrentModule] = React.useState(null);
+  const [currentChallenge, setCurrentChallenge] = React.useState(null);
+  const [currentScenario, setCurrentScenario] = React.useState(null);
+  const [messages, setMessages] = React.useState([]);
+  const [conversationStep, setConversationStep] = React.useState(0);
+  const [userInput, setUserInput] = React.useState('');
+  const [stats, setStats] = React.useState({ xp: 0, level: 1, streak: 0, modulesComplete: 0 });
+  const [selectedAnswer, setSelectedAnswer] = React.useState(null);
+  const [quizFeedback, setQuizFeedback] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const chatRef = React.useRef(null);
+
+  // Auto-scroll to latest message
+  React.useEffect(() => {
+    if (chatRef.current) {
+      setTimeout(() => chatRef.current.scrollTop = chatRef.current.scrollHeight, 50);
+    }
+  }, [messages]);
+
+  // Handle Google SSO login
+  const handleGoogleLogin = React.useCallback((response) => {
+    try {
+      const payload = decodeJwt(response.credential);
+      const email = payload.email?.toLowerCase();
+      const domain = email?.split('@')[1];
+
+      // Only allow @gokwik.co emails
+      if (domain !== 'gokwik.co') {
+        alert('Access restricted to @gokwik.co accounts only.');
+        return;
+      }
+
+      // Check if user is in authorized list
+      const authorized = AUTHORIZED_USERS[email];
+      if (authorized) {
+        const userData = { ...authorized, id: email.split('@')[0].replace('.', '_'), email, picture: payload.picture };
+        setUser(userData);
+        setPage(userData.role === 'Manager' ? 'admin' : 'home');
+      } else {
+        // Any @gokwik.co user can access as Sales Rep by default
+        const userData = {
+          name: payload.name || email.split('@')[0],
+          role: 'Sales Rep',
+          team: 'SMB',
+          id: email.split('@')[0].replace('.', '_'),
+          email,
+          picture: payload.picture
+        };
+        setUser(userData);
+        setPage('home');
+      }
+    } catch (err) {
+      console.error('Google Sign-In error:', err);
+      alert('Sign-in failed. Please try again.');
+    }
+  }, []);
+
+  // Register the Google callback
+  React.useEffect(() => {
+    _googleLoginCallback = handleGoogleLogin;
+    return () => { _googleLoginCallback = null; };
+  }, [handleGoogleLogin]);
+
+  // Handle manual login (fallback for testing)
+  const handleManualLogin = (username, password) => {
+    const users = {
+      'deepak': { name: 'Deepak', role: 'Sales Rep', team: 'SMB' },
+      'sankalp': { name: 'Sankalp', role: 'Manager', team: 'Admin' },
+      'vignesh': { name: 'Vignesh', role: 'Sales Rep', team: 'Enterprise' }
+    };
+    if (users[username] && password === 'admin123') {
+      const userData = { ...users[username], id: username };
+      setUser(userData);
+      setPage(userData.role === 'Manager' ? 'admin' : 'home');
+    } else {
+      alert('Invalid credentials');
+    }
+  };
+
+  // Start module conversation
+  const startModule = (moduleNum) => {
+    setCurrentModule(moduleNum);
+    setPage('module');
+    setMessages([]);
+    setConversationStep(0);
+    setSelectedAnswer(null);
+    setQuizFeedback(null);
+  };
+
+  // Advance conversation
+  const advanceConversation = () => {
+    let flow;
+    if (page === 'scenario' && currentScenario) {
+      flow = scenarios[`scenario${currentScenario}`]?.flow;
+    } else if (page === 'challenge' && currentChallenge) {
+      flow = moduleFlows[`challenge${currentChallenge}`];
+    } else {
+      flow = moduleFlows[`module${currentModule}`];
+    }
+    if (!flow) return;
+
+    if (conversationStep < flow.length) {
+      const step = flow[conversationStep];
+      const newMessages = [...messages];
+
+      if (step.type === 'ai_message') {
+        const text = step.text.replace('{name}', user.name);
+        newMessages.push({ type: 'ai', text, delay: step.delay });
+        // Track XP and module completion
+        if (step.xp) {
+          setStats(prev => {
+            const newXp = prev.xp + step.xp;
+            const newLevel = Math.floor(newXp / 300) + 1;
+            const isLastStep = conversationStep === flow.length - 1;
+            const newModulesComplete = isLastStep && currentModule > prev.modulesComplete
+              ? currentModule
+              : prev.modulesComplete;
+            return { ...prev, xp: newXp, level: newLevel, modulesComplete: newModulesComplete, streak: prev.streak + (isLastStep ? 1 : 0) };
+          });
+        }
+      } else if (step.type === 'stat_card') {
+        newMessages.push({ type: 'stat_card', stats: step.stats });
+      } else if (step.type === 'quick_reply') {
+        newMessages.push({ type: 'quick_reply', options: step.options, nextMap: step.nextMap });
+      } else if (step.type === 'quiz') {
+        newMessages.push({ type: 'quiz', question: step.question, options: step.options, correct: step.correct, explanation: step.explanation });
+      } else if (step.type === 'practice') {
+        newMessages.push({ type: 'practice', prompt: step.prompt, keywords: step.keywords, minKeywords: step.minKeywords, goodFeedback: step.goodFeedback, improveFeedback: step.improveFeedback });
+      } else if (step.type === 'summary_card') {
+        newMessages.push({ type: 'summary_card', points: step.points });
+      }
+
+      setMessages(newMessages);
+      setConversationStep(conversationStep + 1);
+    }
+  };
+
+  // Handle quick reply click
+  const handleQuickReply = (optionIndex, nextMap) => {
+    setMessages([...messages, { type: 'user', text: messages[messages.length - 1].options[optionIndex] }]);
+    const nextStep = nextMap[optionIndex];
+    setConversationStep(nextStep);
+    setTimeout(advanceConversation, 500);
+  };
+
+  // Handle quiz answer
+  const handleQuizAnswer = (optionIndex, correct, explanation) => {
+    setSelectedAnswer(optionIndex);
+    setQuizFeedback({ correct: optionIndex === correct, explanation });
+    setTimeout(() => {
+      setMessages([...messages, { type: 'user', text: messages[messages.length - 1].options[optionIndex] }]);
+      setSelectedAnswer(null);
+      setQuizFeedback(null);
+      setTimeout(advanceConversation, 800);
+    }, 2000);
+  };
+
+  // Handle practice response
+  const handlePracticeSend = (practicePrompt) => {
+    const messageObj = messages[messages.length - 1];
+    const input = userInput.trim();
+    setMessages([...messages, { type: 'user', text: input }]);
+
+    const keywordMatches = messageObj.keywords.filter(k => input.toLowerCase().includes(k.toLowerCase())).length;
+    const passed = keywordMatches >= messageObj.minKeywords;
+    const feedback = passed ? messageObj.goodFeedback : messageObj.improveFeedback;
+
+    setMessages(prev => [...prev, { type: 'ai', text: feedback }]);
+    setUserInput('');
+
+    setTimeout(advanceConversation, 1500);
+  };
+
+  // Render login
+  if (page === 'login') {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <LoginCard onManualLogin={handleManualLogin} />
+      </div>
+    );
+  }
+
+  // Render admin dashboard
+  if (page === 'admin' && user?.role === 'Manager') {
+    return (
+      <AdminDashboard
+        user={user}
+        onLogout={() => { setUser(null); setPage('login'); }}
+        onSwitchToLearner={() => setPage('home')}
+      />
+    );
+  }
+
+  // Render home
+  if (page === 'home') {
+    return (
+      <HomeScreen
+        user={user}
+        stats={stats}
+        onStartModule={startModule}
+        onStartChallenge={(challengeNum) => { setCurrentChallenge(challengeNum); setPage('challenge'); setMessages([]); setConversationStep(0); }}
+        onStartScenario={(scenarioNum) => { setCurrentScenario(scenarioNum); setPage('scenario'); setMessages([]); setConversationStep(0); }}
+        onLogout={() => { setUser(null); setPage('login'); }}
+        onSwitchToAdmin={user?.role === 'Manager' ? () => setPage('admin') : null}
+      />
+    );
+  }
+
+  // Render module conversation
+  if (page === 'module' && currentModule) {
+    return (
+      <ConversationScreen
+        title={`Module ${currentModule}: ${['Welcome to GoKwik', 'The KwikAds Weapon', 'The Problem We Solve', 'Signals That Win', 'The Money Talk', 'Selling Like a Consultant', 'The Client Journey', 'Demo Day', 'Handling Pushback', 'Proof That It Works'][currentModule - 1]}`}
+        messages={messages}
+        onAdvance={advanceConversation}
+        onQuickReply={handleQuickReply}
+        onQuizAnswer={handleQuizAnswer}
+        onPracticeSend={handlePracticeSend}
+        userInput={userInput}
+        setUserInput={setUserInput}
+        selectedAnswer={selectedAnswer}
+        quizFeedback={quizFeedback}
+        chatRef={chatRef}
+        onBack={() => { setPage('home'); setCurrentModule(null); }}
+      />
+    );
+  }
+
+  // Render challenge
+  if (page === 'challenge' && currentChallenge) {
+    return (
+      <ConversationScreen
+        title={currentChallenge === 1 ? "Week 1 Challenge: Product Mastery" : "Week 2 Challenge: Sales Simulation"}
+        messages={messages}
+        onAdvance={advanceConversation}
+        onQuickReply={handleQuickReply}
+        onQuizAnswer={handleQuizAnswer}
+        onPracticeSend={handlePracticeSend}
+        userInput={userInput}
+        setUserInput={setUserInput}
+        selectedAnswer={selectedAnswer}
+        quizFeedback={quizFeedback}
+        chatRef={chatRef}
+        onBack={() => { setPage('home'); setCurrentChallenge(null); }}
+      />
+    );
+  }
+
+  // Render scenario
+  if (page === 'scenario' && currentScenario) {
+    const scenario = scenarios[`scenario${currentScenario}`];
+    return (
+      <ConversationScreen
+        title={`Scenario ${currentScenario}: ${scenario.title}`}
+        messages={messages}
+        onAdvance={advanceConversation}
+        onQuickReply={handleQuickReply}
+        onQuizAnswer={handleQuizAnswer}
+        onPracticeSend={handlePracticeSend}
+        userInput={userInput}
+        setUserInput={setUserInput}
+        selectedAnswer={selectedAnswer}
+        quizFeedback={quizFeedback}
+        chatRef={chatRef}
+        onBack={() => { setPage('home'); setCurrentScenario(null); }}
+      />
+    );
+  }
+
+  return null;
+}
+
+// ============ COMPONENTS ============
+
+function LoginCard({ onManualLogin }) {
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [showManual, setShowManual] = React.useState(false);
+  const googleBtnRef = React.useRef(null);
+
+  // Initialize Google Sign-In button
+  React.useEffect(() => {
+    const initGoogle = () => {
+      if (window.google?.accounts?.id && googleBtnRef.current) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleSignIn,
+            auto_select: false,
+          });
+          window.google.accounts.id.renderButton(googleBtnRef.current, {
+            type: 'standard',
+            theme: 'filled_black',
+            size: 'large',
+            text: 'signin_with',
+            shape: 'rectangular',
+            width: 340,
+            logo_alignment: 'left',
+          });
+        } catch (e) {
+          console.warn('Google Sign-In init failed:', e);
+        }
+      }
+    };
+
+    // GIS script might still be loading
+    if (window.google?.accounts?.id) {
+      initGoogle();
+    } else {
+      const timer = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(timer);
+          initGoogle();
+        }
+      }, 200);
+      return () => clearInterval(timer);
+    }
+  }, []);
+
+  const isClientIdConfigured = GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+  return (
+    <div className="w-96 bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
+      {/* Logo & Title */}
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <span className="text-2xl font-bold text-white">K</span>
+        </div>
+        <h1 className="text-2xl font-bold text-white">KwikAds Academy</h1>
+        <p className="text-sm text-gray-400 mt-1">AI-Powered Sales Training</p>
+      </div>
+
+      {/* Google SSO Button */}
+      {isClientIdConfigured ? (
+        <div className="mb-6">
+          <div ref={googleBtnRef} className="flex justify-center"></div>
+          <p className="text-xs text-gray-500 text-center mt-3">Sign in with your @gokwik.co Google account</p>
+        </div>
+      ) : (
+        <div className="mb-6 p-4 bg-gray-800 border border-gray-700 rounded-lg">
+          <div className="flex items-center gap-3 mb-2">
+            <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            <span className="text-sm text-gray-300 font-medium">Google SSO Ready</span>
+          </div>
+          <p className="text-xs text-gray-500">Add your Google Client ID to enable SSO. Use manual login below for now.</p>
+        </div>
+      )}
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex-1 h-px bg-gray-700"></div>
+        <span className="text-xs text-gray-500 uppercase tracking-wider">{isClientIdConfigured ? 'or use manual login' : 'manual login'}</span>
+        <div className="flex-1 h-px bg-gray-700"></div>
+      </div>
+
+      {/* Manual Login — shown by default if no Client ID, collapsible otherwise */}
+      {(showManual || !isClientIdConfigured) ? (
+        <div>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onManualLogin(username, password)}
+            className="w-full px-4 py-2.5 mb-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-emerald-500"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onManualLogin(username, password)}
+            className="w-full px-4 py-2.5 mb-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-emerald-500"
+          />
+          <button
+            onClick={() => onManualLogin(username, password)}
+            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition"
+          >
+            Sign In
+          </button>
+          <p className="text-xs text-gray-500 mt-3 text-center">Users: deepak, sankalp, vignesh | Password: admin123</p>
+        </div>
+      ) : (
+        <button
+          onClick={() => setShowManual(true)}
+          className="w-full py-2 text-sm text-gray-500 hover:text-gray-300 transition"
+        >
+          Use manual login instead
+        </button>
+      )}
+    </div>
+  );
+}
+
+function HomeScreen({ user, stats, onStartModule, onStartChallenge, onStartScenario, onLogout, onSwitchToAdmin }) {
+  const modules = [
+    { num: 1, title: 'Welcome to GoKwik' },
+    { num: 2, title: 'The KwikAds Weapon' },
+    { num: 3, title: 'The Problem We Solve' },
+    { num: 4, title: 'Signals That Win' },
+    { num: 5, title: 'The Money Talk' },
+    { num: 6, title: 'Selling Like a Consultant' },
+    { num: 7, title: 'The Client Journey' },
+    { num: 8, title: 'Demo Day' },
+    { num: 9, title: 'Handling Pushback' },
+    { num: 10, title: 'Proof That It Works' }
+  ];
+
+  const completedModules = stats.modulesComplete;
+
+  return (
+    <div className="min-h-screen bg-black text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Welcome back, {user.name}</h1>
+            <p className="text-gray-400">Continue your learning journey</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {onSwitchToAdmin && (
+              <button
+                onClick={onSwitchToAdmin}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded text-sm font-semibold transition"
+              >
+                Admin Dashboard
+              </button>
+            )}
+            <button
+              onClick={onLogout}
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition"
+            >
+              Sign Out
+            </button>
+            {user.picture && (
+              <img src={user.picture} alt={user.name} className="w-9 h-9 rounded-full border-2 border-emerald-600" referrerPolicy="no-referrer" />
+            )}
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-4 gap-4 mb-12">
+          <StatCard icon="⚡" value={`${stats.xp}`} label="XP" />
+          <StatCard icon="🎯" value={`${stats.level}`} label="Level" />
+          <StatCard icon="🔥" value={`${stats.streak}`} label="Streak" />
+          <StatCard icon="✅" value={`${stats.modulesComplete}/10`} label="Modules Done" />
+        </div>
+
+        {/* Module Journey */}
+        <div className="mb-12">
+          <h2 className="text-lg font-semibold mb-6">Your Learning Path</h2>
+          <div className="flex gap-3 overflow-x-auto pb-4">
+            {modules.map((mod, idx) => (
+              <div
+                key={mod.num}
+                onClick={() => idx <= completedModules && onStartModule(mod.num)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition ${
+                  idx < completedModules
+                    ? 'bg-green-600 text-white cursor-pointer hover:bg-green-500'
+                    : idx === completedModules
+                    ? 'bg-emerald-600 text-white gokwik-pulse cursor-pointer'
+                    : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                }`}
+                title={idx <= completedModules ? `${mod.title} (click to ${idx < completedModules ? 'review' : 'start'})` : `${mod.title} (locked)`}
+              >
+                {idx < completedModules ? '✓' : mod.num}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Continue Learning */}
+        <button
+          onClick={() => onStartModule(completedModules + 1)}
+          className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg mb-12 transition"
+        >
+          {completedModules === 0 ? 'Start Module 1' : completedModules >= 10 ? 'All Modules Complete!' : `Continue Module ${completedModules + 1}`}
+        </button>
+
+        {/* Modules Grid */}
+        <div className="mb-12">
+          <h2 className="text-lg font-semibold mb-6">All Modules</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {modules.map((mod) => (
+              <ModuleCard
+                key={mod.num}
+                module={mod}
+                isCompleted={mod.num <= completedModules}
+                isCurrent={mod.num === completedModules + 1}
+                onClick={() => onStartModule(mod.num)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Challenges */}
+        <div className="mb-12">
+          <h2 className="text-lg font-semibold mb-6">Challenges</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <ChallengeCard title="Week 1: Product Mastery" description="15 rapid-fire questions" onClick={() => onStartChallenge(1)} />
+            <ChallengeCard title="Week 2: Sales Simulation" description="3 client role-plays" onClick={() => onStartChallenge(2)} />
+          </div>
+        </div>
+
+        {/* Scenarios */}
+        <div>
+          <h2 className="text-lg font-semibold mb-6">Scenario Assessments</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <ScenarioCard title="Scenario 1: The Skeptical CMO" description="₹35L/month, 2.1x ROAS" onClick={() => onStartScenario(1)} />
+            <ScenarioCard title="Scenario 2: The Budget-Conscious Founder" description="₹8L/month, 1.3x ROAS" onClick={() => onStartScenario(2)} />
+            <ScenarioCard title="Scenario 3: The Current Winner" description="3.5x ROAS, why switch?" onClick={() => onStartScenario(3)} />
+            <ScenarioCard title="Scenario 4: The Enterprise Play" description="₹60L/month, integration questions" onClick={() => onStartScenario(4)} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ icon, value, label }) {
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
+      <div className="text-3xl mb-2">{icon}</div>
+      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className="text-sm text-gray-400">{label}</div>
+    </div>
+  );
+}
+
+function ModuleCard({ module, isCompleted, isCurrent, onClick }) {
+  return (
+    <button
+      onClick={(isCompleted || isCurrent) ? onClick : undefined}
+      className={`p-4 rounded-lg text-left transition border ${
+        isCompleted
+          ? 'bg-green-950 border-green-700 cursor-pointer hover:border-green-500'
+          : isCurrent
+          ? 'bg-emerald-950 border-emerald-600 gokwik-pulse cursor-pointer'
+          : 'bg-gray-900 border-gray-800 opacity-50 cursor-not-allowed'
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold text-white">{module.title}</h3>
+          <p className="text-sm text-gray-400 mt-1">{isCompleted ? '✓ Completed' : isCurrent ? 'Continue' : 'Locked'}</p>
+        </div>
+        {isCompleted && <span className="text-green-400 text-xl">✓</span>}
+      </div>
+    </button>
+  );
+}
+
+function ChallengeCard({ title, description, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="p-4 rounded-lg bg-gray-900 border border-gray-800 hover:border-gray-700 transition text-left"
+    >
+      <h3 className="font-semibold text-white">{title}</h3>
+      <p className="text-sm text-gray-400 mt-2">{description}</p>
+    </button>
+  );
+}
+
+function ScenarioCard({ title, description, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="p-4 rounded-lg bg-gray-900 border border-gray-800 hover:border-gray-700 transition text-left"
+    >
+      <h3 className="font-semibold text-white">{title}</h3>
+      <p className="text-sm text-gray-400 mt-2">{description}</p>
+    </button>
+  );
+}
+
+function ConversationScreen({
+  title,
+  messages,
+  onAdvance,
+  onQuickReply,
+  onQuizAnswer,
+  onPracticeSend,
+  userInput,
+  setUserInput,
+  selectedAnswer,
+  quizFeedback,
+  chatRef,
+  onBack
+}) {
+  React.useEffect(() => {
+    if (messages.length === 0) {
+      onAdvance();
+    }
+  }, []);
+
+  const lastMessage = messages[messages.length - 1];
+  const hasInput = lastMessage?.type === 'practice';
+  const hasQuickReply = lastMessage?.type === 'quick_reply';
+  const hasQuiz = lastMessage?.type === 'quiz';
+
+  return (
+    <div className="flex flex-col h-screen bg-black text-white">
+      {/* Header */}
+      <div className="border-b border-gray-800 p-4 flex justify-between items-center">
+        <h1 className="font-semibold">{title}</h1>
+        <button
+          onClick={onBack}
+          className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm transition"
+        >
+          ← Back
+        </button>
+      </div>
+
+      {/* Chat */}
+      <div
+        ref={chatRef}
+        className="flex-1 overflow-y-auto p-6 chat-container"
+      >
+        <div className="max-w-2xl mx-auto space-y-4">
+          {messages.map((msg, idx) => (
+            <MessageBubble
+              key={idx}
+              message={msg}
+              isSelected={selectedAnswer}
+              onQuickReply={onQuickReply}
+              onQuizAnswer={onQuizAnswer}
+              quizFeedback={quizFeedback}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Input Area */}
+      <div className="border-t border-gray-800 p-4 bg-black">
+        {hasInput && (
+          <div className="max-w-2xl mx-auto">
+            <textarea
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder="Type your response..."
+              className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:border-emerald-600 resize-none"
+              rows="3"
+            />
+            <button
+              onClick={() => onPracticeSend(lastMessage)}
+              disabled={!userInput.trim()}
+              className="mt-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg transition"
+            >
+              Send
+            </button>
+          </div>
+        )}
+
+        {!hasInput && !hasQuickReply && !hasQuiz && (
+          <div className="max-w-2xl mx-auto">
+            <button
+              onClick={onAdvance}
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-semibold"
+            >
+              Continue
+            </button>
+          </div>
+        )}
+
+        {!hasInput && !hasQuickReply && !hasQuiz && (
+          <p className="text-sm text-gray-500 text-center mt-2">Press Enter or click Continue</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MessageBubble({
+  message,
+  isSelected,
+  onQuickReply,
+  onQuizAnswer,
+  quizFeedback
+}) {
+  if (message.type === 'ai') {
+    return (
+      <div className="message-enter">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 max-w-xl">
+          <p className="text-gray-100 text-sm leading-relaxed">{message.text}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (message.type === 'user') {
+    return (
+      <div className="message-enter flex justify-end">
+        <div className="bg-emerald-600 rounded-lg p-4 max-w-xl">
+          <p className="text-white text-sm">{message.text}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (message.type === 'stat_card') {
+    return (
+      <div className="message-enter stat-card grid grid-cols-3 gap-3">
+        {message.stats.map((stat, idx) => (
+          <div
+            key={idx}
+            className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center"
+          >
+            <div className="text-2xl font-bold text-emerald-400">{stat.value}</div>
+            <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
+            {stat.subtext && <div className="text-xs text-gray-500 mt-0.5">{stat.subtext}</div>}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (message.type === 'summary_card') {
+    return (
+      <div className="message-enter bg-gradient-to-r from-emerald-900 to-gray-900 border border-emerald-800 rounded-lg p-6">
+        <h3 className="font-semibold text-white mb-3">Key Takeaway</h3>
+        <ul className="space-y-2 text-sm text-gray-100">
+          {message.points.map((point, idx) => (
+            <li key={idx} className="flex gap-2">
+              <span className="text-emerald-400 font-bold">•</span>
+              {point}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  if (message.type === 'quick_reply') {
+    return (
+      <div className="message-enter flex gap-2 flex-wrap">
+        {message.options.map((option, idx) => (
+          <button
+            key={idx}
+            onClick={() => onQuickReply(idx, message.nextMap)}
+            className="px-4 py-2 bg-gray-800 hover:bg-emerald-600 border border-gray-700 hover:border-emerald-600 rounded-lg text-sm transition"
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  if (message.type === 'quiz') {
+    return (
+      <div className="message-enter space-y-3">
+        <p className="text-sm font-semibold text-gray-100">{message.question}</p>
+        <div className="space-y-2">
+          {message.options.map((option, idx) => (
+            <button
+              key={idx}
+              onClick={() => onQuizAnswer(idx, message.correct, message.explanation)}
+              disabled={isSelected !== null}
+              className={`w-full p-3 rounded-lg text-left text-sm transition ${
+                isSelected === null
+                  ? 'bg-gray-800 hover:bg-gray-700 border border-gray-700'
+                  : idx === message.correct
+                  ? 'bg-green-900 border border-green-700'
+                  : idx === isSelected
+                  ? 'bg-red-900 border border-red-700'
+                  : 'bg-gray-800 border border-gray-700 opacity-50'
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        {quizFeedback && (
+          <div className={`p-3 rounded-lg text-sm ${quizFeedback.correct ? 'bg-green-900 text-green-100' : 'bg-yellow-900 text-yellow-100'}`}>
+            {quizFeedback.explanation}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (message.type === 'practice') {
+    return (
+      <div className="message-enter space-y-3">
+        <p className="text-sm font-semibold text-gray-100">{message.prompt}</p>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function AdminDashboard({ user, onLogout, onSwitchToLearner }) {
+  const [teamMembers, setTeamMembers] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    setLoading(true);
+    fetch(API_URL + '?action=getAllProgress')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && data.progress) {
+          const members = data.progress
+            .filter(p => p.userId !== 'sankalp')
+            .map(p => ({
+              name: p.name || p.userId,
+              level: Math.floor((p.xp || 0) / 300) + 1,
+              modulesComplete: p.modulesComplete || 0,
+              xp: p.xp || 0,
+              lastActive: p.lastActive || 'Never'
+            }));
+          setTeamMembers(members);
+        } else {
+          // Fallback: show team with 0 progress
+          setTeamMembers([
+            { name: 'Deepak', level: 1, modulesComplete: 0, xp: 0, lastActive: 'Not started' },
+            { name: 'Vignesh', level: 1, modulesComplete: 0, xp: 0, lastActive: 'Not started' }
+          ]);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch progress:', err);
+        // Fallback on error
+        setTeamMembers([
+          { name: 'Deepak', level: 1, modulesComplete: 0, xp: 0, lastActive: 'Not started' },
+          { name: 'Vignesh', level: 1, modulesComplete: 0, xp: 0, lastActive: 'Not started' }
+        ]);
+        setLoading(false);
+      });
+  }, []);
+
+  const avgCompletion = teamMembers.length > 0
+    ? Math.round(teamMembers.reduce((sum, m) => sum + m.modulesComplete, 0) / teamMembers.length / 10 * 100)
+    : 0;
+  const avgLevel = teamMembers.length > 0
+    ? (teamMembers.reduce((sum, m) => sum + m.level, 0) / teamMembers.length).toFixed(1)
+    : 0;
+
+  return (
+    <div className="min-h-screen bg-black text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="text-3xl font-bold">Academy Admin</h1>
+          <div className="flex gap-3">
+            <button
+              onClick={onSwitchToLearner}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded text-sm font-semibold transition"
+            >
+              My Learning
+            </button>
+            <button
+              onClick={onLogout}
+              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        {/* Team Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-12">
+          <StatCard icon="👥" value={`${teamMembers.length}`} label="Team Members" />
+          <StatCard icon="📊" value={`${avgCompletion}%`} label="Avg Completion" />
+          <StatCard icon="⭐" value={avgLevel} label="Avg Level" />
+        </div>
+
+        {/* Team Members */}
+        <div>
+          <h2 className="text-lg font-semibold mb-6">Team Progress</h2>
+          {loading ? (
+            <div className="text-center py-12 text-gray-400">Loading team progress...</div>
+          ) : (
+          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+            {teamMembers.map((member, idx) => (
+              <div
+                key={idx}
+                className={`p-4 flex justify-between items-center border-b border-gray-800 last:border-b-0 ${
+                  idx % 2 === 0 ? 'bg-gray-800' : 'bg-black'
+                }`}
+              >
+                <div>
+                  <p className="font-semibold text-white">{member.name}</p>
+                  <p className="text-sm text-gray-400">Level {member.level} • {member.modulesComplete} modules • {member.xp} XP • Last active: {member.lastActive}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-emerald-400">{member.modulesComplete}/10</p>
+                  <div className="w-24 h-2 bg-gray-700 rounded-full mt-1">
+                    <div className="h-2 bg-emerald-500 rounded-full" style={{width: `${member.modulesComplete * 10}%`}}></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {teamMembers.length === 0 && (
+              <div className="text-center py-8 text-gray-400">No team members found</div>
+            )}
+          </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ RENDER ============
+
+ReactDOM.createRoot(document.getElementById('root')).render(<KwikAdsAcademy />);
+</script>
+</body>
+</html>
