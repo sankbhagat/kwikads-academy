@@ -297,46 +297,46 @@ const moduleFlows = {
 // ============ CHALLENGES ============
 
 const weekOneChallengeFlow = [
-  { type: 'ai_message', text: "Welcome to Week 1 Challenge: Product Mastery. 15 rapid-fire questions. 30 seconds each. Let's go.", delay: 500 },
-  { type: 'ai_message', text: "You'll need 70%+ (11/15) to pass and unlock Week 2. Ready?", delay: 400 },
-  { type: 'quick_reply', options: ["Let's do it", "Give me a moment"], nextMap: { 0: 3, 1: 2 } },
-  { type: 'ai_message', text: "Question 1: How many consumer signals does KwikAds have access to?", delay: 300 },
-  { type: 'quiz', question: "Q1: Consumer signals?", options: ["50M+", "100M+", "180M+", "250M+"], correct: 2, explanation: "180M+ signals from our checkout network." },
-  { type: 'ai_message', text: "Question 2: GoKwik was founded in which year?", delay: 300 },
-  { type: 'quiz', question: "Q2: Founded year?", options: ["2018", "2019", "2020", "2021"], correct: 2, explanation: "GoKwik founded in 2020." },
-  { type: 'ai_message', text: "Question 3: What is the primary metric that Meta uses to score data quality?", delay: 300 },
-  { type: 'quiz', question: "Q3: Meta's data quality metric?", options: ["EMQ", "CPC", "CTR", "ROAS"], correct: 0, explanation: "EMQ = Event Match Quality." },
-  { type: 'ai_message', text: "Question 4: Which of these is NOT one of our 4 proprietary signals?", delay: 300 },
-  { type: 'quiz', question: "Q4: Not our signal?", options: ["purchase_prepaid", "click_to_cart", "multi_product_purchase", "high_order_volume"], correct: 1, explanation: "Our 4 signals: purchase_prepaid, new_customer_purchase, multi_product_purchase, high_order_volume." },
-  { type: 'ai_message', text: "Question 5: What's the minimum guaranteed monthly ad spend for viability?", delay: 300 },
-  { type: 'quiz', question: "Q5: Viability minimum?", options: ["₹20K", "₹40K", "₹75K", "₹100K"], correct: 1, explanation: "₹40K guaranteed minimum. Below that, ROI doesn't justify implementation." },
-  { type: 'ai_message', text: "Question 6: How many products does GoKwik offer?", delay: 300 },
-  { type: 'quiz', question: "Q6: GoKwik products?", options: ["5", "8", "10", "12"], correct: 1, explanation: "8 products in the GoKwik ecosystem." },
-  { type: 'ai_message', text: "Question 7: Shop Unrush achieved what ROAS improvement?", delay: 300 },
-  { type: 'quiz', question: "Q7: Shop Unrush ROAS?", options: ["+45%", "+67%", "+80%", "+100%"], correct: 1, explanation: "+67% ROAS improvement." },
-  { type: 'ai_message', text: "Question 8: What's the first stage of the client journey?", delay: 300 },
-  { type: 'quiz', question: "Q8: First stage?", options: ["Audit Request", "Commercial", "Discovery", "Go-Live"], correct: 2, explanation: "Discovery first. Listen and diagnose." },
-  { type: 'ai_message', text: "Question 9: How long does the audit stage typically take?", delay: 300 },
-  { type: 'quiz', question: "Q9: Audit duration?", options: ["1-2 days", "3-4 days", "1 week", "2 weeks"], correct: 1, explanation: "3-4 days for a thorough audit." },
-  { type: 'ai_message', text: "Question 10: Which tier is a brand spending ₹40L/month in?", delay: 300 },
-  { type: 'quiz', question: "Q10: ₹40L/month tier?", options: ["Long Tail", "Emerging", "SMB", "Enterprise"], correct: 2, explanation: "₹40L falls in SMB (₹25-50L)." },
-  { type: 'ai_message', text: "Question 11: What's the key rule for consultative selling?", delay: 300 },
-  { type: 'quiz', question: "Q11: Consultative selling?", options: ["Always lead with product", "Lead with pain and listen", "Ask for the budget first", "Pitch immediately"], correct: 1, explanation: "Lead with pain, not product. Discovery → Diagnosis → Prescription." },
-  { type: 'ai_message', text: "Question 12: Peesafe achieved what growth rate?", delay: 300 },
-  { type: 'quiz', question: "Q12: Peesafe growth?", options: ["2x", "4x", "6x", "8x"], correct: 2, explanation: "6x growth in 6 months." },
-  { type: 'ai_message', text: "Question 13: What's the most common objection you'll hear?", delay: 300 },
-  { type: 'quiz', question: "Q13: Common objection?", options: ["Pricing is high", "We already have an agency", "We don't trust data", "We're too small"], correct: 1, explanation: "'We already have an agency' is the #1 objection. Reframe it." },
-  { type: 'ai_message', text: "Question 14: What does ICP stand for?", delay: 300 },
-  { type: 'quiz', question: "Q14: ICP?", options: ["Internet Content Protocol", "Ideal Customer Profile", "Industry Connection Point", "Integrated Campaign Platform"], correct: 1, explanation: "ICP = Ideal Customer Profile. For us: ₹25-70L/month ad spend." },
-  { type: 'ai_message', text: "Final question 15: What's the #1 metric brands care about?", delay: 300 },
-  { type: 'quiz', question: "Q15: #1 brand metric?", options: ["Impressions", "Clicks", "ROAS", "Audience size"], correct: 2, explanation: "ROAS. Return on Ad Spend. Everything else is secondary." },
+  { type: 'ai_message', text: "Week 1 Challenge — Applied GoKwik Mastery. 15 scenario-based questions. Pass mark 70% (11/15). I'll give you a coach-nudge on any question if you want one.", delay: 500 },
+  { type: 'ai_message', text: "This is application, not trivia. I'll grade you like a manager would. Ready when you are.", delay: 400 },
+  { type: 'quick_reply', options: ["Let's go", "Quick refresher first"], nextMap: { 0: 3, 1: 3 } },
+  { type: 'ai_message', text: "Q1 — The GoKwik moat. Why can we score Meta's audience quality better than any agency?", delay: 300 },
+  { type: 'quiz', question: "Q1: The real source of our edge:", options: ["We have bigger ad budgets than agencies", "We see first-party checkout data across 10,000+ D2C brands", "We are an authorised Meta reseller", "We train our own ML models on Google data"], correct: 1, explanation: "Edge = checkout-level intent data across our network of D2C brands. Agencies only see click/impression data from Meta's ad platform.", hint: "Agencies see clicks. We see something deeper, further down the funnel." },
+  { type: 'ai_message', text: "Q2 — A brand says 'we're already doing ROAS 3x, why you?' The right frame?", delay: 300 },
+  { type: 'quiz', question: "Q2: Best reframe for a ROAS 3x brand:", options: ["3x is low, we'll 2x that", "3x is the floor of what's possible with signal-fed campaigns — let's prove upside in an audit", "Your agency must be over-reporting", "We're cheaper than your agency"], correct: 1, explanation: "Never attack the incumbent's ROAS — it triggers defensiveness. Anchor 3x as the floor, offer a risk-free audit to prove upside.", hint: "Never tell a CMO their current work is bad. Reframe their win as a starting line, not a ceiling." },
+  { type: 'ai_message', text: "Q3 — Meta's data quality score that determines how your audiences perform:", delay: 300 },
+  { type: 'quiz', question: "Q3: What does Meta optimise against?", options: ["EMQ — Event Match Quality (how well events tie to real users)", "CPC — Cost Per Click", "CTR — Click-Through Rate", "CPM — Cost per Mille"], correct: 0, explanation: "EMQ is Meta's score of how accurately your conversion events are matched to a Meta user. Higher EMQ → lower CPA → higher ROAS.", hint: "It's not a click metric. It measures how cleanly your events attribute to Meta identities." },
+  { type: 'ai_message', text: "Q4 — Which signal would you lean on for an acquisition-led campaign?", delay: 300 },
+  { type: 'quiz', question: "Q4: Best signal to prospect net-new customers:", options: ["purchase_prepaid", "new_customer_purchase", "multi_product_purchase", "high_order_volume"], correct: 1, explanation: "new_customer_purchase models first-time buyers — ideal seed for acquisition lookalikes. purchase_prepaid is for margin, multi_product is for AOV, high_order_volume is for retention.", hint: "Match the signal to the campaign goal: acquisition vs. retention vs. margin." },
+  { type: 'ai_message', text: "Q5 — A brand spends ₹12L/month. Do we qualify them?", delay: 300 },
+  { type: 'quiz', question: "Q5: Correct ICP call for ₹12L/month:", options: ["No — below ₹25L ICP floor, parking-lot for nurture", "Yes — onboard in Enterprise tier", "Yes — onboard in SMB tier", "No — escalate to Founder"], correct: 0, explanation: "ICP starts at ₹25L/month. Below that, unit economics don't work (min ₹40K fee). Park them — check back in 2 quarters as they scale.", hint: "Our ICP floor is ₹25L. Know it cold — it protects your quota from low-fit accounts." },
+  { type: 'ai_message', text: "Q6 — The 6-stage client journey, in order:", delay: 300 },
+  { type: 'quiz', question: "Q6: Correct journey sequence:", options: ["Discovery → Audit → Audit Presentation → Commercial → Closure → Go-Live", "Discovery → Pitch → Negotiate → Contract → Onboard → Launch", "Cold Call → Demo → Proposal → Close → Kickoff → Live", "Audit → Discovery → Commercial → Demo → Sign → Live"], correct: 0, explanation: "Discovery (listen) → Audit Request → Audit Presentation (show value) → Commercial → Closure → Go-Live. Total ~2-3 weeks.", hint: "Listening comes before the audit. Always." },
+  { type: 'ai_message', text: "Q7 — Shop Unrush case: what was the unlock?", delay: 300 },
+  { type: 'quiz', question: "Q7: Shop Unrush's +67% ROAS came primarily from:", options: ["Doubling their ad budget", "Better creatives", "Swapping Meta's default audiences for signal-fed audiences", "Running more retargeting"], correct: 2, explanation: "Creative and budget were held constant. The unlock was feeding Meta prepaid-purchase signals instead of generic pixel audiences. Same spend, cleaner intent → +67% ROAS.", hint: "Shop Unrush didn't spend more. They spent on cleaner audiences." },
+  { type: 'ai_message', text: "Q8 — A CMO says 'show me why your data is better than my agency's pixel'. Your move?", delay: 300 },
+  { type: 'quiz', question: "Q8: Best response:", options: ["Send case studies and wait", "Offer a 3-day audit on their live account", "Drop price by 20% to win trial", "Promise a guaranteed ROAS lift"], correct: 1, explanation: "The audit IS the sale. It's low-commitment for them, proof-packed for us. Never promise ROAS numbers blind — always prove with their data.", hint: "When in doubt, offer the audit. It's our strongest sales asset." },
+  { type: 'ai_message', text: "Q9 — Priya (CMO, fashion, ₹45L/month, ROAS 2.2x, CAC climbing). Which tier & why?", delay: 300 },
+  { type: 'quiz', question: "Q9: Priya's tier and next step:", options: ["SMB tier — lead with prepaid-purchase signal to fix rising CAC", "Enterprise tier — dedicated AM pitch", "Emerging tier — bundle pricing", "Long Tail — auto-serve"], correct: 0, explanation: "₹45L falls in SMB (₹25-50L). Her pain is CAC-not-ROAS. Prepaid-purchase signals pull in higher-intent lookalikes → lower CAC at same ROAS.", hint: "₹45L = SMB. CAC rising ≠ ROAS problem. Pick the signal that addresses HER pain." },
+  { type: 'ai_message', text: "Q10 — A founder says 'we can't afford another vendor'. Best reframe?", delay: 300 },
+  { type: 'quiz', question: "Q10: Reframe 'we can't afford it':", options: ["Drop the price", "Walk away", "Do the unit-economics math: 'if we lift ROAS 15%, your revenue goes up X. Our fee is Y. You net positive in month 1.'", "Offer a 3-month free trial"], correct: 2, explanation: "Bootstrapped founders respond to math, not discounts. Never concede price without showing the arithmetic of payback.", hint: "Cost vs. investment. Always flip it with numbers." },
+  { type: 'ai_message', text: "Q11 — Discovery call. Which opening gets a CMO talking?", delay: 300 },
+  { type: 'quiz', question: "Q11: Strongest discovery opener:", options: ["Let me walk you through our deck", "What does the next 90 days of growth look like for you?", "We're Meta's Signals Partner in India", "Our clients see +67% ROAS"], correct: 1, explanation: "Future-focused, open-ended, business-framed. Gets them talking about THEIR priorities, not ours. Decks and credentials come AFTER pain is named.", hint: "A good discovery opener makes THEM talk for the next 5 minutes." },
+  { type: 'ai_message', text: "Q12 — Peesafe grew 6x in 6 months. What matters most for YOU as a salesperson?", delay: 300 },
+  { type: 'quiz', question: "Q12: Why Peesafe matters in a pitch:", options: ["It proves we work with large brands", "It's a credibility anchor for founders scaling from ₹10-50L fast", "It's the biggest logo we have", "It shows we discount aggressively"], correct: 1, explanation: "Peesafe is the 'I can be that brand' story for scaling founders. Use it when prospect is sub-₹25L but growing fast. The number is less important than the archetype.", hint: "Case studies are mirrors. Match the case to the prospect's stage." },
+  { type: 'ai_message', text: "Q13 — 'We're happy with our current agency'. Best first response?", delay: 300 },
+  { type: 'quiz', question: "Q13: Reframe 'we have an agency':", options: ["Agencies are slow — we're faster", "Great — keep them. We're a data layer they plug into, not a replacement", "You'll save money with us", "Let me show you why they're wrong"], correct: 1, explanation: "Never attack the agency — the CMO picked them, you'd be calling their judgment bad. Position as additive: signal data that feeds THEIR campaigns. Low-threat, high-value.", hint: "Don't replace the agency. Arm them. That's how you get in the door." },
+  { type: 'ai_message', text: "Q14 — A prospect's prepaid rate is 35% and AOV is ₹1,200. Which signal do you pitch?", delay: 300 },
+  { type: 'quiz', question: "Q14: Best signal for high-prepaid, low-AOV brand:", options: ["purchase_prepaid — double down on their margin strength", "multi_product_purchase — push AOV up", "high_order_volume — push retention", "new_customer_purchase — push acquisition"], correct: 1, explanation: "They already win on prepaid (35% is strong). The gap is AOV — multi_product_purchase signal finds lookalikes who buy 2+ items per order. Fix the weakness, don't gild the strength.", hint: "Match the signal to the GAP, not the strength. Where is the lever that moves revenue?" },
+  { type: 'ai_message', text: "Q15 — Closing ask. A CMO says 'send me a proposal.' What's the right move?", delay: 300 },
+  { type: 'quiz', question: "Q15: Right response to 'send me a proposal':", options: ["Send it that day, wait for reply", "Ask: 'happy to — what's the one outcome that would make this a yes for you?' then book the review call", "Send a long proposal with every feature", "Call their junior and pitch them"], correct: 1, explanation: "Proposals die in inboxes. Before sending, anchor the outcome that makes it a YES and book the review call. If they won't agree to a review, the deal isn't real.", hint: "Never send a proposal without a scheduled review call. That's how deals slip." },
   { type: 'ai_message', text: "Challenge complete! Calculating your score...", delay: 800 }
 ];
 
 const weekTwoChallengeFlow = [
   { type: 'ai_message', text: "Welcome to Week 2 Challenge: Sales Simulation. You're about to face 3 client personas. Handle each conversation.", delay: 500 },
   { type: 'ai_message', text: "You'll be scored on: qualification, pitch quality, objection handling, closing technique. Pass 2/3 to advance.", delay: 400 },
-  { type: 'quick_reply', options: ["I'm ready", "Tell me more"], nextMap: { 0: 3, 1: 2 } },
+  { type: 'quick_reply', options: ["I'm ready", "Tell me more"], nextMap: { 0: 3, 1: 3 } },
   { type: 'ai_message', text: "Scenario 1: You're talking to Priya, CMO of a fashion brand spending ₹50L/month on Meta. ROAS is 2.8x, but CAC is rising. She's skeptical.", delay: 500 },
   { type: 'practice', prompt: "You: [Your opening message]", keywords: ["challenge", "problem", "data", "signals", "roas", "cac", "improve"], minKeywords: 2, goodFeedback: "Strong start! You led with her pain. Priya would continue talking.", improveFeedback: "Open with a question about her biggest challenge. Make her talk first." },
   { type: 'ai_message', text: "Priya: 'We're already working with an agency. Why would I switch?'", delay: 400 },
@@ -439,7 +439,13 @@ function KwikAdsAcademy() {
   const [selectedAnswer, setSelectedAnswer] = React.useState(null);
   const [quizFeedback, setQuizFeedback] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showHint, setShowHint] = React.useState(false);
   const chatRef = React.useRef(null);
+  // Refs to avoid stale-closure bugs when chaining advance() via setTimeout
+  const conversationStepRef = React.useRef(0);
+  const messagesRef = React.useRef([]);
+  React.useEffect(() => { conversationStepRef.current = conversationStep; }, [conversationStep]);
+  React.useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   // Auto-scroll to latest message
   React.useEffect(() => {
@@ -508,98 +514,134 @@ function KwikAdsAcademy() {
     }
   };
 
+  // Helper: resolve the active flow (module / challenge / scenario)
+  const getFlow = React.useCallback(() => {
+    if (page === 'scenario' && currentScenario) {
+      return scenarios[`scenario${currentScenario}`]?.flow;
+    } else if (page === 'challenge' && currentChallenge) {
+      // FIX: challenges live in their own variables, not in moduleFlows
+      return currentChallenge === 1 ? weekOneChallengeFlow : weekTwoChallengeFlow;
+    } else if (page === 'module' && currentModule) {
+      return moduleFlows[`module${currentModule}`];
+    }
+    return null;
+  }, [page, currentScenario, currentChallenge, currentModule]);
+
   // Start module conversation
   const startModule = (moduleNum) => {
     setCurrentModule(moduleNum);
     setPage('module');
     setMessages([]);
+    messagesRef.current = [];
     setConversationStep(0);
+    conversationStepRef.current = 0;
     setSelectedAnswer(null);
     setQuizFeedback(null);
+    setShowHint(false);
   };
 
-  // Advance conversation
+  // Advance conversation — uses refs to avoid stale-closure bugs
   const advanceConversation = () => {
-    let flow;
-    if (page === 'scenario' && currentScenario) {
-      flow = scenarios[`scenario${currentScenario}`]?.flow;
-    } else if (page === 'challenge' && currentChallenge) {
-      flow = moduleFlows[`challenge${currentChallenge}`];
-    } else {
-      flow = moduleFlows[`module${currentModule}`];
-    }
+    const flow = getFlow();
     if (!flow) return;
 
-    if (conversationStep < flow.length) {
-      const step = flow[conversationStep];
-      const newMessages = [...messages];
+    const stepIdx = conversationStepRef.current;
+    if (stepIdx >= flow.length) return;
 
-      if (step.type === 'ai_message') {
-        const text = step.text.replace('{name}', user.name);
-        newMessages.push({ type: 'ai', text, delay: step.delay });
-        // Track XP and module completion
-        if (step.xp) {
-          setStats(prev => {
-            const newXp = prev.xp + step.xp;
-            const newLevel = Math.floor(newXp / 300) + 1;
-            const isLastStep = conversationStep === flow.length - 1;
-            const newModulesComplete = isLastStep && currentModule > prev.modulesComplete
-              ? currentModule
-              : prev.modulesComplete;
-            return { ...prev, xp: newXp, level: newLevel, modulesComplete: newModulesComplete, streak: prev.streak + (isLastStep ? 1 : 0) };
-          });
-        }
-      } else if (step.type === 'stat_card') {
-        newMessages.push({ type: 'stat_card', stats: step.stats });
-      } else if (step.type === 'quick_reply') {
-        newMessages.push({ type: 'quick_reply', options: step.options, nextMap: step.nextMap });
-      } else if (step.type === 'quiz') {
-        newMessages.push({ type: 'quiz', question: step.question, options: step.options, correct: step.correct, explanation: step.explanation });
-      } else if (step.type === 'practice') {
-        newMessages.push({ type: 'practice', prompt: step.prompt, keywords: step.keywords, minKeywords: step.minKeywords, goodFeedback: step.goodFeedback, improveFeedback: step.improveFeedback });
-      } else if (step.type === 'summary_card') {
-        newMessages.push({ type: 'summary_card', points: step.points });
+    const step = flow[stepIdx];
+    let newMessage = null;
+
+    if (step.type === 'ai_message') {
+      const text = (step.text || '').replace('{name}', user?.name || '');
+      newMessage = { type: 'ai', text, delay: step.delay };
+      // XP + completion tracking
+      if (step.xp) {
+        setStats(prev => {
+          const newXp = prev.xp + step.xp;
+          const newLevel = Math.floor(newXp / 300) + 1;
+          const isLastStep = stepIdx === flow.length - 1;
+          const newModulesComplete = isLastStep && currentModule > prev.modulesComplete
+            ? currentModule
+            : prev.modulesComplete;
+          return { ...prev, xp: newXp, level: newLevel, modulesComplete: newModulesComplete, streak: prev.streak + (isLastStep ? 1 : 0) };
+        });
       }
-
-      setMessages(newMessages);
-      setConversationStep(conversationStep + 1);
+    } else if (step.type === 'stat_card') {
+      newMessage = { type: 'stat_card', stats: step.stats };
+    } else if (step.type === 'quick_reply') {
+      newMessage = { type: 'quick_reply', options: step.options, nextMap: step.nextMap };
+    } else if (step.type === 'quiz') {
+      newMessage = { type: 'quiz', question: step.question, options: step.options, correct: step.correct, explanation: step.explanation, hint: step.hint };
+    } else if (step.type === 'practice') {
+      newMessage = { type: 'practice', prompt: step.prompt, keywords: step.keywords, minKeywords: step.minKeywords, goodFeedback: step.goodFeedback, improveFeedback: step.improveFeedback, hint: step.hint };
+    } else if (step.type === 'summary_card') {
+      newMessage = { type: 'summary_card', points: step.points };
     }
+
+    if (newMessage) {
+      setMessages(prev => {
+        const next = [...prev, newMessage];
+        messagesRef.current = next;
+        return next;
+      });
+    }
+
+    const nextIdx = stepIdx + 1;
+    conversationStepRef.current = nextIdx;
+    setConversationStep(nextIdx);
+    setShowHint(false);
   };
 
-  // Handle quick reply click
+  // Handle quick reply click — uses functional setState + refs, no stale closures
   const handleQuickReply = (optionIndex, nextMap) => {
-    setMessages([...messages, { type: 'user', text: messages[messages.length - 1].options[optionIndex] }]);
+    setMessages(prev => {
+      const last = prev[prev.length - 1];
+      const next = [...prev, { type: 'user', text: last.options[optionIndex] }];
+      messagesRef.current = next;
+      return next;
+    });
     const nextStep = nextMap[optionIndex];
+    conversationStepRef.current = nextStep;
     setConversationStep(nextStep);
-    setTimeout(advanceConversation, 500);
+    setTimeout(advanceConversation, 400);
   };
 
-  // Handle quiz answer
+  // Handle quiz answer — uses functional setState + refs
   const handleQuizAnswer = (optionIndex, correct, explanation) => {
     setSelectedAnswer(optionIndex);
     setQuizFeedback({ correct: optionIndex === correct, explanation });
     setTimeout(() => {
-      setMessages([...messages, { type: 'user', text: messages[messages.length - 1].options[optionIndex] }]);
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        const next = [...prev, { type: 'user', text: last.options[optionIndex] }];
+        messagesRef.current = next;
+        return next;
+      });
       setSelectedAnswer(null);
       setQuizFeedback(null);
-      setTimeout(advanceConversation, 800);
+      setTimeout(advanceConversation, 700);
     }, 2000);
   };
 
-  // Handle practice response
-  const handlePracticeSend = (practicePrompt) => {
-    const messageObj = messages[messages.length - 1];
+  // Handle practice response — uses functional setState + refs
+  const handlePracticeSend = () => {
     const input = userInput.trim();
-    setMessages([...messages, { type: 'user', text: input }]);
+    if (!input) return;
+    const last = messagesRef.current[messagesRef.current.length - 1];
+    if (!last || last.type !== 'practice') return;
 
-    const keywordMatches = messageObj.keywords.filter(k => input.toLowerCase().includes(k.toLowerCase())).length;
-    const passed = keywordMatches >= messageObj.minKeywords;
-    const feedback = passed ? messageObj.goodFeedback : messageObj.improveFeedback;
+    const keywordMatches = (last.keywords || []).filter(k => input.toLowerCase().includes(k.toLowerCase())).length;
+    const passed = keywordMatches >= (last.minKeywords || 1);
+    const feedback = passed ? last.goodFeedback : last.improveFeedback;
+    const coachPrefix = passed ? "✅ Coach: " : "💡 Coach: ";
 
-    setMessages(prev => [...prev, { type: 'ai', text: feedback }]);
+    setMessages(prev => {
+      const next = [...prev, { type: 'user', text: input }, { type: 'ai', text: coachPrefix + feedback }];
+      messagesRef.current = next;
+      return next;
+    });
     setUserInput('');
-
-    setTimeout(advanceConversation, 1500);
+    setTimeout(advanceConversation, 1400);
   };
 
   // Render login
@@ -629,8 +671,8 @@ function KwikAdsAcademy() {
         user={user}
         stats={stats}
         onStartModule={startModule}
-        onStartChallenge={(challengeNum) => { setCurrentChallenge(challengeNum); setPage('challenge'); setMessages([]); setConversationStep(0); }}
-        onStartScenario={(scenarioNum) => { setCurrentScenario(scenarioNum); setPage('scenario'); setMessages([]); setConversationStep(0); }}
+        onStartChallenge={(challengeNum) => { setCurrentChallenge(challengeNum); setPage('challenge'); setMessages([]); messagesRef.current = []; setConversationStep(0); conversationStepRef.current = 0; setSelectedAnswer(null); setQuizFeedback(null); setShowHint(false); }}
+        onStartScenario={(scenarioNum) => { setCurrentScenario(scenarioNum); setPage('scenario'); setMessages([]); messagesRef.current = []; setConversationStep(0); conversationStepRef.current = 0; setSelectedAnswer(null); setQuizFeedback(null); setShowHint(false); }}
         onLogout={() => { setUser(null); setPage('login'); }}
         onSwitchToAdmin={user?.role === 'Manager' ? () => setPage('admin') : null}
       />
@@ -843,10 +885,18 @@ function HomeScreen({ user, stats, onStartModule, onStartChallenge, onStartScena
     <div className="min-h-screen bg-black text-white p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-4xl font-bold mb-2">Welcome back, {user.name}</h1>
-            <p className="text-gray-400">Continue your learning journey</p>
+            <p className="text-gray-400">
+              {(() => {
+                const c = stats.modulesComplete;
+                if (c === 0) return "Let's get you shipping in 10 days. Module 1 takes ~6 minutes.";
+                if (c >= 10) return "All 10 modules cleared. Time to apply it live — jump into the Scenarios.";
+                const pct = Math.round(c / 10 * 100);
+                return `You're ${pct}% through. Next up: Module ${c + 1}. I'll keep it tight — promise.`;
+              })()}
+            </p>
           </div>
           <div className="flex items-center gap-3">
             {onSwitchToAdmin && (
@@ -1182,6 +1232,9 @@ function MessageBubble({
     return (
       <div className="message-enter space-y-3">
         <p className="text-sm font-semibold text-gray-100">{message.question}</p>
+        {message.hint && isSelected === null && (
+          <HintReveal hint={message.hint} />
+        )}
         <div className="space-y-2">
           {message.options.map((option, idx) => (
             <button
@@ -1215,11 +1268,31 @@ function MessageBubble({
     return (
       <div className="message-enter space-y-3">
         <p className="text-sm font-semibold text-gray-100">{message.prompt}</p>
+        {message.hint && <HintReveal hint={message.hint} />}
       </div>
     );
   }
 
   return null;
+}
+
+function HintReveal({ hint }) {
+  const [open, setOpen] = React.useState(false);
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+      >
+        💡 Need a coach nudge?
+      </button>
+    );
+  }
+  return (
+    <div className="text-xs bg-emerald-950 border border-emerald-800 text-emerald-100 rounded-md p-3">
+      <span className="font-semibold">Coach:</span> {hint}
+    </div>
+  );
 }
 
 function AdminDashboard({ user, onLogout, onSwitchToLearner }) {
