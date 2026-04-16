@@ -63,6 +63,8 @@ const AUTHORIZED_USERS = {
   'sankalp.bhagat@gokwik.co': { name: 'Sankalp', role: 'Manager', team: 'Admin' },
   'deepak.n@gokwik.co':       { name: 'Deepak', role: 'Sales Rep', team: 'SMB' },
   'vignesh.babu@gokwik.co':   { name: 'Vignesh', role: 'Sales Rep', team: 'Enterprise' },
+  'karan.bhatia@gokwik.co':   { name: 'Karan', role: 'Manager', team: 'Admin' },
+  'test.reviewer@gokwik.co':  { name: 'Test Reviewer', role: 'Reviewer', team: 'QA' },
 };
 
 // Helper: decode Google JWT token
@@ -100,19 +102,20 @@ const apiPost = (action, data) => {
 
 const moduleFlows = {
   module1: [
-    { type: 'ai_message', text: "{name} — before we get to selling, let's align on what GoKwik actually is and why brands buy us. 8 minutes. Positioning first, mechanics after.", delay: 500 },
-    { type: 'ai_message', text: "One-line positioning: GoKwik is the operating stack for D2C growth. Not a point product. A single-vendor platform solving the three moments D2C brands lose money on.", delay: 400 },
-    { type: 'ai_message', text: "Moment 1 — Acquisition. Meta CPMs up ~40% in three years. Attribution fractured post-iOS14. Brands pay for traffic that can't be measured.", delay: 400 },
-    { type: 'ai_message', text: "Moment 2 — Conversion. D2C checkout drop-off sits at 70%+. Address friction, payment-method limits, COD abuse, slow pages. Revenue already paid for walks away.", delay: 400 },
-    { type: 'ai_message', text: "Moment 3 — Retention. ₹1,200 acquisition cost, one order, churn. LTV negative. Brands die on bad cohorts.", delay: 400 },
-    { type: 'ai_message', text: "GoKwik builds a product for each moment. Eight products. One stack. Here's the full catalogue — memorise it.", delay: 400 },
+    { type: 'ai_message', text: "{name} — you sell KwikAds. But most of the D2C brands you'll pitch already use GoKwik Checkout or KwikEngage. Understanding the full stack isn't optional — it's how you sell smarter, cross-sell naturally, and speak the language your prospects already know.", delay: 500 },
+    { type: 'ai_message', text: "GoKwik's mission: become the operating stack for D2C growth in India. Not a single tool — a platform that solves the three moments where D2C brands lose money. Data sits at the core of everything we build.", delay: 400 },
+    { type: 'ai_message', text: "Moment 1 — Acquisition. Meta CPMs up ~40% in three years. Attribution fractured post-iOS14. Brands pay for traffic that can't be measured. This is where KwikAds lives — YOUR product.", delay: 400 },
+    { type: 'ai_message', text: "Moment 2 — Conversion. D2C checkout drop-off sits at 70%+. Friction, payment-method limits, COD abuse, slow pages. Revenue already paid for walks away. This is where Kwik Checkout lives — and it generates the data that powers YOUR product.", delay: 400 },
+    { type: 'ai_message', text: "Moment 3 — Retention. ₹1,200 acquisition cost, one order, churn. LTV goes negative. Brands die on bad cohorts. This is where KwikEngage lives — WhatsApp, Email, RCS campaigns that bring buyers back.", delay: 400 },
+    { type: 'ai_message', text: "Here's why this matters to YOU as a KwikAds rep: most of your prospects are already GoKwik clients using Checkout or KwikEngage. When you walk in, you're not cold — you're cross-selling into an existing relationship. Understand their current GoKwik usage and you'll close faster.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "Kwik Checkout", label: "1-page checkout", subtext: "Reduces RTO, lifts conversion" },
-      { value: "Kwik Ads", label: "Meta Signals Partner", subtext: "Best ROAS on Meta — YOUR product" },
-      { value: "Kwik Engage", label: "WA / Email / RCS", subtext: "Engagement + repeat purchases" }
+      { value: "Kwik Checkout", label: "1-page checkout", subtext: "DATA SOURCE — feeds KwikAds signals" },
+      { value: "Kwik Ads", label: "Meta Signals Partner", subtext: "YOUR PRODUCT — powered by checkout data" },
+      { value: "Kwik Engage", label: "WA / Email / RCS", subtext: "RETENTION — amplifies your ROAS story" }
     ] },
+    { type: 'ai_message', text: "The data flywheel you must understand: Kwik Checkout captures verified purchase events (prepaid/COD, AOV, phone, email) → this first-party data flows into KwikAds as 200+ intent signals → Meta gets cleaner events, finds better buyers → those buyers convert on Kwik Checkout → KwikEngage retains them. Each product makes the others stronger.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "Kwik Pass", label: "Visitor → buyer", subtext: "Identify anonymous traffic" },
+      { value: "Kwik Pass", label: "Visitor → buyer", subtext: "Identifies anonymous traffic with OTP" },
       { value: "GoKwik Cart", label: "Cart optimizer", subtext: "Boosts AOV + conversion" },
       { value: "Kwik Ship", label: "Shipping + fulfilment", subtext: "Smart D2C logistics" }
     ] },
@@ -121,22 +124,23 @@ const moduleFlows = {
       { value: "Kwik AI Popups", label: "Lead capture", subtext: "AI popups for high-intent leads" },
       { value: "One stack", label: "8 products", subtext: "One contract, one integration" }
     ] },
-    { type: 'ai_message', text: "Why the stack matters on a sales call: every product generates data the next consumes. KwikCheckout writes buyer intent → KwikAds feeds it to Meta → cheaper traffic → more checkouts. That is a flywheel, not a feature list.", delay: 400 },
-    { type: 'ai_message', text: "When a founder asks 'why not best-of-breed point tools?' — the flywheel is your answer. Point tools are additive (A + B). GoKwik compounds (A × B).", delay: 400 },
-    { type: 'quiz', question: "A CFO asks: 'Why your stack over best-of-breed point solutions?' Strongest answer:", options: [
-      "We're cheaper than the alternatives",
-      "Our products feed each other — checkout data makes our ads work better, which lowers CAC structurally. Point solutions can't compound; we do.",
-      "We have better support",
-      "We integrate with Shopify"
-    ], correct: 1, explanation: "CFOs buy compounding, not features. Point stacks are additive. GoKwik is multiplicative — KwikCheckout data powers KwikAds, which powers KwikEngage retention. Frame every call this way.", hint: "CFOs think in compounding. Your answer must too." },
-    { type: 'ai_message', text: "The sales job is not to explain eight products. It is to diagnose which of the three moments a brand is bleeding on, lead with that product, and expand from there.", delay: 400 },
-    { type: 'practice', prompt: "Give your one-sentence GoKwik pitch to a founder with 3 minutes. No jargon. Go.", keywords: ["stack", "acquisition", "conversion", "retention", "flywheel", "d2c", "checkout", "ads", "engage", "compound"], minKeywords: 2, goodFeedback: "Clean. You tied the stack to a business outcome. That is the executive frame — use it on every first call.", improveFeedback: "Don't list products. Frame the three moments (acquire / convert / retain) and land: 'one stack for all three.' Founders buy the outcome, not the SKU.", hint: "Three moments. One stack. Don't list SKUs." },
+    { type: 'ai_message', text: "Your cross-sell advantage: when a brand already uses Kwik Checkout, they're generating the exact data KwikAds needs. Your pitch becomes: 'You're already on GoKwik Checkout. That checkout data is gold for Meta — and right now it's not being used for your ads. KwikAds activates it.' That's a 30-second close.", delay: 400 },
+    { type: 'ai_message', text: "When a brand uses KwikEngage too, your story gets even stronger: 'Your acquisition cost drops with KwikAds, your checkout converts with Kwik Checkout, and KwikEngage brings them back. You're already 2/3 of the way — KwikAds completes the loop.'", delay: 400 },
+    { type: 'quiz', question: "A D2C brand already uses Kwik Checkout and KwikEngage. Your strongest KwikAds pitch opener:", options: [
+      "Let me tell you about KwikAds — it's India's 1st Meta Signals Partner",
+      "You're already on Kwik Checkout — that checkout data is gold for Meta, and right now it's not being used for your ad campaigns. KwikAds activates it. Same data you already generate, but now it's lowering your CAC.",
+      "We can improve your ROAS by 25%",
+      "You should use all our products for the best results"
+    ], correct: 1, explanation: "When the brand already uses Checkout, the sale is half done. They're generating first-party data that KwikAds consumes. Your job is to show them the unused asset sitting in their own stack. That's a natural cross-sell, not a cold pitch.", hint: "The brand already generates the data. You're just showing them it's not being used for ads yet." },
+    { type: 'ai_message', text: "The 'point tools' objection: when a founder asks 'why not best-of-breed point tools?' — your answer is the flywheel. Point tools are additive (A + B). GoKwik compounds (A × B). Checkout data powers Ads, which powers Engage, which drives repeat purchases through Checkout.", delay: 400 },
+    { type: 'practice', prompt: "A founder already uses Kwik Checkout. In one sentence, pitch KwikAds by connecting it to the data they're already generating. No jargon.", keywords: ["checkout", "data", "signals", "already", "generating", "meta", "activate", "flywheel", "first-party", "roas", "cac"], minKeywords: 3, goodFeedback: "Sharp. You connected their existing Checkout usage to the KwikAds value prop without sounding like a cold pitch. That's the cross-sell frame — use it every time.", improveFeedback: "Don't pitch KwikAds in isolation. Connect it: 'Your Checkout already captures verified purchase data. KwikAds pipes that into Meta as intent signals — your CAC drops because Meta finally sees real buyers, not cookie ghosts.' Always start with what they already have.", hint: "Start with what they own (Checkout data), then show what it unlocks (better Meta audiences)." },
     { type: 'summary_card', points: [
-      "GoKwik = D2C operating stack for acquisition, conversion, retention.",
+      "GoKwik = D2C operating stack. Data sits at the core — every product generates data the next consumes.",
+      "You sell KwikAds, but most prospects already use Checkout and/or KwikEngage. Cross-sell is your default motion.",
       "Eight products: Kwik Checkout, Kwik Ads, Kwik Engage, Kwik Pass, GoKwik Cart, Kwik Ship, Return Prime, Kwik AI Popups.",
-      "Sell the flywheel, not the features. Diagnose the bleeding moment, lead with that product, expand from there."
+      "The flywheel: Checkout data → KwikAds signals → better Meta audiences → more conversions → KwikEngage retention. Compounds, not adds."
     ] },
-    { type: 'ai_message', text: "Module 1 done. +100 XP. Next: KwikAds — the product you own.", delay: 500, xp: 100 }
+    { type: 'ai_message', text: "Module 1 done. +100 XP. Next: KwikAds deep dive — the product you own.", delay: 500, xp: 100 }
   ],
 
   module2: [
@@ -694,7 +698,9 @@ function KwikAdsAcademy() {
     const users = {
       'deepak': { name: 'Deepak', role: 'Sales Rep', team: 'SMB' },
       'sankalp': { name: 'Sankalp', role: 'Manager', team: 'Admin' },
-      'vignesh': { name: 'Vignesh', role: 'Sales Rep', team: 'Enterprise' }
+      'vignesh': { name: 'Vignesh', role: 'Sales Rep', team: 'Enterprise' },
+      'karan': { name: 'Karan', role: 'Manager', team: 'Admin' },
+      'reviewer': { name: 'Test Reviewer', role: 'Sales Rep', team: 'QA' }
     };
     if (users[username] && password === 'admin123') {
       const userData = { ...users[username], id: username };
