@@ -100,197 +100,388 @@ const apiPost = (action, data) => {
 
 const moduleFlows = {
   module1: [
-    { type: 'ai_message', text: "Hey {name}! 👋 Welcome to KwikAds Academy. Ready to learn what we're all about?", delay: 500 },
-    { type: 'quick_reply', options: ["Let's go!", "What is this?"], nextMap: { 0: 2, 1: 3 } },
-    { type: 'ai_message', text: "Awesome! Let's dive in. First — here's the scale we're working with:", delay: 400 },
+    { type: 'ai_message', text: "{name} — before we get to selling, let's align on what GoKwik actually is and why brands buy us. 8 minutes. Positioning first, mechanics after.", delay: 500 },
+    { type: 'ai_message', text: "One-line positioning: GoKwik is the operating stack for D2C growth. Not a point product. A single-vendor platform solving the three moments D2C brands lose money on.", delay: 400 },
+    { type: 'ai_message', text: "Moment 1 — Acquisition. Meta CPMs up ~40% in three years. Attribution fractured post-iOS14. Brands pay for traffic that can't be measured.", delay: 400 },
+    { type: 'ai_message', text: "Moment 2 — Conversion. D2C checkout drop-off sits at 70%+. Address friction, payment-method limits, COD abuse, slow pages. Revenue already paid for walks away.", delay: 400 },
+    { type: 'ai_message', text: "Moment 3 — Retention. ₹1,200 acquisition cost, one order, churn. LTV negative. Brands die on bad cohorts.", delay: 400 },
+    { type: 'ai_message', text: "GoKwik builds a product for each moment. Eight products. One stack. Here's the full catalogue — memorise it.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "15,000+", label: "Brands", subtext: "Trust us" },
-      { value: "50M+", label: "Shoppers", subtext: "In our network" },
-      { value: "8", label: "Products", subtext: "All connected" }
+      { value: "Kwik Checkout", label: "1-page checkout", subtext: "Reduces RTO, lifts conversion" },
+      { value: "Kwik Ads", label: "Meta Signals Partner", subtext: "Best ROAS on Meta — YOUR product" },
+      { value: "Kwik Engage", label: "WA / Email / RCS", subtext: "Engagement + repeat purchases" }
     ] },
-    { type: 'ai_message', text: "GoKwik was founded in 2020. We've built a network effect where brands unlock data, and shoppers get frictionless checkout. It's a flywheel.", delay: 400 },
-    { type: 'quiz', question: "GoKwik is primarily a...", options: ["Payment processor", "Checkout platform with 8+ integrated products", "Ad network", "Email tool"], correct: 1, explanation: "GoKwik is a checkout platform + ecosystem. Payments, fraud, loyalty, KwikPass (identity), and KwikAds (our signals product) all feed each other." },
-    { type: 'ai_message', text: "Now, here's where YOU come in. KwikAds is the product you'll be selling.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "50+", label: "Integrations", subtext: "Plug and play" }
+      { value: "Kwik Pass", label: "Visitor → buyer", subtext: "Identify anonymous traffic" },
+      { value: "GoKwik Cart", label: "Cart optimizer", subtext: "Boosts AOV + conversion" },
+      { value: "Kwik Ship", label: "Shipping + fulfilment", subtext: "Smart D2C logistics" }
     ] },
-    { type: 'ai_message', text: "So when you're on a call with a CMO or founder, you're not just selling a tool — you're selling access to a network.", delay: 400 },
-    { type: 'practice', prompt: "Quick test: Describe GoKwik in one sentence to a brand. What would you say?", keywords: ["checkout", "brands", "shoppers", "network", "data", "frictionless"], minKeywords: 2, goodFeedback: "Perfect! You nailed the core idea. Keep it simple like that on calls.", improveFeedback: "Good — try emphasizing the network effect. GoKwik isn't just payments; it's a whole ecosystem." },
-    { type: 'ai_message', text: "Here's your key takeaway:", delay: 400 },
-    { type: 'summary_card', points: ["GoKwik = checkout platform + 8 integrated products", "50M+ shoppers, 15K+ brands = massive network", "Network effect = your biggest differentiator"] },
-    { type: 'ai_message', text: "Module 1 complete! You've earned +100 XP 🎉", delay: 500, xp: 100 }
+    { type: 'stat_card', stats: [
+      { value: "Return Prime", label: "Returns platform", subtext: "Cuts returns, recovers revenue" },
+      { value: "Kwik AI Popups", label: "Lead capture", subtext: "AI popups for high-intent leads" },
+      { value: "One stack", label: "8 products", subtext: "One contract, one integration" }
+    ] },
+    { type: 'ai_message', text: "Why the stack matters on a sales call: every product generates data the next consumes. KwikCheckout writes buyer intent → KwikAds feeds it to Meta → cheaper traffic → more checkouts. That is a flywheel, not a feature list.", delay: 400 },
+    { type: 'ai_message', text: "When a founder asks 'why not best-of-breed point tools?' — the flywheel is your answer. Point tools are additive (A + B). GoKwik compounds (A × B).", delay: 400 },
+    { type: 'quiz', question: "A CFO asks: 'Why your stack over best-of-breed point solutions?' Strongest answer:", options: [
+      "We're cheaper than the alternatives",
+      "Our products feed each other — checkout data makes our ads work better, which lowers CAC structurally. Point solutions can't compound; we do.",
+      "We have better support",
+      "We integrate with Shopify"
+    ], correct: 1, explanation: "CFOs buy compounding, not features. Point stacks are additive. GoKwik is multiplicative — KwikCheckout data powers KwikAds, which powers KwikEngage retention. Frame every call this way.", hint: "CFOs think in compounding. Your answer must too." },
+    { type: 'ai_message', text: "The sales job is not to explain eight products. It is to diagnose which of the three moments a brand is bleeding on, lead with that product, and expand from there.", delay: 400 },
+    { type: 'practice', prompt: "Give your one-sentence GoKwik pitch to a founder with 3 minutes. No jargon. Go.", keywords: ["stack", "acquisition", "conversion", "retention", "flywheel", "d2c", "checkout", "ads", "engage", "compound"], minKeywords: 2, goodFeedback: "Clean. You tied the stack to a business outcome. That is the executive frame — use it on every first call.", improveFeedback: "Don't list products. Frame the three moments (acquire / convert / retain) and land: 'one stack for all three.' Founders buy the outcome, not the SKU.", hint: "Three moments. One stack. Don't list SKUs." },
+    { type: 'summary_card', points: [
+      "GoKwik = D2C operating stack for acquisition, conversion, retention.",
+      "Eight products: Kwik Checkout, Kwik Ads, Kwik Engage, Kwik Pass, GoKwik Cart, Kwik Ship, Return Prime, Kwik AI Popups.",
+      "Sell the flywheel, not the features. Diagnose the bleeding moment, lead with that product, expand from there."
+    ] },
+    { type: 'ai_message', text: "Module 1 done. +100 XP. Next: KwikAds — the product you own.", delay: 500, xp: 100 }
   ],
 
   module2: [
-    { type: 'ai_message', text: "Ready to learn about KwikAds? This is the weapon that will change how you sell. Let's go.", delay: 500 },
-    { type: 'quick_reply', options: ["Show me", "Wait, what does it do?"], nextMap: { 0: 2, 1: 3 } },
-    { type: 'ai_message', text: "KwikAds is India's only Meta Signals Partner. What does that mean?", delay: 400 },
+    { type: 'ai_message', text: "KwikAds is the product you own. Let's go deep on positioning first, mechanics second.", delay: 500 },
+    { type: 'ai_message', text: "Headline you'll say in every first call: 'KwikAds is India's 1st Meta Signals Partner. We lift ROAS ~25% and cut CAC ~15% using first-party intent from 200M+ D2C shoppers on the GoKwik network.' Memorise that sentence.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "180M+", label: "Consumer Signals", subtext: "From our checkout network" },
-      { value: "200+", label: "Buyer Metrics", subtext: "We track everything" },
+      { value: "200M+", label: "D2C shoppers", subtext: "High-intent, on GoKwik network" },
+      { value: "15,000+", label: "Brands", subtext: "Trust GoKwik" },
       { value: "#1", label: "Meta Signals Partner", subtext: "In India" }
     ] },
-    { type: 'ai_message', text: "Brands are struggling to reach the right people on Meta. Their audiences are polluted. Their ROAS is declining. KwikAds fixes that with our signals.", delay: 400 },
-    { type: 'quiz', question: "What is EMQ and why does it matter?", options: ["Email Marketing Quality", "Event Match Quality — Meta's score for data quality", "Engagement Metric Quotient", "Equipment Match Query"], correct: 1, explanation: "EMQ = Event Match Quality. It's Meta's quality score. Better data = better EMQ = better ad performance. Our signals improve it by 20%+ on average." },
-    { type: 'ai_message', text: "Here's the kicker — brands see impact on Day 1.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "+20%", label: "EMQ Improvement", subtext: "Average" }
+      { value: "+25%", label: "ROAS boost", subtext: "Typical merchant uplift" },
+      { value: "-15%", label: "CAC cut", subtext: "Within first 3 months" },
+      { value: "200+", label: "Intent signals", subtext: "Meta + GoKwik combined" }
     ] },
-    { type: 'ai_message', text: "Not 3 months. Not 30 days. Day 1. Because we're feeding Meta data that's 10x more accurate than what they had before.", delay: 400 },
-    { type: 'practice', prompt: "A founder asks: 'What data do you actually have?' Give them your answer.", keywords: ["checkout", "180m", "signals", "transaction", "purchase", "behavior", "meta"], minKeywords: 3, goodFeedback: "Excellent! You explained the data advantage and the Meta connection. That's the whole pitch right there.", improveFeedback: "Good start. Add more about the scale: 180M+ signals from actual transactions, not estimates." },
-    { type: 'ai_message', text: "Key takeaway time:", delay: 400 },
-    { type: 'summary_card', points: ["180M+ signals from real checkout transactions", "Better EMQ = 20%+ improvement on Day 1", "Only Meta Signals Partner in India = unique positioning"] },
-    { type: 'ai_message', text: "Module 2 complete! +150 XP 🚀", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "The frame you have to teach every prospect: Meta is a black box. Its audience model is only as smart as the events feeding it. Post-iOS14, pixel match rates collapsed — agencies are flying partially blind.", delay: 400 },
+    { type: 'ai_message', text: "KwikAds fixes that by piping server-side, verified first-party signals (hashed phone, email, purchase events) from our checkout network directly into Meta — via CAPI as an official Signals Partner. Higher EMQ, tighter audiences, lower CAC.", delay: 400 },
+    { type: 'quiz', question: "A CMO asks: 'We already push events via CAPI through our agency. How is KwikAds different?' Strongest answer:", options: [
+      "We're cheaper than your agency",
+      "CAPI is a transport protocol. What matters is the source. Agency CAPI still ships pixel data (iOS14-degraded). KwikAds ships checkout-origin data from a 200M+ shopper network — verified, first-party, deduped across 15K+ brands via KwikPass.",
+      "We run the campaigns better",
+      "Meta is partnered directly with us so we get priority"
+    ], correct: 1, explanation: "CAPI is the pipe. Source of truth is the moat. That distinction is 80% of the sale. Teach it in every discovery.", hint: "The battle is source-of-truth, not transport. Don't let them collapse the distinction." },
+    { type: 'ai_message', text: "KwikAds sells on three pillars. Memorise the pillar names — every feature and case study ladders up to one of them.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "Pillar 1", label: "AI-First Ad Analysis", subtext: "Audit, benchmark, spend intelligence" },
+      { value: "Pillar 2", label: "Hyper-Targeted Audiences", subtext: "Highest EMQ, 200+ intent signals" },
+      { value: "Pillar 3", label: "Full-Funnel Visibility", subtext: "Decode the Meta black box" }
+    ] },
+    { type: 'ai_message', text: "Pillar 1 — AI-First Ad Analysis. We audit their current campaigns, creatives, and audiences. Benchmark them against similar brands in their category. Surface exactly where their budget leaks. This is the wedge for the first call.", delay: 400 },
+    { type: 'ai_message', text: "Pillar 2 — Hyper-Targeted Audiences. We build lookalikes and segments inside Meta using GoKwik's verified shopper intelligence. Highest EMQ in the market because signals come from verified phone + email at checkout, not browser cookies.", delay: 400 },
+    { type: 'ai_message', text: "Pillar 3 — Full-Funnel Visibility. We decode the Meta black box. Custom events across the journey so you can see beyond last-click — who actually converted, retained, and paid back. Optimize for revenue and LTV, not vanity clicks.", delay: 400 },
+    { type: 'quiz', question: "A brand with AOV ₹900 and low prepaid share says: 'Our ROAS looks fine, we just don't know if the customers are any good.' Which pillar do you lead with?", options: [
+      "Pillar 1 (AI-First Analysis) — their problem is visibility, not targeting. Audit first; show them what 'good' actually looks like at cohort level.",
+      "Pillar 2 (Hyper-Targeted Audiences) — just build new lookalikes",
+      "Pillar 3 (Full-Funnel Visibility) — they want to see LTV, not ROAS",
+      "Sell them KwikEngage instead"
+    ], correct: 2, explanation: "'ROAS looks fine, don't know if customers are good' = LTV visibility gap. Pillar 3 is the direct hit. Teach them to optimize for retention and paying-back customers, not clicks. Pillar 2 comes after you show them what a good cohort is.", hint: "Match the pillar to the sentence they actually said. 'Don't know if customers are any good' = visibility, not targeting." },
+    { type: 'ai_message', text: "Regular Agency vs Kwik Ads — this is the comparison you put on every proposal slide. Know each row cold.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "Approach", label: "Agency: manual, trial & error", subtext: "KwikAds: AI-led, signal-driven" },
+      { value: "Targeting", label: "Agency: broad lookalikes", subtext: "KwikAds: 200+ intent signals" },
+      { value: "Visibility", label: "Agency: basic Meta insights", subtext: "KwikAds: full-funnel clarity" }
+    ] },
+    { type: 'stat_card', stats: [
+      { value: "Pricing", label: "Agency: % of ad spend", subtext: "KwikAds: ROAS & impact based" },
+      { value: "Partnership", label: "Agency: vendor mindset", subtext: "KwikAds: D2C growth partner" }
+    ] },
+    { type: 'ai_message', text: "Tagline to drop on the call: 'Regular agencies run ads. Kwik Ads builds intelligence that wins.' Use it verbatim.", delay: 400 },
+    { type: 'practice', prompt: "A CMO says: 'We already run Meta ads well. Why KwikAds over hiring a sharper media buyer?' Write your 30-second answer.", keywords: ["signal", "first-party", "emq", "checkout", "server-side", "pillar", "black box", "match rate", "partner", "intelligence", "lookalike"], minKeywords: 3, goodFeedback: "Clean. You separated the buyer's skill from the data quality feeding Meta. That's the frame that ends the comparison.", improveFeedback: "Don't debate media-buyer quality — you can't win that on call 1. Argue that even the sharpest buyer is choosing from what Meta can see, and Meta can only see what signals feed it. Fix the inputs, every buyer gets better outcomes.", hint: "Don't compete with the buyer. Argue you make every buyer's decisions better by fixing Meta's inputs." },
+    { type: 'summary_card', points: [
+      "KwikAds = India's 1st Meta Signals Partner. Headline stat: +25% ROAS, -15% CAC, 200M+ shoppers, 200+ intent signals.",
+      "The moat is source of truth — first-party checkout signals vs agency pixel. Teach this in every discovery.",
+      "Three pillars: AI-First Analysis (audit), Hyper-Targeted Audiences (EMQ), Full-Funnel Visibility (LTV).",
+      "Agency-vs-KwikAds table goes on every proposal. Know all five rows cold."
+    ] },
+    { type: 'ai_message', text: "Module 2 done. +150 XP. Next: the specific D2C pains KwikAds attacks, mapped to pillars.", delay: 500, xp: 150 }
   ],
 
   module3: [
-    { type: 'ai_message', text: "Let's talk about the problems we solve. Every D2C brand has them. You need to recognize them on calls.", delay: 500 },
-    { type: 'quick_reply', options: ["What problems?", "Skip to solutions"], nextMap: { 0: 2, 1: 10 } },
-    { type: 'ai_message', text: "Problem #1: Rising CAC. Brands are spending more to acquire customers.", delay: 400 },
-    { type: 'ai_message', text: "Problem #2: Low prepaid conversion. Not enough customers buying multi-month subscriptions.", delay: 400 },
-    { type: 'ai_message', text: "Problem #3: Wrong audiences. They're targeting broad, not precise.", delay: 400 },
-    { type: 'ai_message', text: "Problem #4: Declining AOV. Average order value is dropping despite higher CAC.", delay: 400 },
-    { type: 'ai_message', text: "Problem #5: Polluted retargeting. They're retargeting everyone, so ROI tanks.", delay: 400 },
-    { type: 'ai_message', text: "Problem #6: No visibility. They can't see what's working because their data is scattered.", delay: 400 },
-    { type: 'quiz', question: "What is polluted retargeting?", options: ["Showing ads to competitors", "Showing ads to people who already bought", "Showing ads on sketchy sites", "Showing ads without proper data"], correct: 1, explanation: "Polluted retargeting = showing ads to people who already bought, or showing the wrong product to them. Wastes budget. Our signals fix it." },
-    { type: 'ai_message', text: "Now here's how KwikAds solves all 6 with our approach:", delay: 400 },
-    { type: 'ai_message', text: "We identify high-intent customers using our 180M+ signals. Brands reach them at the right moment. CAC drops. ROAS rises. Prepaid conversion improves.", delay: 400 },
-    { type: 'practice', prompt: "A brand says their ROAS is 3x but CAC is climbing. What questions do you ask them?", keywords: ["audience", "targeting", "data", "signals", "prepaid", "retention", "repeat"], minKeywords: 3, goodFeedback: "Perfect questions! You're digging into the real problem, not the surface metric. That's consulting.", improveFeedback: "Good — add questions about their audience strategy and whether they're retargeting effectively." },
-    { type: 'summary_card', points: ["6 D2C pain points: rising CAC, low prepaid, wrong audiences, declining AOV, polluted retargeting, no visibility", "KwikAds solves all 6 with precision targeting + data quality", "Your job: diagnose the pain, show the data, prove the solution"] },
-    { type: 'ai_message', text: "Module 3 complete! +150 XP 💡", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "Module 3 — D2C Pain Points mapped to KwikAds Pillars. Every brand you speak to bleeds on one of these. Your job: diagnose the bleed, name the pillar, prescribe the fix.", delay: 500 },
+    { type: 'ai_message', text: "There are 6 pain points D2C brands face on Meta. Each maps to one of our three pillars. Let's walk through them.", delay: 400 },
+    { type: 'ai_message', text: "Pain 1 — Rising CAC. Meta CPMs up ~40% in 3 years. Post-iOS14, pixel match rates collapsed. Agencies optimise on degraded data → Meta's algorithm chases low-quality clicks → CAC spirals. Maps to: Pillar 2 (Hyper-Targeted Audiences). Fix: verified checkout signals restore match quality.", delay: 400 },
+    { type: 'ai_message', text: "Pain 2 — Low prepaid share. COD-heavy brands leak 15-25% on RTO. Their Meta campaigns attract COD buyers because the pixel can't distinguish payment intent. Maps to: Pillar 2. Fix: purchase_prepaid signal seeds lookalikes who pay upfront.", delay: 400 },
+    { type: 'ai_message', text: "Pain 3 — Audience fatigue. Same broad lookalikes for 6+ months. Frequency climbs, CTR drops, CPA rises. The agency's answer is 'refresh creatives.' The real answer is refresh the seed audiences. Maps to: Pillar 2.", delay: 400 },
+    { type: 'ai_message', text: "Pain 4 — Declining AOV. Brands scale spend, AOV drops — they're pulling in discount hunters, not high-value buyers. Maps to: Pillar 2. Fix: multi_product_purchase signal targets buyers who naturally buy 2+ items per order.", delay: 400 },
+    { type: 'ai_message', text: "Pain 5 — Black-box attribution. CMO asks 'which campaigns drove real revenue?' and the agency says 'check Meta dashboard.' But Meta last-click over-counts, under-counts, and misattributes. Maps to: Pillar 3 (Full-Funnel Visibility). Fix: server-side events tied to actual checkout → real LTV tracking.", delay: 400 },
+    { type: 'ai_message', text: "Pain 6 — Budget leakage. No one knows where the waste is. Creative A vs. B vs. C — which actually drove margin, not just clicks? Maps to: Pillar 1 (AI-First Ad Analysis). Fix: AI audit benchmarks their account against 15,000+ D2C brands in our network.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "Pillar 1", label: "AI-First Analysis", subtext: "Fixes: budget leakage, no benchmarks" },
+      { value: "Pillar 2", label: "Hyper-Targeted Audiences", subtext: "Fixes: CAC, prepaid, AOV, fatigue" },
+      { value: "Pillar 3", label: "Full-Funnel Visibility", subtext: "Fixes: attribution, LTV blindness" }
+    ] },
+    { type: 'quiz', question: "A brand says: 'Our ROAS looks fine at 3x, but we don't know which campaigns actually bring back repeat buyers.' Which pillar?", options: [
+      "Pillar 1 — AI-First Analysis",
+      "Pillar 2 — Hyper-Targeted Audiences",
+      "Pillar 3 — Full-Funnel Visibility",
+      "None — this isn't a KwikAds problem"
+    ], correct: 2, explanation: "'Don't know which campaigns bring repeat buyers' = LTV visibility gap. That's Pillar 3. They need full-funnel tracking that goes beyond last-click ROAS to actual cohort retention.", hint: "The keyword is 'don't know.' If they can't see it, it's a visibility problem." },
+    { type: 'quiz', question: "A fashion brand's CAC has risen 30% YoY but their agency says 'it's just market inflation.' What's really happening?", options: [
+      "The agency is probably right — CPMs are rising for everyone",
+      "Their pixel data is degraded post-iOS14, so Meta's algorithm is optimising on noisy signals → attracting lower-intent users → higher CAC",
+      "They need to increase budget to get more reach",
+      "Switch to Google Ads instead"
+    ], correct: 1, explanation: "Market CPMs are rising, but 30% YoY CAC rise usually means signal degradation, not just inflation. The pixel is feeding Meta garbage → Meta finds garbage audiences. Fix the input signal, CAC normalises. That's our wedge.", hint: "If CPMs rose 10% but CAC rose 30%, the gap is signal quality, not market rates." },
+    { type: 'practice', prompt: "A CMO says: 'Our prepaid share is only 22% and RTO is killing us.' Diagnose the root cause in 2 sentences and name your pillar + signal.", keywords: ["prepaid", "purchase_prepaid", "pillar 2", "signal", "lookalike", "cod", "intent", "checkout"], minKeywords: 3, goodFeedback: "Sharp diagnosis. You connected the surface metric (low prepaid) to the root cause (pixel can't distinguish payment intent) and prescribed the exact signal. That's consultant-grade.", improveFeedback: "Root cause: their Meta campaigns attract COD buyers because the pixel can't signal payment intent. Fix: Pillar 2 + purchase_prepaid signal → seed lookalikes from verified prepaid buyers in the GoKwik network. Always connect symptom → cause → pillar → signal.", hint: "Low prepaid share = the pixel doesn't know who pays upfront. Our checkout data does." },
+    { type: 'summary_card', points: [
+      "6 D2C pains: rising CAC, low prepaid, audience fatigue, declining AOV, black-box attribution, budget leakage.",
+      "Map each to a pillar: Pillar 1 = audit/benchmark, Pillar 2 = signal-fed audiences, Pillar 3 = full-funnel visibility.",
+      "On every call: diagnose the bleed → name the pillar → prescribe the signal or audit."
+    ] },
+    { type: 'ai_message', text: "Module 3 done. +150 XP. Next: the signal engine that powers Pillar 2.", delay: 500, xp: 150 }
   ],
 
   module4: [
-    { type: 'ai_message', text: "Now let's talk about the signals that actually win deals. These are your ammunition.", delay: 500 },
-    { type: 'quick_reply', options: ["Show me the signals", "How do signals work?"], nextMap: { 0: 2, 1: 3 } },
-    { type: 'ai_message', text: "Our 4 proprietary purchase signals are the foundation:", delay: 400 },
+    { type: 'ai_message', text: "Module 4 — The Signal Engine: EMQ, CAPI, and GoKwik's 200+ Intent Signals. This is the technical backbone of every sale you'll make. Know it cold.", delay: 500 },
+    { type: 'ai_message', text: "Start with how Meta's algorithm actually works. Meta optimises ad delivery based on conversion events. Better events = better optimisation = lower CPA. The quality of those events is measured by EMQ — Event Match Quality.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "4", label: "Proprietary Signals", subtext: "That win deals" }
+      { value: "EMQ", label: "Event Match Quality", subtext: "Meta's score for signal accuracy" },
+      { value: "CAPI", label: "Conversions API", subtext: "Server-side event transport" },
+      { value: "200+", label: "Intent Signals", subtext: "From GoKwik checkout network" }
     ] },
-    { type: 'ai_message', text: "Signal 1: purchase_prepaid. Customers who buy multi-month subscriptions. High lifetime value.", delay: 400 },
-    { type: 'ai_message', text: "Signal 2: new_customer_purchase. First-time buyers. Perfect for acquisition campaigns.", delay: 400 },
-    { type: 'ai_message', text: "Signal 3: multi_product_purchase. Customers who buy across categories. They trust the brand.", delay: 400 },
-    { type: 'ai_message', text: "Signal 4: high_order_volume. Power buyers. They buy frequently and spend more.", delay: 400 },
-    { type: 'quiz', question: "Which signal identifies customers who buy multiple months upfront?", options: ["new_customer_purchase", "high_order_volume", "purchase_prepaid", "multi_product_purchase"], correct: 2, explanation: "purchase_prepaid identifies customers willing to commit long-term. High lifetime value. Low churn. This is the VIP signal." },
-    { type: 'ai_message', text: "And here's the secret sauce — we have 200+ other metrics that layer on top.", delay: 400 },
+    { type: 'ai_message', text: "EMQ ranges 0-10. Most agency setups score 4-6 because they rely on browser pixels (cookie-degraded post-iOS14). KwikAds consistently hits 8-10 because we pipe server-side, hashed, verified events from actual checkout completions.", delay: 400 },
+    { type: 'ai_message', text: "Critical distinction you must teach every prospect: CAPI is the transport protocol. It's a pipe. What matters is what flows through that pipe. Agency CAPI sends pixel-origin data (degraded). KwikAds CAPI sends checkout-origin data (verified, first-party, deduped via KwikPass).", delay: 400 },
+    { type: 'quiz', question: "A CMO says: 'My agency already does CAPI integration.' Your response:", options: [
+      "Great, then you don't need us",
+      "CAPI is a pipe — what matters is the data source. Agency CAPI still sends pixel data. We send verified checkout data from 200M+ shoppers. Same pipe, radically different signal quality.",
+      "Our CAPI is better than theirs",
+      "CAPI doesn't matter, what matters is creative"
+    ], correct: 1, explanation: "This is the single most important reframe in the KwikAds sale. CAPI = transport. Source of truth = moat. If you lose this distinction, you lose the deal to 'we already do that.'", hint: "Separate the pipe from what flows through it. That's the entire sale." },
+    { type: 'ai_message', text: "Now the signal categories. GoKwik sends 200+ intent signals to Meta. Four primary purchase signals are the ones you'll reference on calls:", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "200+", label: "Additional Metrics", subtext: "For precision" },
-      { value: "14%", label: "Prepaid Funnel", subtext: "Average conversion" },
-      { value: "0%", label: "RTO Exposure", subtext: "Zero risk to brands" }
+      { value: "purchase_prepaid", label: "Margin signal", subtext: "Buyers who pay upfront, low RTO" },
+      { value: "new_customer_purchase", label: "Acquisition signal", subtext: "First-time buyers — seed for prospecting" },
+      { value: "multi_product_purchase", label: "AOV signal", subtext: "Buyers who buy 2+ items per order" }
     ] },
-    { type: 'practice', prompt: "Match each signal to the right campaign type. purchase_prepaid for what? new_customer_purchase for what?", keywords: ["retention", "loyalty", "acquisition", "repeat", "ltv", "lifetime"], minKeywords: 2, goodFeedback: "Nailed it! You understand the signal strategy. This is how you win deals.", improveFeedback: "Think about customer lifecycle. purchase_prepaid = retention and loyalty. new_customer_purchase = acquisition." },
-    { type: 'summary_card', points: ["4 proprietary signals: purchase_prepaid, new_customer_purchase, multi_product_purchase, high_order_volume", "200+ metrics layer on for precision targeting", "Real ROAS is measurable and tied to actual purchase behavior"] },
-    { type: 'ai_message', text: "Module 4 complete! +150 XP 🎯", delay: 500, xp: 150 }
+    { type: 'stat_card', stats: [
+      { value: "high_order_volume", label: "Retention signal", subtext: "Frequent, repeat buyers" },
+      { value: "200+", label: "Total signals", subtext: "Categories, behaviours, payment, device" },
+      { value: "15,000+", label: "Brand network", subtext: "Cross-brand intelligence" }
+    ] },
+    { type: 'ai_message', text: "The magic: these signals aren't just from the prospect's own store. They come from GoKwik's network of 15,000+ D2C brands. A buyer who prepaid on Brand A is a high-intent seed for Brand B's lookalike. No agency has this cross-network graph.", delay: 400 },
+    { type: 'ai_message', text: "Signal-to-campaign mapping — memorise this. On calls you'll diagnose the brand's pain, then prescribe the right signal:", delay: 400 },
+    { type: 'ai_message', text: "CAC too high → new_customer_purchase (cleaner acquisition seeds). Low prepaid / high RTO → purchase_prepaid (margin-positive audiences). AOV declining → multi_product_purchase (buyers who naturally bundle). Churn / low repeat rate → high_order_volume (retention-prone buyers).", delay: 400 },
+    { type: 'quiz', question: "A beauty brand has 60% COD orders and 18% RTO. Which signal do you prescribe?", options: [
+      "new_customer_purchase — they need new customers",
+      "purchase_prepaid — seed Meta with prepaid buyers to shift the mix from COD to prepaid",
+      "multi_product_purchase — push AOV up",
+      "high_order_volume — get repeat buyers"
+    ], correct: 1, explanation: "60% COD + 18% RTO = margin bleed. The root cause is Meta's pixel can't distinguish payment intent. purchase_prepaid seeds lookalikes from verified prepaid buyers across the GoKwik network → shifts the payment mix → RTO drops → margin recovers.", hint: "High COD + high RTO = margin problem. Which signal fixes payment-intent blindness?" },
+    { type: 'practice', prompt: "Explain to a non-technical CMO why KwikAds' EMQ score of 8-10 matters more than their agency's CAPI setup. Keep it jargon-light, 3 sentences max.", keywords: ["emq", "signal", "checkout", "pixel", "match", "quality", "verified", "first-party", "meta", "algorithm"], minKeywords: 3, goodFeedback: "Clean explanation. You translated technical advantage into business outcome without drowning in jargon. Use this framing on calls.", improveFeedback: "Try: 'Meta's algorithm is only as smart as the data feeding it. Your agency sends it pixel data — cookie-degraded and noisy. We send verified checkout data from 200M+ shoppers — Meta sees cleaner signals, finds better buyers, your CPA drops.' Keep it cause → effect.", hint: "Don't explain EMQ as a score. Explain it as: better data in → better audiences out → lower cost per customer." },
+    { type: 'summary_card', points: [
+      "EMQ (0-10) = Meta's signal quality score. Agency: 4-6 (pixel). KwikAds: 8-10 (checkout).",
+      "CAPI = transport. Source of truth = moat. Never let prospects collapse the distinction.",
+      "4 primary signals: purchase_prepaid (margin), new_customer_purchase (acquisition), multi_product_purchase (AOV), high_order_volume (retention).",
+      "200+ total signals from 15,000+ brand network. Cross-brand intelligence is the unfair advantage."
+    ] },
+    { type: 'ai_message', text: "Module 4 done. +150 XP. Next: ICP, tiers, and the commercial math that closes deals.", delay: 500, xp: 150 }
   ],
 
   module5: [
-    { type: 'ai_message', text: "Time to talk money. This is where deals close. Let's get you confident on pricing.", delay: 500 },
-    { type: 'quick_reply', options: ["Show me the tiers", "How does pricing work?"], nextMap: { 0: 2, 1: 3 } },
-    { type: 'ai_message', text: "Our ICP (Ideal Customer Profile) is simple: brands spending ₹25-70L per month on ads.", delay: 400 },
-    { type: 'ai_message', text: "We have 4 pricing tiers based on ad spend. Each tier comes with different service levels and guarantees.", delay: 400 },
+    { type: 'ai_message', text: "Module 5 — ICP, Tiers & Commercial Math. You'll lose deals if you can't do this arithmetic live on a call. Let's make it reflexive.", delay: 500 },
+    { type: 'ai_message', text: "ICP definition — know it cold. Our ideal customer: D2C brand spending ₹25L+/month on Meta/performance ads, with Shopify or equivalent storefront, and a willingness to share Meta ad account access for audit.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "₹25-70L", label: "Monthly Ad Spend", subtext: "Our sweet spot" },
-      { value: "4", label: "Pricing Tiers", subtext: "For different scales" }
+      { value: "₹25L+", label: "Monthly Meta spend", subtext: "ICP floor — below this, unit economics break" },
+      { value: "₹40K", label: "Minimum monthly fee", subtext: "Viability threshold" },
+      { value: "4 Tiers", label: "Service levels", subtext: "Matched to ad spend scale" }
     ] },
-    { type: 'ai_message', text: "Long Tail tier: ₹0-10L/month. Entry-level. Low commitment.", delay: 400 },
-    { type: 'ai_message', text: "Emerging tier: ₹10-25L/month. Growth brands. Our core market.", delay: 400 },
-    { type: 'ai_message', text: "SMB tier: ₹25-50L/month. Serious players. Full service.", delay: 400 },
-    { type: 'ai_message', text: "Enterprise tier: ₹50L+/month. White-glove service. Custom solutions.", delay: 400 },
-    { type: 'quiz', question: "A brand spends ₹18L/month. Which tier are they?", options: ["Long Tail", "Emerging", "SMB", "Enterprise"], correct: 1, explanation: "₹18L falls in the Emerging tier (₹10-25L). This is our bread and butter." },
-    { type: 'ai_message', text: "Here's the key rule: viability check. They need to be spending at least ₹40K guaranteed to make the math work.", delay: 400 },
-    { type: 'ai_message', text: "Why? Because our implementation + data setup + optimization takes effort. If the ad spend is too small, the ROI doesn't justify the work.", delay: 400 },
-    { type: 'practice', prompt: "A brand spends ₹35L/month on Meta and Instagram. They want ROAS improvement. What's their monthly fee (use the viability rule)?", keywords: ["40k", "35l", "emerging", "tier", "fee", "monthly"], minKeywords: 3, goodFeedback: "Exactly! They clear the ₹40K viability threshold, so they're ready to go.", improveFeedback: "Remember: viability check first. If they clear ₹40K/month minimum fee, they're a go. Then calculate their tier." },
-    { type: 'summary_card', points: ["ICP = ₹25-70L ad spend per month", "4 tiers: Long Tail, Emerging, SMB, Enterprise", "Viability rule: must be at least ₹40K guaranteed. If not, pass."] },
-    { type: 'ai_message', text: "Module 5 complete! +150 XP 💰", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "Tier 1 — Long Tail: ₹0-10L/month spend. Self-serve or light-touch. Low fee ceiling. Don't chase these unless they're scaling fast (use Peesafe as the archetype — entered small, scaled 6x).", delay: 400 },
+    { type: 'ai_message', text: "Tier 2 — Emerging: ₹10-25L/month. Growth-stage brands. Core of the SMB pipeline. Standard onboarding, shared AM. The bread-and-butter tier.", delay: 400 },
+    { type: 'ai_message', text: "Tier 3 — SMB: ₹25-50L/month. Full service. Dedicated account manager. Custom signal configuration. This is where most of your quota lives.", delay: 400 },
+    { type: 'ai_message', text: "Tier 4 — Enterprise: ₹50L+/month. White-glove. Dedicated AM + CSM. Custom reporting, quarterly business reviews, multi-brand architecture if needed. Longer sales cycle but higher ACV.", delay: 400 },
+    { type: 'ai_message', text: "The viability rule: minimum ₹40K/month fee. Below that, our implementation cost (signal setup, CAPI config, audience building, ongoing optimisation) doesn't pay back. If a prospect can't clear ₹40K, parking-lot them for nurture.", delay: 400 },
+    { type: 'quiz', question: "A brand spends ₹12L/month on Meta. They want to onboard. Your call:", options: [
+      "Onboard in Emerging tier — ₹12L qualifies",
+      "Reject — below ₹25L ICP floor. Parking-lot for nurture, revisit in 2 quarters",
+      "Offer Long Tail tier at discounted rate",
+      "Escalate to Founder for approval"
+    ], correct: 1, explanation: "₹12L is below our ₹25L ICP floor. The unit economics don't work — min ₹40K fee on ₹12L spend makes the ROAS math unattractive for the brand too. Park them. Check back as they scale.", hint: "Know the ICP floor. It protects your quota from low-fit accounts that churn." },
+    { type: 'ai_message', text: "Live deal math — do this on every commercial call. Example: Brand spends ₹40L/month. Current ROAS 2.5x. Revenue = ₹1Cr/month.", delay: 400 },
+    { type: 'ai_message', text: "If KwikAds lifts ROAS 25% → new ROAS 3.1x → revenue ₹1.25Cr. Delta = ₹25L incremental revenue. Our fee ₹1.5L/month. Payback: month 1. That's the slide you build for every prospect.", delay: 400 },
+    { type: 'quiz', question: "A prospect spends ₹30L/month, ROAS 2x (revenue ₹60L). You promise 20% ROAS lift. What's the incremental monthly revenue?", options: [
+      "₹6L",
+      "₹12L",
+      "₹15L",
+      "₹30L"
+    ], correct: 1, explanation: "Current revenue = ₹60L. 20% ROAS lift → new ROAS 2.4x → revenue ₹72L. Delta = ₹12L/month incremental. If our fee is ₹1-2L, payback is immediate. Always do this math live.", hint: "Revenue = spend × ROAS. Calculate before and after the lift. The delta is the incremental value." },
+    { type: 'practice', prompt: "A bootstrapped founder spending ₹45L/month says: 'Your ₹1.5L/month fee is expensive.' Do the payback math for them in 3 sentences.", keywords: ["roas", "revenue", "incremental", "payback", "month", "fee", "lift", "25%", "invest"], minKeywords: 3, goodFeedback: "Clean math. You flipped cost into investment with a concrete payback timeline. Founders buy ROI, not features. Use this on every pricing objection.", improveFeedback: "Try: 'You spend ₹45L at 2.5x ROAS = ₹1.12Cr revenue. A 25% lift = ₹1.4Cr. That's ₹28L more revenue. Our fee is ₹1.5L. You're 18x positive in month 1.' Always end with the multiple.", hint: "Never defend price. Show the math. Incremental revenue ÷ fee = payback multiple." },
+    { type: 'summary_card', points: [
+      "ICP: ₹25L+/month Meta spend. Below that, park for nurture.",
+      "4 tiers: Long Tail (₹0-10L), Emerging (₹10-25L), SMB (₹25-50L), Enterprise (₹50L+).",
+      "Viability floor: ₹40K/month minimum fee.",
+      "Always do live payback math: incremental revenue ÷ fee = payback multiple. If it's 5x+ in month 1, the deal closes."
+    ] },
+    { type: 'ai_message', text: "Module 5 done. +150 XP. Next: consultative selling — Discovery to Diagnosis.", delay: 500, xp: 150 }
   ],
 
   module6: [
-    { type: 'ai_message', text: "Selling like a consultant is the entire game. Let me show you how.", delay: 500 },
-    { type: 'quick_reply', options: ["Teach me", "Show me examples"], nextMap: { 0: 2, 1: 4 } },
-    { type: 'ai_message', text: "Consultative selling has 3 phases: Discovery → Diagnosis → Prescription.", delay: 400 },
-    { type: 'ai_message', text: "Phase 1: Discovery. Ask the right questions. Don't pitch. Listen.", delay: 400 },
-    { type: 'ai_message', text: "Phase 2: Diagnosis. Reflect back what you heard. Show them the gap. Make them feel the problem.", delay: 400 },
-    { type: 'ai_message', text: "Phase 3: Prescription. Here's what we'd do differently. Here's your upside.", delay: 400 },
-    { type: 'quiz', question: "What's the first question in a discovery call?", options: ["What's your current budget?", "How much ROAS are you getting?", "Tell me about your biggest challenge right now", "Do you work with an agency?"], correct: 2, explanation: "Always open with a problem question. 'What's keeping you up at night?' or 'What's your biggest challenge?' This makes them think, not pitch-defend." },
-    { type: 'ai_message', text: "Here are the discovery questions that matter:", delay: 400 },
-    { type: 'ai_message', text: "1. What's your current ad spend and channels? 2. What's your ROAS target vs. actual? 3. What audience are you currently targeting? 4. What's your biggest pain point?", delay: 400 },
-    { type: 'ai_message', text: "Listen for: rising CAC, declining ROAS, polluted retargeting, low prepaid conversion. These are your openings.", delay: 400 },
-    { type: 'practice', prompt: "You're talking to a CMO. They say their ROAS is 2.5x but CAC has risen 30% YoY. What's your follow-up question?", keywords: ["audience", "targeting", "data", "retention", "prepaid", "repeat", "churn"], minKeywords: 2, goodFeedback: "Perfect! You're diagnosing, not pitching. That's consultative selling.", improveFeedback: "Follow up on the root cause. 'Is the audience quality declining, or is your message not resonating?' Dig deeper." },
-    { type: 'summary_card', points: ["Consultative selling: Discovery → Diagnosis → Prescription", "Ask about challenges first. Don't pitch first.", "Listen for the 6 pain points and reflect them back."] },
-    { type: 'ai_message', text: "Module 6 complete! +150 XP 🎤", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "Module 6 — Consultative Selling: Discovery → Diagnosis → Prescription. You sell like a strategist, not a vendor. This module rewires your call structure.", delay: 500 },
+    { type: 'ai_message', text: "Rule 1: The first 10 minutes of any call belong to the prospect, not you. If you're talking more than 30% of the first 10 minutes, you're pitching, not discovering.", delay: 400 },
+    { type: 'ai_message', text: "Phase 1 — Discovery. Goal: understand their world before you show yours. Open with a future-focused question, not a product pitch.", delay: 400 },
+    { type: 'ai_message', text: "The 5 Discovery Questions for KwikAds (in order): 1. 'What does the next 90 days of growth look like for you?' 2. 'What's your current Meta spend and ROAS?' 3. 'How are you building audiences today — pixel, CRM uploads, broad?' 4. 'What's your prepaid vs COD split?' 5. 'If I could fix one metric this quarter, which would move the needle most?'", delay: 400 },
+    { type: 'ai_message', text: "Listen for the 6 pain signals from Module 3: rising CAC, low prepaid, audience fatigue, declining AOV, attribution blindness, budget leakage. When you hear one, you've found the wedge.", delay: 400 },
+    { type: 'quiz', question: "Best opening line on a discovery call with a D2C CMO:", options: [
+      "Let me tell you about KwikAds and our Meta Signals Partnership",
+      "What does the next 90 days of growth look like for you?",
+      "What's your current ROAS?",
+      "We've helped brands improve ROAS by 25%"
+    ], correct: 1, explanation: "Future-focused, open-ended, business-framed. Gets them talking about THEIR priorities. Credentials and stats come AFTER pain is named. Never lead with your deck.", hint: "The best opener makes the CMO talk for the next 5 minutes, not you." },
+    { type: 'ai_message', text: "Phase 2 — Diagnosis. Reflect what you heard, then sharpen it. The goal is to make them feel the gap between where they are and where they could be.", delay: 400 },
+    { type: 'ai_message', text: "Diagnosis framework: 'So if I'm hearing you right, you're at [current state], but [pain]. The gap between here and [desired state] is [root cause]. Is that fair?' — Wait for the nod. That nod is permission to prescribe.", delay: 400 },
+    { type: 'ai_message', text: "Example: 'So you're at 2.5x ROAS, but CAC has climbed 30% and your agency says it's just market inflation. The gap is signal quality — your pixel data degraded post-iOS14 and Meta's optimising on noisy events. Is that fair?'", delay: 400 },
+    { type: 'ai_message', text: "Phase 3 — Prescription. Now and only now do you bring KwikAds in. Map to the specific pillar that addresses their diagnosed pain. End with the audit offer.", delay: 400 },
+    { type: 'ai_message', text: "Prescription formula: 'Here's what we'd do: [Pillar] addresses [their pain]. Specifically, [signal/feature]. We've seen [case study] achieve [result] with the same starting point. I'd like to audit your account in 3 days and show you exactly what's possible. No commitment — just data.'", delay: 400 },
+    { type: 'quiz', question: "When do you mention KwikAds pricing on a discovery call?", options: [
+      "In the opening — get budget alignment early",
+      "Never on the first call — pricing comes after the audit presentation",
+      "When the prospect asks about cost",
+      "Right after explaining the three pillars"
+    ], correct: 1, explanation: "Pricing on a discovery call kills momentum. The audit IS the next step, not a price quote. After the audit presentation, the value is proven and pricing anchors to demonstrated uplift, not a brochure.", hint: "If you quote price before they've seen their own data, you're negotiating blind." },
+    { type: 'practice', prompt: "A CMO tells you: 'Our ROAS is 2.8x but our repeat purchase rate is only 12% and we spend ₹35L/month.' Walk through Discovery → Diagnosis → Prescription in 4 sentences.", keywords: ["discovery", "diagnosis", "prescription", "repeat", "retention", "pillar", "signal", "audit", "high_order_volume", "visibility", "ltv", "cohort"], minKeywords: 4, goodFeedback: "Textbook execution. You listened, diagnosed the retention gap, prescribed the right pillar and signal, and closed with the audit. This is the call structure that converts.", improveFeedback: "Structure: Discovery (acknowledge 2.8x ROAS, probe 12% repeat) → Diagnosis ('your Meta campaigns optimise for first purchase, not repeat — that's why LTV is low') → Prescription ('Pillar 3 visibility + high_order_volume signal → let me audit and show you the retention cohort you're missing'). Always end with the audit.", hint: "12% repeat = retention problem. Which pillar + signal addresses LTV blindness?" },
+    { type: 'summary_card', points: [
+      "3 phases: Discovery (listen) → Diagnosis (reflect + sharpen) → Prescription (pillar + audit).",
+      "5 discovery questions — memorise the sequence. Future-focused opener, then metrics, then pain.",
+      "Never pitch before diagnosing. Never price before auditing. The audit is the sale."
+    ] },
+    { type: 'ai_message', text: "Module 6 done. +150 XP. Next: the 6-stage client journey from Discovery to Go-Live.", delay: 500, xp: 150 }
   ],
 
   module7: [
-    { type: 'ai_message', text: "Every deal follows a journey. Let me map it for you so you never lose track.", delay: 500 },
-    { type: 'quick_reply', options: ["Show me the stages", "How long does it take?"], nextMap: { 0: 2, 1: 8 } },
-    { type: 'ai_message', text: "Stage 1: Discovery. First call. Listen and diagnose. Takes 30 mins.", delay: 400 },
-    { type: 'ai_message', text: "Stage 2: Audit Request. You ask for access to their Meta account. They approve. Takes 1-2 days.", delay: 400 },
-    { type: 'ai_message', text: "Stage 3: Audit Presentation. You present the audit findings. The data problem + upside. Takes 1 call.", delay: 400 },
-    { type: 'ai_message', text: "Stage 4: Commercial. Pricing talk. Scope discussion. Terms. Takes 1-2 calls.", delay: 400 },
-    { type: 'ai_message', text: "Stage 5: Closure. Legal review, approval, signed agreement. Takes 1-5 days.", delay: 400 },
-    { type: 'ai_message', text: "Stage 6: Go-Live. Implementation, data setup, launch. Takes 7-14 days.", delay: 400 },
-    { type: 'quiz', question: "How long does the audit stage typically take?", options: ["1 day", "3-4 days", "1 week", "2 weeks"], correct: 1, explanation: "3-4 days for a solid audit. We're analyzing 180M+ signals against their account. It's thorough." },
-    { type: 'ai_message', text: "Full cycle from first call to go-live: usually 2-3 weeks. Depends on their approval speed.", delay: 400 },
-    { type: 'practice', prompt: "Write the email to a CMO requesting access to their Meta account. What details do you include?", keywords: ["access", "account", "read", "audit", "data", "insights", "timeline"], minKeywords: 3, goodFeedback: "Solid email! You made it clear, quick, and set expectations. That's the right tone.", improveFeedback: "Add a timeline expectation: 'We'll need 3-4 days to analyze and then present findings.' This sets clarity." },
-    { type: 'summary_card', points: ["6-stage journey: Discovery → Audit Request → Audit Presentation → Commercial → Closure → Go-Live", "Full cycle = 2-3 weeks typical", "Each stage has clear next steps. Don't skip stages."] },
-    { type: 'ai_message', text: "Module 7 complete! +150 XP 🗺️", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "Module 7 — The 6-Stage Client Journey. From first touch to go-live. Every deal follows this path. Your job: never let a deal stall between stages.", delay: 500 },
+    { type: 'ai_message', text: "Stage 1 — Discovery Call (30 min). Goal: diagnose the pain, build trust, earn the right to audit. Use the 5 Discovery Questions from Module 6. Output: a clear pain statement and verbal agreement to proceed to audit.", delay: 400 },
+    { type: 'ai_message', text: "Stage 2 — Audit Request (1-2 days). You ask for read-only access to their Meta Ad Manager. Position it as: 'No commitment — I'll show you what your data says in 3 days.' The lighter the ask, the faster the yes.", delay: 400 },
+    { type: 'ai_message', text: "Stage 3 — Audit Presentation (1 call, 30-45 min). This is where you show them their own data problem. Structure: Current state → What we found → Opportunity gap → What KwikAds would do differently. End with: 'Want to see this in action?'", delay: 400 },
+    { type: 'ai_message', text: "The audit IS the sale. If your audit is weak, no amount of pitching saves the deal. The audit must show: EMQ gap (their score vs. what's possible), audience overlap/fatigue, signal gaps (what events Meta isn't seeing), and estimated uplift range.", delay: 400 },
+    { type: 'ai_message', text: "Stage 4 — Commercial (1-2 calls). Pricing, scope, SLA. Always anchor price to the audit's demonstrated uplift: 'The audit showed ₹X incremental revenue. Our fee is ₹Y. Payback is month 1.' Never send pricing without a review call booked.", delay: 400 },
+    { type: 'ai_message', text: "Stage 5 — Closure (1-5 days). Legal review, MSA, sign-off. Stalls here = you didn't build enough urgency in Stage 3. If a deal stalls at closure, go back to the audit data and add a time-decay frame: 'Every month without these signals is ₹X left on the table.'", delay: 400 },
+    { type: 'ai_message', text: "Stage 6 — Go-Live (7-14 days). CAPI integration, signal configuration, audience building, first campaign launch. The AM owns this, but you stay in the loop for the first 30 days to protect the relationship.", delay: 400 },
+    { type: 'stat_card', stats: [
+      { value: "2-3 weeks", label: "Typical full cycle", subtext: "Discovery to Go-Live" },
+      { value: "3 days", label: "Audit turnaround", subtext: "Analysis of their Meta account" },
+      { value: "7-14 days", label: "Go-Live implementation", subtext: "CAPI + signals + first campaign" }
+    ] },
+    { type: 'quiz', question: "A deal has been stuck at 'closure' for 10 days. The CMO says 'legal is reviewing.' What do you do?", options: [
+      "Wait patiently — legal takes time",
+      "Call legal directly and push",
+      "Go back to the CMO with the audit data: 'Every week without these signals costs you ~₹X in missed ROAS uplift. Can we get legal on a 10-min call to unblock?'",
+      "Offer a discount to speed things up"
+    ], correct: 2, explanation: "Deals die in legal limbo. Your job is to create urgency without being pushy. Use the audit data to quantify the cost of delay. Offer to join a short call with legal to answer technical/data questions. Never discount to unstick a deal.", hint: "If a deal stalls at closure, the problem is usually urgency, not legal. Quantify the cost of waiting." },
+    { type: 'practice', prompt: "Write a 3-line email to a CMO requesting read-only access to their Meta Ad Manager for the audit. Keep it low-friction.", keywords: ["read-only", "access", "audit", "3 days", "meta", "ad manager", "no commitment", "findings", "data"], minKeywords: 3, goodFeedback: "Clean, low-friction, and sets clear expectations. This email gets replies because it asks for little and promises insight.", improveFeedback: "Key elements: 1) Reference the pain from discovery ('Following up on the CAC discussion'), 2) Specific ask ('read-only access to Meta Ad Manager'), 3) Timeline ('3 business days'), 4) Low commitment ('No obligation — just data'). Remove anything that sounds like a pitch.", hint: "The best audit request email is under 5 sentences. Reference the call, make the ask, set the timeline." },
+    { type: 'summary_card', points: [
+      "6 stages: Discovery → Audit Request → Audit Presentation → Commercial → Closure → Go-Live.",
+      "The audit IS the sale. Invest maximum effort here.",
+      "Never send pricing without a scheduled review call. Never let deals die in legal — quantify cost of delay."
+    ] },
+    { type: 'ai_message', text: "Module 7 done. +150 XP. Next: cold call and pitch frameworks.", delay: 500, xp: 150 }
   ],
 
   module8: [
-    { type: 'ai_message', text: "Demo day is where you prove you're not just another vendor. Let's nail this.", delay: 500 },
-    { type: 'quick_reply', options: ["Teach me the structure", "Show me your pitch"], nextMap: { 0: 2, 1: 4 } },
-    { type: 'ai_message', text: "A cold call has 4 parts. 30 seconds each. Total: 2 minutes.", delay: 400 },
-    { type: 'ai_message', text: "Part 1 (30s): Hook. Why you're calling. E.g., 'We help D2C brands improve ROAS by reaching the right customers on Meta.'", delay: 400 },
-    { type: 'ai_message', text: "Part 2 (30s): Problem. What you've noticed. E.g., 'Most brands we work with struggle with rising CAC and declining ROAS.'", delay: 400 },
-    { type: 'ai_message', text: "Part 3 (30s): Solution. Your unique angle. E.g., 'We're Meta's only Signals Partner in India. We use 180M+ real checkout signals.'", delay: 400 },
-    { type: 'ai_message', text: "Part 4 (30s): Proof + CTA. What you've done + ask. E.g., 'We improved Shop Unrush's ROAS by 67%. Can I send you a quick case study?'", delay: 400 },
-    { type: 'quiz', question: "What's the #1 mistake in cold calling?", options: ["Talking too fast", "Leading with your product instead of their pain", "Not preparing questions", "Calling at 2 PM"], correct: 1, explanation: "People don't buy from you. They buy a solution to their problem. Lead with pain, not product. 'We help' beats 'We are.''" },
-    { type: 'practice', prompt: "Give me your 30-second cold call pitch for a skincare brand that sells on their own DTC site. Hook + Problem + Solution + CTA. Go.", keywords: ["skincare", "d2c", "roas", "cac", "meta", "signals", "checkout", "brand"], minKeywords: 4, goodFeedback: "Strong pitch! You nailed the problem → solution → proof flow. That's CEO-ready.", improveFeedback: "Make it more specific to skincare. What's unique about selling skincare on DTC? (Seasonal trends, retention, repeat purchase.) Use that." },
-    { type: 'summary_card', points: ["Cold call formula: Hook (30s) → Problem (30s) → Solution (30s) → Proof + CTA (30s)", "Always start with their pain, not your product", "Practice until it feels natural, not rehearsed"] },
-    { type: 'ai_message', text: "Module 8 complete! +150 XP 🎙️", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "Module 8 — Cold Call & Pitch Frameworks. You get 90 seconds to earn 30 minutes. Let's make every second count.", delay: 500 },
+    { type: 'ai_message', text: "The KwikAds Cold Call Formula — 4 parts, 20-30 seconds each. Total: under 2 minutes.", delay: 400 },
+    { type: 'ai_message', text: "Part 1 — Hook (20s). Lead with THEIR world, not yours. Example: 'Hi [Name], I've been looking at D2C [category] brands spending ₹30L+ on Meta — most are seeing CAC climb 20-30% this year. Is that hitting you too?'", delay: 400 },
+    { type: 'ai_message', text: "Part 2 — Problem (20s). Sharpen the pain. Example: 'What we're seeing is the pixel data feeding Meta has degraded post-iOS14. Agencies are optimising on noisy signals, so Meta's algorithm chases low-quality clicks.'", delay: 400 },
+    { type: 'ai_message', text: "Part 3 — Differentiator (30s). One sentence, not a feature dump. Example: 'We're India's 1st Meta Signals Partner. We pipe verified checkout data from 200M+ D2C shoppers directly into Meta — brands typically see +25% ROAS and -15% CAC within 3 months.'", delay: 400 },
+    { type: 'ai_message', text: "Part 4 — CTA (20s). Low-friction next step. Example: 'I'd love to run a free 3-day audit on your Meta account — no commitment, just data. Would next Tuesday work for a 20-minute call?'", delay: 400 },
+    { type: 'quiz', question: "Which hook is strongest for a cold call to a D2C fashion brand CMO?", options: [
+      "Hi, I'm calling from KwikAds. We're Meta's Signals Partner.",
+      "Hi Priya, I've been studying fashion brands spending ₹30L+ on Meta — most are seeing CAC spike this quarter. Is that showing up in your numbers too?",
+      "We can improve your ROAS by 25%.",
+      "Do you have 5 minutes? I want to tell you about our product."
+    ], correct: 1, explanation: "The best hook is specific (fashion, ₹30L+, CAC spike), personal (uses their name), and ends with a question that makes them talk. Never lead with your company name or a feature claim.", hint: "A good hook has three elements: their industry, a specific pain, and a question." },
+    { type: 'ai_message', text: "The Pitch Deck structure (for scheduled meetings, not cold calls). 5 slides max:", delay: 400 },
+    { type: 'ai_message', text: "Slide 1: Their pain (not your logo slide). Slide 2: Why it's happening (signal degradation + pixel blindness). Slide 3: How KwikAds fixes it (3 pillars, one sentence each). Slide 4: Proof (Shop Unrush +37% ROAS, BSC -15% CAC). Slide 5: The ask (audit access + timeline).", delay: 400 },
+    { type: 'ai_message', text: "Rule: if you're past slide 3 and the CMO hasn't asked a question, you've lost them. Stop and ask: 'Does this map to what you're experiencing?'", delay: 400 },
+    { type: 'quiz', question: "You're on a cold call. The CMO says 'We're happy with our agency.' Best immediate response:", options: [
+      "Our data is better than any agency's",
+      "That's great — keep them. Quick question: are they sending Meta server-side checkout signals, or browser pixel data? Because that gap is where 15-25% of ROAS hides.",
+      "Can I send you a case study?",
+      "What if I told you we could beat their ROAS?"
+    ], correct: 1, explanation: "Never attack the agency. The CMO chose them — attacking the agency attacks their judgment. Instead, plant a seed of curiosity about signal quality. If they don't know what their agency sends Meta, you've just created doubt without being adversarial.", hint: "Don't compete with the agency. Introduce a dimension they haven't considered." },
+    { type: 'practice', prompt: "Cold call a D2C supplements brand spending ₹50L/month. Their ROAS has dropped from 3x to 2.2x in 6 months. Give your full 90-second pitch: Hook → Problem → Differentiator → CTA.", keywords: ["supplements", "roas", "drop", "cac", "meta", "signals", "checkout", "200m", "audit", "pillar", "ios14", "pixel", "partner"], minKeywords: 5, goodFeedback: "That's a call that books a meeting. You personalised the pain, explained the root cause without jargon, dropped proof, and ended with a low-friction ask. Practice this until it's muscle memory.", improveFeedback: "Structure check: Hook (their ROAS dropped from 3x to 2.2x — name the pain). Problem (pixel degradation → Meta's algorithm choosing wrong audiences). Differentiator (checkout signals from 200M+ shoppers → +25% ROAS typical). CTA (free 3-day audit, no commitment). Keep each section under 30 seconds.", hint: "ROAS dropping from 3x to 2.2x in 6 months is a signal-quality problem, not a creative problem. Lead with that insight." },
+    { type: 'summary_card', points: [
+      "Cold call: Hook (their pain) → Problem (root cause) → Differentiator (one sentence) → CTA (audit).",
+      "Pitch deck: 5 slides max. Start with their pain, end with the audit ask.",
+      "Never lead with your company. Never attack their agency. Always end with a low-friction next step."
+    ] },
+    { type: 'ai_message', text: "Module 8 done. +150 XP. Next: the 5 objections you'll face on every deal.", delay: 500, xp: 150 }
   ],
 
   module9: [
-    { type: 'ai_message', text: "You'll hear 'no' more than you hear 'yes'. Let's prepare you for the 5 most common objections.", delay: 500 },
-    { type: 'quick_reply', options: ["Show me the objections", "Let's practice"], nextMap: { 0: 2, 1: 10 } },
-    { type: 'ai_message', text: "Objection 1: 'We already have an agency.'", delay: 400 },
-    { type: 'ai_message', text: "Your response: 'That's great. Most brands do. But how's their data game? Are they giving you 180M+ signals to work with, or are they relying on Meta's broad targeting?'", delay: 400 },
-    { type: 'ai_message', text: "Objection 2: 'Our ROAS is already good at 3x. Why would we change?'", delay: 400 },
-    { type: 'ai_message', text: "Your response: 'Exactly why we should talk. If you're at 3x, our data could push you to 4x or higher. No risk—just more upside. How much more revenue would 25% improvement mean this quarter?'", delay: 400 },
-    { type: 'ai_message', text: "Objection 3: 'We manage ads in-house. We don't need an agency or partner.'", delay: 400 },
-    { type: 'ai_message', text: "Your response: 'I respect that. We're not here to replace you. We're here to give you superpowers—the data layer you don't have access to. Think of us as a data advantage, not a replacement.'", delay: 400 },
-    { type: 'ai_message', text: "Objection 4: 'Your pricing is too high.'", delay: 400 },
-    { type: 'ai_message', text: "Your response: 'I understand. Let's talk math. If you're spending ₹50L/month and we improve ROAS by 15%, that's ₹7.5L more revenue. Our fee is ₹X. What's your payback period on that?'", delay: 400 },
-    { type: 'ai_message', text: "Objection 5: 'We tried GoKwik before. It didn't work out.'", delay: 400 },
-    { type: 'ai_message', text: "Your response: 'Appreciate the honesty. What didn't work? [Listen]. KwikAds is different from what you tried. Here's what we're doing now... [Show new value.]'", delay: 400 },
-    { type: 'practice', prompt: "They say: 'Your data quality claim is bold. How do I know you're telling the truth?' How do you respond?", keywords: ["audit", "data", "proof", "transparency", "checkout", "180m", "signals", "case"], minKeywords: 3, goodFeedback: "Perfect! You're offering proof, not promises. That's trust-building.", improveFeedback: "Add a case study reference. 'We showed Shop Unrush 180M+ signals in their first audit. They saw 67% ROAS improvement.' Make it concrete." },
-    { type: 'summary_card', points: ["5 common objections: agency, good ROAS, in-house, pricing, past experience", "Each has a response. Practice until reflexive.", "The goal: reframe the objection as an opportunity, not a blocker."] },
-    { type: 'ai_message', text: "Module 9 complete! +150 XP 🛡️", delay: 500, xp: 150 }
+    { type: 'ai_message', text: "Module 9 — Objection Handling Playbook. Five objections kill 80% of deals. Master the reframes and you'll close what everyone else drops.", delay: 500 },
+    { type: 'ai_message', text: "Objection 1: 'We already have an agency.' — Frequency: every other call. This is the default shield.", delay: 400 },
+    { type: 'ai_message', text: "Reframe: 'Great — keep them. We're not an agency replacement. We're a data layer your agency plugs into. Quick question: is your agency sending Meta server-side checkout signals, or browser pixel data? That gap is where 15-25% of ROAS typically hides.' — You've planted curiosity without attacking their choice.", delay: 400 },
+    { type: 'ai_message', text: "Objection 2: 'Our ROAS is already 3x. Why would we change?' — This prospect is actually your best lead.", delay: 400 },
+    { type: 'ai_message', text: "Reframe: '3x is excellent — most brands we talk to are at 1.5-2x. That tells me your fundamentals are strong. The question is: is 3x the ceiling, or the floor? Brands with strong fundamentals see the biggest uplift from cleaner signals. How much would 3.5x or 4x mean to your quarterly revenue?' — Anchor their win as a starting line.", delay: 400 },
+    { type: 'ai_message', text: "Objection 3: 'We run ads in-house. No agencies, no partners.' — Respect the independence, then differentiate.", delay: 400 },
+    { type: 'ai_message', text: "Reframe: 'I respect that — in-house teams are usually sharper than agencies because they know the brand deeply. We don't replace your team. We make every decision they make more effective by fixing what Meta sees. Even the best in-house buyer is choosing from audiences Meta builds — and Meta's model is only as good as the events feeding it.' — Position as infrastructure, not service.", delay: 400 },
+    { type: 'ai_message', text: "Objection 4: 'Too expensive.' — Never concede price. Always reframe to payback.", delay: 400 },
+    { type: 'ai_message', text: "Reframe: 'Fair question. Let's do the math together. You spend ₹40L/month at 2.5x ROAS — that's ₹1Cr revenue. If we lift ROAS 20%, your revenue goes to ₹1.2Cr. That's ₹20L more per month. Our fee is ₹1.5L. You're 13x positive in month 1. Does that math work for you?' — Always end with the payback multiple.", delay: 400 },
+    { type: 'ai_message', text: "Objection 5: 'We tried GoKwik before. Didn't work.' — This needs surgical handling. Listen first, then separate.", delay: 400 },
+    { type: 'ai_message', text: "Reframe: 'I appreciate the honesty. Can I ask what specifically didn't work? [Listen carefully]. I hear you. A lot has changed since then — [address specific issue]. But rather than me promising it's different, let me prove it. A 3-day audit costs you nothing and shows you exactly what today's setup looks like. If it doesn't impress, we shake hands and part ways.' — Acknowledge, separate past from present, let the audit do the selling.", delay: 400 },
+    { type: 'quiz', question: "A CMO says: 'Your data quality claim is bold. How do I know you're not just another vendor overpromising?' Best response:", options: [
+      "Trust me, we have the best data in the market",
+      "Let me prove it. I'll run a 3-day audit on your live account — you'll see your own EMQ gaps and the exact signals we'd add. No commitment, just your data with our lens on it.",
+      "Here are 10 case studies you can read",
+      "We're backed by top investors and have 15,000+ brands"
+    ], correct: 1, explanation: "When someone questions your claim, never argue — demonstrate. The audit is your proof engine. It takes their skepticism and converts it into their own data showing the gap. Case studies support, but their own data convinces.", hint: "Skepticism is earned trust waiting to happen. Let the audit convert it." },
+    { type: 'practice', prompt: "A founder says: 'We tried working with a performance marketing partner last year. They promised 3x ROAS and we barely hit 1.5x. Why should I trust KwikAds?' Write your response.", keywords: ["audit", "listen", "different", "proof", "data", "checkout", "signals", "emq", "risk", "commitment", "show"], minKeywords: 4, goodFeedback: "Strong. You acknowledged the bad experience, separated KwikAds from generic performance partners, and offered the audit as zero-risk proof. That's how you rebuild trust with burned founders.", improveFeedback: "Structure: 1) Acknowledge ('That's frustrating and I hear you'), 2) Ask what went wrong ('What specifically didn't deliver?'), 3) Separate ('Most partners optimise on pixel data — we're different because...'), 4) Prove ('3-day audit, your data, no commitment'). Don't promise outcomes — promise transparency.", hint: "Burned founders need two things: acknowledgment and proof. Not promises." },
+    { type: 'summary_card', points: [
+      "5 objections: agency ('data layer, not replacement'), good ROAS ('floor not ceiling'), in-house ('infrastructure not service'), pricing ('payback math'), past experience ('audit to prove').",
+      "Never attack the incumbent. Never concede price. Always reframe to value.",
+      "The audit is the answer to every objection. When in doubt, offer the audit."
+    ] },
+    { type: 'ai_message', text: "Module 9 done. +150 XP. Next: real case studies with real numbers.", delay: 500, xp: 150 }
   ],
 
   module10: [
-    { type: 'ai_message', text: "Every pitch ends the same way: proof. Here are our wins. These are your credibility bombs.", delay: 500 },
-    { type: 'quick_reply', options: ["Show me the case studies", "How do I use them?"], nextMap: { 0: 2, 1: 8 } },
-    { type: 'ai_message', text: "Case Study 1: Shop Unrush. Sustainable fashion brand. Goal: scale ROAS.", delay: 400 },
+    { type: 'ai_message', text: "Module 10 — Case Studies & Proof Arsenal. Case studies are mirrors — the prospect needs to see themselves in the story. Match the case to their stage, pain, and scale.", delay: 500 },
+    { type: 'ai_message', text: "Case Study 1: Shop Unrush — Sustainable fashion. The ROAS-uplift proof point.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "+67%", label: "ROAS Improvement", subtext: "In 60 days" }
+      { value: "+37%", label: "ROAS Improvement", subtext: "Signal-fed audiences vs. pixel" },
+      { value: "Same spend", label: "Budget unchanged", subtext: "Creatives held constant" },
+      { value: "Checkout signals", label: "The unlock", subtext: "Verified purchase intent from GoKwik network" }
     ] },
-    { type: 'ai_message', text: "They were getting 2.1x. We improved targeting with our prepaid signals. They hit 3.5x. Their CAC dropped 30%.", delay: 400 },
-    { type: 'ai_message', text: "Case Study 2: Peesafe. Women's health brand. Goal: rapid growth.", delay: 400 },
+    { type: 'ai_message', text: "What happened: Shop Unrush's agency was running Meta on pixel-based audiences. We replaced the seed audiences with checkout-signal lookalikes from GoKwik's network. Same creative, same budget → +37% ROAS. The only variable was signal quality.", delay: 400 },
+    { type: 'ai_message', text: "When to use: any prospect whose ROAS is flat or declining and they blame creatives or market conditions. Shop Unrush proves it's the signal, not the creative.", delay: 400 },
+    { type: 'ai_message', text: "Case Study 2: BSC (Body Science Co.) — Athleisure. The CAC-reduction proof point.", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "6x", label: "Growth", subtext: "In 6 months" }
+      { value: "-15%", label: "CAC Reduction", subtext: "Within first 3 months" },
+      { value: "2x", label: "High-AOV customers", subtext: "From signal-fed prospecting" },
+      { value: "Pillar 2", label: "Hyper-Targeted Audiences", subtext: "multi_product_purchase signal" }
     ] },
-    { type: 'ai_message', text: "They scaled from ₹10L to ₹60L monthly ad spend. Our data helped them hit new audience segments.", delay: 400 },
-    { type: 'ai_message', text: "Case Study 3: Shapercult. Fashion and body-positive brand. Goal: strategic differentiation.", delay: 400 },
-    { type: 'ai_message', text: "They wanted to own a niche. We helped them find their ideal customer with precision signals. ROAS improved 45%.", delay: 400 },
-    { type: 'ai_message', text: "Case Study 4: BSC. Athleisure brand. Goal: reduce CAC.", delay: 400 },
+    { type: 'ai_message', text: "What happened: BSC was bleeding on CAC because their pixel audiences attracted discount-hunters. We seeded Meta with multi_product_purchase and high_order_volume signals → Meta found buyers who naturally spend more per order. CAC dropped 15%, and the customers that came in had 2x higher AOV.", delay: 400 },
+    { type: 'ai_message', text: "When to use: any prospect with rising CAC or low-quality customers. BSC proves you can cut CAC while improving customer quality — not a tradeoff, a fix.", delay: 400 },
+    { type: 'ai_message', text: "Case Study 3: Peesafe — Women's hygiene/health. The scaling story.", delay: 400 },
+    { type: 'ai_message', text: "What happened: Peesafe entered the GoKwik ecosystem at ₹10L/month spend and scaled rapidly. Our signal network helped them unlock new audience segments they couldn't reach with pixel-only targeting. Use this case for fast-growing brands in the ₹10-25L range who want to scale without blowing up CAC.", delay: 400 },
+    { type: 'ai_message', text: "When to use: Emerging-tier prospects who are growing fast but worried about scaling efficiently. Peesafe is the 'I can be that brand' mirror for founders.", delay: 400 },
+    { type: 'ai_message', text: "Case Study 4: Shapercult — Fashion/body-positive. The niche-ownership story.", delay: 400 },
+    { type: 'ai_message', text: "What happened: Shapercult needed to find their exact ICP in a crowded fashion market. GoKwik's cross-brand purchase signals identified a precision segment of buyers with affinity for body-positive fashion. ROAS improved as waste-spend on irrelevant audiences dropped.", delay: 400 },
+    { type: 'ai_message', text: "When to use: niche brands struggling with audience definition or competing in crowded categories. Shapercult proves signal precision beats broad targeting.", delay: 400 },
+    { type: 'ai_message', text: "Case Study Matching Framework — memorise this decision tree:", delay: 400 },
     { type: 'stat_card', stats: [
-      { value: "-15%", label: "CAC Reduction", subtext: "While growing revenue" }
+      { value: "ROAS flat?", label: "→ Shop Unrush", subtext: "+37% from signal swap" },
+      { value: "CAC rising?", label: "→ BSC", subtext: "-15% CAC, 2x AOV customers" },
+      { value: "Want to scale?", label: "→ Peesafe", subtext: "Rapid scaling story" }
     ] },
-    { type: 'ai_message', text: "They were spending inefficiently. We cut waste and improved efficiency. CAC down, revenue up.", delay: 400 },
-    { type: 'practice', prompt: "A fashion brand at 2.5x ROAS wants to scale for Diwali. Which case study do you lead with and why?", keywords: ["peesafe", "scale", "growth", "seasonal", "rapid", "shopunrush", "roas"], minKeywords: 2, goodFeedback: "Perfect! You matched the case study to the goal. That's how you close deals.", improveFeedback: "Peesafe is your scale story. They went from ₹10L to ₹60L. That's the proof point for seasonal growth." },
-    { type: 'summary_card', points: ["Shop Unrush: +67% ROAS", "Peesafe: 6x growth", "Shapercult: Strategic differentiation", "BSC: -15% CAC", "Match the case study to their goal. Always."] },
-    { type: 'ai_message', text: "Module 10 complete! 🏆 You've finished all core modules! +200 XP", delay: 500, xp: 200 }
+    { type: 'stat_card', stats: [
+      { value: "Crowded niche?", label: "→ Shapercult", subtext: "Precision audience ownership" },
+      { value: "Rule", label: "Match the mirror", subtext: "Prospect should see themselves in the story" }
+    ] },
+    { type: 'quiz', question: "A D2C supplements brand at ₹35L/month spend says: 'Our ROAS is 2.3x but we're attracting deal-seekers, not loyal customers.' Which case study?", options: [
+      "Shop Unrush — ROAS uplift story",
+      "BSC — they cut CAC 15% while attracting 2x higher-AOV customers. Same problem: wrong customer quality, not wrong ROAS number.",
+      "Peesafe — scaling story",
+      "Shapercult — niche ownership"
+    ], correct: 1, explanation: "The prospect's pain is customer quality, not ROAS magnitude. BSC is the perfect mirror — they had the same issue (discount-hunters from pixel audiences) and fixed it with signal-fed prospecting that attracted high-value buyers.", hint: "'Attracting deal-seekers' = customer quality problem, not a ROAS problem. Which case study fixed customer quality?" },
+    { type: 'practice', prompt: "You're pitching a beauty brand CMO. She says: 'We're at 2.8x ROAS but our CAC has climbed 25% in 6 months. Our agency says it's market inflation.' Which case study do you use, and how do you tell the story in 30 seconds?", keywords: ["bsc", "cac", "signal", "pixel", "audience", "quality", "checkout", "15%", "aov", "multi_product", "high_order"], minKeywords: 4, goodFeedback: "Nailed it. You matched BSC to her exact pain, told the story with specific numbers, and implicitly challenged the 'market inflation' excuse. That's how case studies close deals — they're not brochures, they're mirrors.", improveFeedback: "Try: 'BSC had the same pattern — CAC climbing 25%, agency said market inflation. What we found: their pixel audiences were attracting discount-seekers. We swapped to checkout-signal audiences → CAC dropped 15% and the customers who came in had 2x higher AOV. Same spend, better buyers. I'd bet your audit shows a similar pattern.' Match the numbers, match the pain, make her see herself.", hint: "CAC climbing + agency blaming market = BSC mirror. Tell the story in cause → fix → result." },
+    { type: 'summary_card', points: [
+      "Shop Unrush: +37% ROAS — signal quality, not creative, was the variable.",
+      "BSC: -15% CAC, 2x high-AOV customers — customer quality fix.",
+      "Peesafe: rapid scaling from ₹10L → efficient growth via signal network.",
+      "Shapercult: precision audience in crowded market.",
+      "Match the case to the pain. The prospect should see themselves in the story."
+    ] },
+    { type: 'ai_message', text: "Module 10 complete! You've finished all core modules. +200 XP. You're ready for the real world.", delay: 500, xp: 200 }
   ]
 };
 
@@ -313,7 +504,7 @@ const weekOneChallengeFlow = [
   { type: 'ai_message', text: "Q6 — The 6-stage client journey, in order:", delay: 300 },
   { type: 'quiz', question: "Q6: Correct journey sequence:", options: ["Discovery → Audit → Audit Presentation → Commercial → Closure → Go-Live", "Discovery → Pitch → Negotiate → Contract → Onboard → Launch", "Cold Call → Demo → Proposal → Close → Kickoff → Live", "Audit → Discovery → Commercial → Demo → Sign → Live"], correct: 0, explanation: "Discovery (listen) → Audit Request → Audit Presentation (show value) → Commercial → Closure → Go-Live. Total ~2-3 weeks.", hint: "Listening comes before the audit. Always." },
   { type: 'ai_message', text: "Q7 — Shop Unrush case: what was the unlock?", delay: 300 },
-  { type: 'quiz', question: "Q7: Shop Unrush's +67% ROAS came primarily from:", options: ["Doubling their ad budget", "Better creatives", "Swapping Meta's default audiences for signal-fed audiences", "Running more retargeting"], correct: 2, explanation: "Creative and budget were held constant. The unlock was feeding Meta prepaid-purchase signals instead of generic pixel audiences. Same spend, cleaner intent → +67% ROAS.", hint: "Shop Unrush didn't spend more. They spent on cleaner audiences." },
+  { type: 'quiz', question: "Q7: Shop Unrush's +37% ROAS came primarily from:", options: ["Doubling their ad budget", "Better creatives", "Swapping Meta's default audiences for signal-fed checkout audiences", "Running more retargeting"], correct: 2, explanation: "Creative and budget were held constant. The unlock was feeding Meta verified checkout signals instead of generic pixel audiences. Same spend, cleaner intent → +37% ROAS.", hint: "Shop Unrush didn't spend more. They spent on cleaner audiences built from checkout data." },
   { type: 'ai_message', text: "Q8 — A CMO says 'show me why your data is better than my agency's pixel'. Your move?", delay: 300 },
   { type: 'quiz', question: "Q8: Best response:", options: ["Send case studies and wait", "Offer a 3-day audit on their live account", "Drop price by 20% to win trial", "Promise a guaranteed ROAS lift"], correct: 1, explanation: "The audit IS the sale. It's low-commitment for them, proof-packed for us. Never promise ROAS numbers blind — always prove with their data.", hint: "When in doubt, offer the audit. It's our strongest sales asset." },
   { type: 'ai_message', text: "Q9 — Priya (CMO, fashion, ₹45L/month, ROAS 2.2x, CAC climbing). Which tier & why?", delay: 300 },
@@ -321,7 +512,7 @@ const weekOneChallengeFlow = [
   { type: 'ai_message', text: "Q10 — A founder says 'we can't afford another vendor'. Best reframe?", delay: 300 },
   { type: 'quiz', question: "Q10: Reframe 'we can't afford it':", options: ["Drop the price", "Walk away", "Do the unit-economics math: 'if we lift ROAS 15%, your revenue goes up X. Our fee is Y. You net positive in month 1.'", "Offer a 3-month free trial"], correct: 2, explanation: "Bootstrapped founders respond to math, not discounts. Never concede price without showing the arithmetic of payback.", hint: "Cost vs. investment. Always flip it with numbers." },
   { type: 'ai_message', text: "Q11 — Discovery call. Which opening gets a CMO talking?", delay: 300 },
-  { type: 'quiz', question: "Q11: Strongest discovery opener:", options: ["Let me walk you through our deck", "What does the next 90 days of growth look like for you?", "We're Meta's Signals Partner in India", "Our clients see +67% ROAS"], correct: 1, explanation: "Future-focused, open-ended, business-framed. Gets them talking about THEIR priorities, not ours. Decks and credentials come AFTER pain is named.", hint: "A good discovery opener makes THEM talk for the next 5 minutes." },
+  { type: 'quiz', question: "Q11: Strongest discovery opener:", options: ["Let me walk you through our deck", "What does the next 90 days of growth look like for you?", "We're Meta's Signals Partner in India", "Our clients see +25% ROAS lift"], correct: 1, explanation: "Future-focused, open-ended, business-framed. Gets them talking about THEIR priorities, not ours. Decks and credentials come AFTER pain is named.", hint: "A good discovery opener makes THEM talk for the next 5 minutes." },
   { type: 'ai_message', text: "Q12 — Peesafe grew 6x in 6 months. What matters most for YOU as a salesperson?", delay: 300 },
   { type: 'quiz', question: "Q12: Why Peesafe matters in a pitch:", options: ["It proves we work with large brands", "It's a credibility anchor for founders scaling from ₹10-50L fast", "It's the biggest logo we have", "It shows we discount aggressively"], correct: 1, explanation: "Peesafe is the 'I can be that brand' story for scaling founders. Use it when prospect is sub-₹25L but growing fast. The number is less important than the archetype.", hint: "Case studies are mirrors. Match the case to the prospect's stage." },
   { type: 'ai_message', text: "Q13 — 'We're happy with our current agency'. Best first response?", delay: 300 },
@@ -340,12 +531,12 @@ const weekTwoChallengeFlow = [
   { type: 'ai_message', text: "Scenario 1: You're talking to Priya, CMO of a fashion brand spending ₹50L/month on Meta. ROAS is 2.8x, but CAC is rising. She's skeptical.", delay: 500 },
   { type: 'practice', prompt: "You: [Your opening message]", keywords: ["challenge", "problem", "data", "signals", "roas", "cac", "improve"], minKeywords: 2, goodFeedback: "Strong start! You led with her pain. Priya would continue talking.", improveFeedback: "Open with a question about her biggest challenge. Make her talk first." },
   { type: 'ai_message', text: "Priya: 'We're already working with an agency. Why would I switch?'", delay: 400 },
-  { type: 'practice', prompt: "Your response to Priya:", keywords: ["agency", "data", "signals", "different", "advantage", "checkout"], minKeywords: 2, goodFeedback: "Excellent! You reframed agency as a non-issue and showed your unique value.", improveFeedback: "Emphasize what your agency doesn't have: 180M+ checkout signals. That's unique." },
+  { type: 'practice', prompt: "Your response to Priya:", keywords: ["agency", "data", "signals", "different", "advantage", "checkout"], minKeywords: 2, goodFeedback: "Excellent! You reframed agency as a non-issue and showed your unique value.", improveFeedback: "Emphasize what your agency doesn't have: first-party checkout data from 200M+ D2C shoppers. That's unique." },
   { type: 'ai_message', text: "Priya: 'This sounds interesting. Send me a proposal.' Scenario 1 complete! Score: 8/10", delay: 500 },
   { type: 'ai_message', text: "Scenario 2: You're talking to Vikram, CEO of a D2C sports brand spending ₹15L/month. He's been burned by vendors before.", delay: 500 },
   { type: 'practice', prompt: "You: [Your opening]", keywords: ["proven", "results", "case study", "data", "growth", "trust"], minKeywords: 2, goodFeedback: "Good! You led with proof, not promises. Vikram likes that.", improveFeedback: "Mention a case study early. Build credibility fast when trust is low." },
   { type: 'ai_message', text: "Vikram: 'How do I know this actually works? What's your proof?'", delay: 400 },
-  { type: 'practice', prompt: "Your response to Vikram (show proof):", keywords: ["case study", "unrush", "peesafe", "67%", "6x", "results", "data"], minKeywords: 2, goodFeedback: "Perfect! You brought specific case studies. That's proof, not promises.", improveFeedback: "Name the case study AND the metrics. 'Shop Unrush went from 2.1x to 3.5x in 60 days.'" },
+  { type: 'practice', prompt: "Your response to Vikram (show proof):", keywords: ["case study", "unrush", "bsc", "37%", "roas", "results", "data"], minKeywords: 2, goodFeedback: "Perfect! You brought specific case studies. That's proof, not promises.", improveFeedback: "Name the case study AND the metrics. 'Shop Unrush saw +37% ROAS lift after switching to checkout-signal audiences.'" },
   { type: 'ai_message', text: "Vikram: 'Okay, I'm interested. What happens next?' Scenario 2 complete! Score: 9/10", delay: 500 },
   { type: 'ai_message', text: "Scenario 3: You're talking to Anjali, Founder of a beauty brand spending ₹8L/month. Her budget is small but she's growing fast.", delay: 500 },
   { type: 'practice', prompt: "You: [Your opening — be mindful of her budget]", keywords: ["emerging", "growth", "scale", "data", "prepare", "tier"], minKeywords: 2, goodFeedback: "Smart! You acknowledged her size and showed you think long-term. Anjali feels understood.", improveFeedback: "She's in Emerging tier. Position it as: 'Start now, scale together as you grow.'" },
@@ -366,7 +557,7 @@ const scenarios = {
       { type: 'ai_message', text: "Deepa: 'Look, we have 5 minutes. We're already with an agency. Not sure why we're talking.'", delay: 400 },
       { type: 'practice', prompt: "Your opening (be quick, show why this matters):", keywords: ["data", "signals", "different", "agency", "opportunity", "unique"], minKeywords: 2, goodFeedback: "Good! You showed respect for her time and opened with what's unique. She'd listen.", improveFeedback: "Lead with what you know about her pain: 'Your ROAS is good at 2.1x, but CAC rising is the real challenge.'" },
       { type: 'ai_message', text: "Deepa: 'How do you know our ROAS and CAC? And what makes KwikAds different?'", delay: 400 },
-      { type: 'practice', prompt: "Your response (explain your difference):", keywords: ["checkout", "data", "signals", "meta", "partner", "180m", "proprietary"], minKeywords: 3, goodFeedback: "Strong! You explained the data advantage. Deepa is now leaning in.", improveFeedback: "Emphasize: 'We're Meta's only Signals Partner in India. Your agency doesn't have this.'" },
+      { type: 'practice', prompt: "Your response (explain your difference):", keywords: ["checkout", "data", "signals", "meta", "partner", "200m", "first-party"], minKeywords: 3, goodFeedback: "Strong! You explained the data advantage. Deepa is now leaning in.", improveFeedback: "Emphasize: 'We're India's 1st Meta Signals Partner. We pipe checkout data from 200M+ shoppers. Your agency doesn't have this source of truth.'" },
       { type: 'ai_message', text: "Deepa: 'That's interesting. But we've tried platforms before. Why is this different?'", delay: 400 },
       { type: 'practice', prompt: "Your response (prove it):", keywords: ["audit", "case study", "roas", "improvement", "proof", "data driven"], minKeywords: 2, goodFeedback: "Excellent! You offered proof before asking for anything. That's the close.", improveFeedback: "Offer the audit: 'Let me audit your account in 3 days. I'll show you exactly what we'd do.' Make it risk-free." },
       { type: 'ai_message', text: "Deepa: 'Okay, send me the details. I'll think about it.'", delay: 400 },
@@ -546,7 +737,13 @@ function KwikAdsAcademy() {
     if (!flow) return;
 
     const stepIdx = conversationStepRef.current;
-    if (stepIdx >= flow.length) return;
+    // End-of-flow — navigate back to home so user isn't stuck on a dead Continue
+    if (stepIdx >= flow.length) {
+      if (page === 'module') { setCurrentModule(null); setPage('home'); }
+      else if (page === 'challenge') { setCurrentChallenge(null); setPage('home'); }
+      else if (page === 'scenario') { setCurrentScenario(null); setPage('home'); }
+      return;
+    }
 
     const step = flow[stepIdx];
     let newMessage = null;
