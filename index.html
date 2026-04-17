@@ -51,6 +51,23 @@
 <body>
 <div id="root"></div>
 
+<!-- Pre-seed progress for existing users who completed modules before persistence was added -->
+<script>
+(function() {
+  var KEY = 'kwikads_academy_progress';
+  // Only seed if no progress exists yet — preserves any future real progress
+  var users = {
+    'vignesh': { xp: 900, level: 4, streak: 6, modulesComplete: 6 },
+    'deepak':  { xp: 900, level: 4, streak: 6, modulesComplete: 6 }
+  };
+  Object.keys(users).forEach(function(uid) {
+    if (!localStorage.getItem(KEY + '_' + uid)) {
+      localStorage.setItem(KEY + '_' + uid, JSON.stringify(users[uid]));
+    }
+  });
+})();
+</script>
+
 <script type="text/babel">
 const API_URL = "https://script.google.com/macros/s/AKfycbxglcUiNqi74WtsZVH9JRRyHrMFfBcS_0NK4V8yIqX2KQ6XQ-XmqhgRvrysA7GKrV8m/exec";
 
@@ -525,7 +542,7 @@ const weekOneChallengeFlow = [
   { type: 'quiz', question: "Q14: Best signal for high-prepaid, low-AOV brand:", options: ["purchase_prepaid — double down on their margin strength", "multi_product_purchase — push AOV up", "high_order_volume — push retention", "new_customer_purchase — push acquisition"], correct: 1, explanation: "They already win on prepaid (35% is strong). The gap is AOV — multi_product_purchase signal finds lookalikes who buy 2+ items per order. Fix the weakness, don't gild the strength.", hint: "Match the signal to the GAP, not the strength. Where is the lever that moves revenue?" },
   { type: 'ai_message', text: "Q15 — Closing ask. A CMO says 'send me a proposal.' What's the right move?", delay: 300 },
   { type: 'quiz', question: "Q15: Right response to 'send me a proposal':", options: ["Send it that day, wait for reply", "Ask: 'happy to — what's the one outcome that would make this a yes for you?' then book the review call", "Send a long proposal with every feature", "Call their junior and pitch them"], correct: 1, explanation: "Proposals die in inboxes. Before sending, anchor the outcome that makes it a YES and book the review call. If they won't agree to a review, the deal isn't real.", hint: "Never send a proposal without a scheduled review call. That's how deals slip." },
-  { type: 'ai_message', text: "Challenge complete! Calculating your score...", delay: 800 }
+  { type: 'ai_message', text: "Challenge complete! Calculating your score... Well done! +200 XP", delay: 800, xp: 200 }
 ];
 
 const weekTwoChallengeFlow = [
@@ -619,6 +636,47 @@ const scenarios = {
   }
 };
 
+// ============ ERROR BOUNDARY ============
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  componentDidCatch(error, info) { console.error('KwikAds Academy Error:', error, info); }
+  render() {
+    if (this.state.hasError) {
+      return React.createElement('div', { className: 'flex flex-col items-center justify-center min-h-screen bg-black text-white p-8' },
+        React.createElement('h1', { className: 'text-2xl font-bold mb-4' }, 'Something went wrong'),
+        React.createElement('p', { className: 'text-gray-400 mb-6 text-center max-w-md' },
+          'The module encountered an error. Your progress has been saved. Click below to go back.'),
+        React.createElement('button', {
+          className: 'px-6 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-semibold transition',
+          onClick: () => { this.setState({ hasError: false, error: null }); window.location.reload(); }
+        }, 'Reload Academy')
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ============ PROGRESS PERSISTENCE ============
+const STORAGE_KEY = 'kwikads_academy_progress';
+
+function loadProgress(userId) {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY + '_' + userId);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { xp: parsed.xp || 0, level: parsed.level || 1, streak: parsed.streak || 0, modulesComplete: parsed.modulesComplete || 0 };
+    }
+  } catch (e) { console.warn('Failed to load progress:', e); }
+  return null;
+}
+
+function saveProgress(userId, stats) {
+  try {
+    localStorage.setItem(STORAGE_KEY + '_' + userId, JSON.stringify(stats));
+  } catch (e) { console.warn('Failed to save progress:', e); }
+}
+
 // ============ MAIN APP ============
 
 function KwikAdsAcademy() {
@@ -639,8 +697,21 @@ function KwikAdsAcademy() {
   // Refs to avoid stale-closure bugs when chaining advance() via setTimeout
   const conversationStepRef = React.useRef(0);
   const messagesRef = React.useRef([]);
+  const pageRef = React.useRef(page);
+  const currentModuleRef = React.useRef(currentModule);
+  const currentChallengeRef = React.useRef(currentChallenge);
+  const currentScenarioRef = React.useRef(currentScenario);
   React.useEffect(() => { conversationStepRef.current = conversationStep; }, [conversationStep]);
   React.useEffect(() => { messagesRef.current = messages; }, [messages]);
+  React.useEffect(() => { pageRef.current = page; }, [page]);
+  React.useEffect(() => { currentModuleRef.current = currentModule; }, [currentModule]);
+  React.useEffect(() => { currentChallengeRef.current = currentChallenge; }, [currentChallenge]);
+  React.useEffect(() => { currentScenarioRef.current = currentScenario; }, [currentScenario]);
+
+  // Persist progress to localStorage on every stats change
+  React.useEffect(() => {
+    if (user?.id) { saveProgress(user.id, stats); }
+  }, [stats, user]);
 
   // Auto-scroll to latest message
   React.useEffect(() => {
@@ -667,6 +738,9 @@ function KwikAdsAcademy() {
       if (authorized) {
         const userData = { ...authorized, id: email.split('@')[0].replace('.', '_'), email, picture: payload.picture };
         setUser(userData);
+        // Restore saved progress from localStorage
+        const saved = loadProgress(userData.id);
+        if (saved) setStats(saved);
         setPage(userData.role === 'Manager' ? 'admin' : 'home');
       } else {
         // Any @gokwik.co user can access as Sales Rep by default
@@ -679,6 +753,8 @@ function KwikAdsAcademy() {
           picture: payload.picture
         };
         setUser(userData);
+        const saved = loadProgress(userData.id);
+        if (saved) setStats(saved);
         setPage('home');
       }
     } catch (err) {
@@ -705,24 +781,30 @@ function KwikAdsAcademy() {
     if (users[username] && password === 'admin123') {
       const userData = { ...users[username], id: username };
       setUser(userData);
+      // Restore saved progress from localStorage
+      const saved = loadProgress(userData.id);
+      if (saved) setStats(saved);
       setPage(userData.role === 'Manager' ? 'admin' : 'home');
     } else {
       alert('Invalid credentials');
     }
   };
 
-  // Helper: resolve the active flow (module / challenge / scenario)
+  // Helper: resolve the active flow — uses REFS to avoid stale closures in setTimeout chains
   const getFlow = React.useCallback(() => {
-    if (page === 'scenario' && currentScenario) {
-      return scenarios[`scenario${currentScenario}`]?.flow;
-    } else if (page === 'challenge' && currentChallenge) {
-      // FIX: challenges live in their own variables, not in moduleFlows
-      return currentChallenge === 1 ? weekOneChallengeFlow : weekTwoChallengeFlow;
-    } else if (page === 'module' && currentModule) {
-      return moduleFlows[`module${currentModule}`];
+    const p = pageRef.current;
+    const mod = currentModuleRef.current;
+    const ch = currentChallengeRef.current;
+    const sc = currentScenarioRef.current;
+    if (p === 'scenario' && sc) {
+      return scenarios[`scenario${sc}`]?.flow || null;
+    } else if (p === 'challenge' && ch) {
+      return ch === 1 ? weekOneChallengeFlow : weekTwoChallengeFlow;
+    } else if (p === 'module' && mod) {
+      return moduleFlows[`module${mod}`] || null;
     }
     return null;
-  }, [page, currentScenario, currentChallenge, currentModule]);
+  }, []); // no deps — reads from refs, always fresh
 
   // Start module conversation
   const startModule = (moduleNum) => {
@@ -737,114 +819,151 @@ function KwikAdsAcademy() {
     setShowHint(false);
   };
 
-  // Advance conversation — uses refs to avoid stale-closure bugs
-  const advanceConversation = () => {
-    const flow = getFlow();
-    if (!flow) return;
+  // Advance conversation — uses refs throughout to eliminate stale-closure bugs
+  const advanceConversation = React.useCallback(() => {
+    try {
+      const flow = getFlow();
+      if (!flow || !Array.isArray(flow)) return;
 
-    const stepIdx = conversationStepRef.current;
-    // End-of-flow — navigate back to home so user isn't stuck on a dead Continue
-    if (stepIdx >= flow.length) {
-      if (page === 'module') { setCurrentModule(null); setPage('home'); }
-      else if (page === 'challenge') { setCurrentChallenge(null); setPage('home'); }
-      else if (page === 'scenario') { setCurrentScenario(null); setPage('home'); }
-      return;
-    }
+      const stepIdx = conversationStepRef.current;
+      // End-of-flow — navigate back to home so user isn't stuck on a dead Continue
+      if (stepIdx >= flow.length) {
+        const p = pageRef.current;
+        if (p === 'module') { setCurrentModule(null); setPage('home'); }
+        else if (p === 'challenge') { setCurrentChallenge(null); setPage('home'); }
+        else if (p === 'scenario') { setCurrentScenario(null); setPage('home'); }
+        return;
+      }
 
-    const step = flow[stepIdx];
-    let newMessage = null;
+      const step = flow[stepIdx];
+      if (!step || !step.type) {
+        // Skip malformed steps instead of crashing
+        console.warn('Skipping malformed step at index', stepIdx);
+        conversationStepRef.current = stepIdx + 1;
+        setConversationStep(stepIdx + 1);
+        return;
+      }
 
-    if (step.type === 'ai_message') {
-      const text = (step.text || '').replace('{name}', user?.name || '');
-      newMessage = { type: 'ai', text, delay: step.delay };
-      // XP + completion tracking
-      if (step.xp) {
-        setStats(prev => {
-          const newXp = prev.xp + step.xp;
-          const newLevel = Math.floor(newXp / 300) + 1;
-          const isLastStep = stepIdx === flow.length - 1;
-          const newModulesComplete = isLastStep && currentModule > prev.modulesComplete
-            ? currentModule
-            : prev.modulesComplete;
-          return { ...prev, xp: newXp, level: newLevel, modulesComplete: newModulesComplete, streak: prev.streak + (isLastStep ? 1 : 0) };
+      let newMessage = null;
+
+      if (step.type === 'ai_message') {
+        const text = (step.text || '').replace('{name}', user?.name || '');
+        newMessage = { type: 'ai', text, delay: step.delay };
+        // XP + completion tracking — uses ref for currentModule to avoid stale closure
+        if (step.xp) {
+          const mod = currentModuleRef.current;
+          setStats(prev => {
+            const newXp = prev.xp + step.xp;
+            const newLevel = Math.floor(newXp / 300) + 1;
+            const isLastStep = stepIdx === flow.length - 1;
+            const newModulesComplete = isLastStep && mod && mod > prev.modulesComplete
+              ? mod
+              : prev.modulesComplete;
+            return { ...prev, xp: newXp, level: newLevel, modulesComplete: Math.min(newModulesComplete, 10), streak: prev.streak + (isLastStep ? 1 : 0) };
+          });
+        }
+      } else if (step.type === 'stat_card') {
+        newMessage = { type: 'stat_card', stats: step.stats || [] };
+      } else if (step.type === 'quick_reply') {
+        newMessage = { type: 'quick_reply', options: step.options || [], nextMap: step.nextMap || {} };
+      } else if (step.type === 'quiz') {
+        newMessage = { type: 'quiz', question: step.question, options: step.options || [], correct: step.correct, explanation: step.explanation, hint: step.hint };
+      } else if (step.type === 'practice') {
+        newMessage = { type: 'practice', prompt: step.prompt, keywords: step.keywords || [], minKeywords: step.minKeywords || 1, goodFeedback: step.goodFeedback || '', improveFeedback: step.improveFeedback || '', hint: step.hint };
+      } else if (step.type === 'summary_card') {
+        newMessage = { type: 'summary_card', points: step.points || [] };
+      } else {
+        // Unknown step type — skip it
+        console.warn('Unknown step type:', step.type, 'at index', stepIdx);
+      }
+
+      if (newMessage) {
+        setMessages(prev => {
+          const next = [...prev, newMessage];
+          messagesRef.current = next;
+          return next;
         });
       }
-    } else if (step.type === 'stat_card') {
-      newMessage = { type: 'stat_card', stats: step.stats };
-    } else if (step.type === 'quick_reply') {
-      newMessage = { type: 'quick_reply', options: step.options, nextMap: step.nextMap };
-    } else if (step.type === 'quiz') {
-      newMessage = { type: 'quiz', question: step.question, options: step.options, correct: step.correct, explanation: step.explanation, hint: step.hint };
-    } else if (step.type === 'practice') {
-      newMessage = { type: 'practice', prompt: step.prompt, keywords: step.keywords, minKeywords: step.minKeywords, goodFeedback: step.goodFeedback, improveFeedback: step.improveFeedback, hint: step.hint };
-    } else if (step.type === 'summary_card') {
-      newMessage = { type: 'summary_card', points: step.points };
-    }
 
-    if (newMessage) {
-      setMessages(prev => {
-        const next = [...prev, newMessage];
-        messagesRef.current = next;
-        return next;
-      });
+      const nextIdx = stepIdx + 1;
+      conversationStepRef.current = nextIdx;
+      setConversationStep(nextIdx);
+      setShowHint(false);
+    } catch (err) {
+      console.error('advanceConversation error:', err);
+      // Recover: go home instead of crashing
+      setPage('home');
+      setCurrentModule(null);
+      setCurrentChallenge(null);
+      setCurrentScenario(null);
     }
+  }, [getFlow, user]);
 
-    const nextIdx = stepIdx + 1;
-    conversationStepRef.current = nextIdx;
-    setConversationStep(nextIdx);
-    setShowHint(false);
-  };
+  // Stable ref for advanceConversation so setTimeout always calls the latest version
+  const advanceRef = React.useRef(advanceConversation);
+  React.useEffect(() => { advanceRef.current = advanceConversation; }, [advanceConversation]);
+  const safeAdvance = React.useCallback(() => { try { advanceRef.current(); } catch(e) { console.error('safeAdvance error:', e); } }, []);
 
   // Handle quick reply click — uses functional setState + refs, no stale closures
   const handleQuickReply = (optionIndex, nextMap) => {
-    setMessages(prev => {
-      const last = prev[prev.length - 1];
-      const next = [...prev, { type: 'user', text: last.options[optionIndex] }];
-      messagesRef.current = next;
-      return next;
-    });
-    const nextStep = nextMap[optionIndex];
-    conversationStepRef.current = nextStep;
-    setConversationStep(nextStep);
-    setTimeout(advanceConversation, 400);
+    try {
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        const text = last?.options?.[optionIndex] || '';
+        const next = [...prev, { type: 'user', text }];
+        messagesRef.current = next;
+        return next;
+      });
+      const nextStep = nextMap?.[optionIndex] ?? (conversationStepRef.current + 1);
+      conversationStepRef.current = nextStep;
+      setConversationStep(nextStep);
+      setTimeout(safeAdvance, 400);
+    } catch (e) { console.error('handleQuickReply error:', e); }
   };
 
   // Handle quiz answer — uses functional setState + refs
   const handleQuizAnswer = (optionIndex, correct, explanation) => {
-    setSelectedAnswer(optionIndex);
-    setQuizFeedback({ correct: optionIndex === correct, explanation });
-    setTimeout(() => {
-      setMessages(prev => {
-        const last = prev[prev.length - 1];
-        const next = [...prev, { type: 'user', text: last.options[optionIndex] }];
-        messagesRef.current = next;
-        return next;
-      });
-      setSelectedAnswer(null);
-      setQuizFeedback(null);
-      setTimeout(advanceConversation, 700);
-    }, 2000);
+    try {
+      setSelectedAnswer(optionIndex);
+      setQuizFeedback({ correct: optionIndex === correct, explanation });
+      setTimeout(() => {
+        try {
+          setMessages(prev => {
+            const last = prev[prev.length - 1];
+            const text = last?.options?.[optionIndex] || '';
+            const next = [...prev, { type: 'user', text }];
+            messagesRef.current = next;
+            return next;
+          });
+          setSelectedAnswer(null);
+          setQuizFeedback(null);
+          setTimeout(safeAdvance, 700);
+        } catch (e) { console.error('handleQuizAnswer inner error:', e); }
+      }, 2000);
+    } catch (e) { console.error('handleQuizAnswer error:', e); }
   };
 
   // Handle practice response — uses functional setState + refs
   const handlePracticeSend = () => {
-    const input = userInput.trim();
-    if (!input) return;
-    const last = messagesRef.current[messagesRef.current.length - 1];
-    if (!last || last.type !== 'practice') return;
+    try {
+      const input = userInput.trim();
+      if (!input) return;
+      const last = messagesRef.current[messagesRef.current.length - 1];
+      if (!last || last.type !== 'practice') return;
 
-    const keywordMatches = (last.keywords || []).filter(k => input.toLowerCase().includes(k.toLowerCase())).length;
-    const passed = keywordMatches >= (last.minKeywords || 1);
-    const feedback = passed ? last.goodFeedback : last.improveFeedback;
-    const coachPrefix = passed ? "✅ Coach: " : "💡 Coach: ";
+      const keywordMatches = (last.keywords || []).filter(k => input.toLowerCase().includes(k.toLowerCase())).length;
+      const passed = keywordMatches >= (last.minKeywords || 1);
+      const feedback = passed ? (last.goodFeedback || 'Good job!') : (last.improveFeedback || 'Keep improving!');
+      const coachPrefix = passed ? "✅ Coach: " : "💡 Coach: ";
 
-    setMessages(prev => {
-      const next = [...prev, { type: 'user', text: input }, { type: 'ai', text: coachPrefix + feedback }];
-      messagesRef.current = next;
-      return next;
-    });
-    setUserInput('');
-    setTimeout(advanceConversation, 1400);
+      setMessages(prev => {
+        const next = [...prev, { type: 'user', text: input }, { type: 'ai', text: coachPrefix + feedback }];
+        messagesRef.current = next;
+        return next;
+      });
+      setUserInput('');
+      setTimeout(safeAdvance, 1400);
+    } catch (e) { console.error('handlePracticeSend error:', e); }
   };
 
   // Render login
@@ -1155,10 +1274,11 @@ function HomeScreen({ user, stats, onStartModule, onStartChallenge, onStartScena
 
         {/* Continue Learning */}
         <button
-          onClick={() => onStartModule(completedModules + 1)}
-          className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg mb-12 transition"
+          onClick={() => completedModules < 10 && onStartModule(completedModules + 1)}
+          disabled={completedModules >= 10}
+          className={`w-full py-4 text-white font-semibold rounded-lg mb-12 transition ${completedModules >= 10 ? 'bg-green-700 cursor-default' : 'bg-emerald-600 hover:bg-emerald-700'}`}
         >
-          {completedModules === 0 ? 'Start Module 1' : completedModules >= 10 ? 'All Modules Complete!' : `Continue Module ${completedModules + 1}`}
+          {completedModules === 0 ? 'Start Module 1' : completedModules >= 10 ? 'All Modules Complete! Review any module below.' : `Continue Module ${completedModules + 1}`}
         </button>
 
         {/* Modules Grid */}
@@ -1613,7 +1733,7 @@ function AdminDashboard({ user, onLogout, onSwitchToLearner }) {
 
 // ============ RENDER ============
 
-ReactDOM.createRoot(document.getElementById('root')).render(<KwikAdsAcademy />);
+ReactDOM.createRoot(document.getElementById('root')).render(<ErrorBoundary><KwikAdsAcademy /></ErrorBoundary>);
 </script>
 </body>
 </html>
