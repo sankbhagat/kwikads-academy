@@ -174,13 +174,13 @@ const CONFIG = {
   PASS_MARK: 70,
   // Org name shown in title bar
   ORG_NAME: "GoKwik · KwikAds",
-  VERSION: "1.1.0",
+  VERSION: "1.2.0",
   // 2-week training cadence
   TRAINING_DURATION_DAYS: 14,
   // Suggested weekly module split (soft schedule — no hard lockout)
   WEEK_PLAN: [
     { week: 1, label: "Week 1 — Foundation", days: "Day 1 to Day 7", moduleIds: ["m1","m2"], focus: "Product mastery + value-based selling discovery" },
-    { week: 2, label: "Week 2 — Application", days: "Day 8 to Day 14", moduleIds: ["m3","m4","m5"], focus: "Demo skills + email/objections + audit interpretation → certification" }
+    { week: 2, label: "Week 2 — Application", days: "Day 8 to Day 14", moduleIds: ["m3","m4","m5","m6"], focus: "Demo skills + email/objections + audit interpretation + Claude AI productivity → certification" }
   ]
 };
 
@@ -268,37 +268,58 @@ const CURRICULUM = [
 <li><b>Optimise</b> — the brand creates ad sets that optimise on KwikAds events (e.g. <code>purchase_prepaid</code>) instead of, or alongside, the standard <code>Purchase</code> event.</li>
 </ol>
 <h3>EMQ — the one Meta number every rep must understand</h3>
-<p><b>Event Match Quality</b> is Meta's score (0–10) for how confidently it can match a fired event back to a real Meta user. KwikAds typically lifts EMQ from <b>~6 → ~8.5+</b> across the funnel and <b>~9.3 on Purchase</b>. Higher EMQ = better optimisation = lower CAC.</p>
+<p><b>Event Match Quality</b> is Meta's score (0–10) for how confidently it can match a fired event back to a real Meta user. KwikAds typically lifts EMQ from <b>~6 → ~7–7.3+</b> across the funnel, with the <b>Purchase event landing at ~9.3</b>. Higher EMQ = better optimisation = lower CAC.</p>
 <h3>Why custom events ≫ custom audiences</h3>
 <p>Other tools (Customer Labs etc.) push <b>custom audiences</b> — static lists Meta uses for lookalikes. KwikAds pushes <b>custom events</b> — live, server-side optimisation signals that Meta's algorithm treats as first-class. Audiences are static; events compound.</p>
 <blockquote><b>One-line objection-killer:</b> "Custom audiences are a list. Custom events are a flywheel. We're a flywheel."</blockquote>`
       },
       {
         id: "m1l4",
-        title: "Pricing — SAAS vs Agency",
-        body: `<h3>Two ways to sell KwikAds</h3>
-<p>Memorise the routing heuristic. Wrong model = stalled deal.</p>
-<h4>SAAS (data-only)</h4>
+        title: "Engagement model — Agency by default, SaaS only by exception",
+        body: `<h3>Default pitch is Agency. SaaS is the exception, not the rule.</h3>
+<p>This is the most important slide in the playbook. Every rep gets this wrong on day 1 and corrects it in week 2 once they see the deal velocity gap.</p>
+<h4>Agency (managed) — DEFAULT</h4>
 <ul>
-<li>Flat <b>₹60,000–70,000 / month</b> (₹70K for Sassafras-grade). No variable.</li>
-<li>Brand's in-house team continues to run Meta. We just enrich the data layer.</li>
-<li>Typical lift talked about: <b>15–25% ROAS uplift</b>, +22% email / +28% phone match.</li>
-<li>Free trial available: <b>2 weeks</b> with full playbook access.</li>
+<li><b>We commit to outcomes.</b> Specific KPIs (ROAS, prepaid share, CAC, new-customer share) tied to the variable component of our fee.</li>
+<li><b>KwikAds team runs Meta execution</b> on the agreed scope — campaign setup, budgets, audiences, events, daily optimisation.</li>
+<li>Typical lift: <b>15–25% ROAS</b>, 25–30% match-rate, lower CAC, cleaner prepaid share.</li>
+<li>Creative production stays with the brand (always — in every engagement type).</li>
 </ul>
-<h4>Agency (managed)</h4>
-<ul>
-<li><b>Fixed retainer + variable</b> tied to ROAS targets, sized after audit.</li>
-<li>KwikAds team runs Meta end-to-end (campaigns, budgets, audiences, events).</li>
-<li>Typical lift: <b>15–25% ROAS</b>, 25–30% match-rate, lower CAC, better LTV curves.</li>
-<li>Creative production stays with the brand (in BOTH models).</li>
-</ul>
-<h3>Routing heuristic (memorise)</h3>
+<h3>The three Agency offerings (lead with the one that fits)</h3>
 <table>
-<tr><th>If…</th><th>Then…</th></tr>
-<tr><td>Monthly Meta spend &lt; ₹5L</td><td>Usually too small. Qualify hard.</td></tr>
-<tr><td>Spend ₹5L–₹15L + strong in-house team</td><td>SAAS</td></tr>
-<tr><td>Spend ₹15L+ AND team stretched / ROAS flat</td><td>Lead with Agency</td></tr>
-<tr><td>Tied to an external agency they like</td><td>Split workflow — old/pilot account to us</td></tr>
+<tr><th>Offering</th><th>What we run</th><th>When to pitch</th></tr>
+<tr><td><b>Full-stack</b></td><td>All Meta ad accounts end-to-end. KwikAds is the sole Meta partner.</td><td>Brand has thin in-house perf team or no incumbent agency they're loyal to.</td></tr>
+<tr><td><b>Wallet-share split (20–30%)</b></td><td>One ad account allocated to us with 20–30% of total Meta wallet. Existing agency / in-house team continues running the rest.</td><td>Brand has trusted incumbent; we earn the share by hitting one specific KPI on our slice.</td></tr>
+<tr><td><b>Wallet-share split (40–50%)</b></td><td>One major ad account, 40–50% wallet share. We run a problem-statement-focused mandate (e.g. prepaid acquisition, new-customer scaling).</td><td>Brand wants meaningful side-by-side comparison before consolidating.</td></tr>
+</table>
+<p><i>Each split account is mandated against ONE specific problem statement, not a generic "do better". This makes outcome accountability crystal clear.</i></p>
+<h3>Commercials — base + value-driven variable</h3>
+<ul>
+<li><b>Base retainer</b> is locked per offering tier. The rep does NOT negotiate the base.</li>
+<li><b>Variable component</b> is where value-based selling shows up. It's tied to specific KPI commitments — ROAS lift, prepaid share %, new-customer CAC, etc.</li>
+<li>The rep determines how aggressive the variable is based on (a) how confident they are in our delivery, (b) how much pain the brand is in, and (c) how much commitment they extract from the brand on access, creative throughput, and decision SLA.</li>
+<li><b>Outcome commitments live ONLY in Agency.</b> If a brand wants commitments, they have to take Agency.</li>
+</ul>
+<h4>SaaS (data-only) — EXCEPTION ONLY</h4>
+<p>Don't lead with SaaS. Don't even bring it up unless one of these two conditions is true:</p>
+<ul>
+<li><b>Enterprise with massive in-house perf team</b> — typically Meta spend <b>₹2 Cr+ / month</b>, 5+ in-house performance marketers, mature pixel/CAPI setup. They genuinely don't need execution help.</li>
+<li><b>Client adamantly refuses</b> to let KwikAds touch execution — usually because of an entrenched agency relationship or internal politics.</li>
+</ul>
+<p>In SaaS conversations:</p>
+<ul>
+<li>Flat retainer (₹60–70K/month band). No variable.</li>
+<li><b>Don't pitch ROAS uplift.</b> SaaS doesn't commit to ROAS. Pitch instead: <b>new-customer acquisition lift</b>, <b>AOV expansion</b>, <b>prepaid share lift</b>, <b>match-rate uplift (+22% email / +28% phone)</b>. These are signal/audience-level outcomes the data layer alone can deliver.</li>
+<li><b>No outcome commitments.</b> Frame it as "your team operates on better data", not "we deliver X ROAS".</li>
+<li>2-week trial available if they want to validate match-rate lift before signing.</li>
+</ul>
+<h3>Spend qualification (memorise)</h3>
+<table>
+<tr><th>Monthly Meta spend</th><th>Action</th></tr>
+<tr><td><b>&lt; ₹25L</b></td><td><b>Qualify hard or disqualify.</b> Below this band the data layer + agency overhead doesn't pay back. Don't waste the slot.</td></tr>
+<tr><td><b>₹25L – ₹2 Cr</b></td><td>Lead with <b>Agency</b> — pick offering tier based on incumbent relationships.</td></tr>
+<tr><td><b>₹2 Cr+ with massive in-house team</b></td><td>Lead with <b>Agency</b>; if they push back hard on execution, fall back to <b>SaaS</b>.</td></tr>
+<tr><td>Any spend, any tier — <b>tied to existing agency they like</b></td><td>Lead with <b>Wallet-share split</b> Agency offering. Old/pilot account or % of wallet, problem-statement mandate.</td></tr>
 </table>`
       },
       {
@@ -307,20 +328,33 @@ const CURRICULUM = [
         body: `<h3>Ideal Customer Profile</h3>
 <ul>
 <li><b>Indian D2C brand</b> on Shopify or standard stack.</li>
-<li>Monthly Meta spend <b>₹5L+</b>.</li>
-<li>Performance-conscious team — they look at ROAS, CAC, EMQ, prepaid share.</li>
-<li>One of: rising CAC, plateaued ROAS, low prepaid share, RTO pain, ad fatigue.</li>
-<li>Categories with strong fit: <b>BPC (Honasa, Aubia, Mcaffeine), Apparel, Footwear, Innerwear, Wellness.</b></li>
+<li><b>Monthly Meta spend ₹25L+ (hard floor).</b> Below ₹25L the math doesn't pay back the engagement.</li>
+<li>Performance-conscious team — they look at <b>ROAS, CAC, AOV, prepaid share, RTO, CTR, CPM</b> and have an active growth target this quarter.</li>
+<li>Has a quantified pain: rising CAC, plateaued ROAS, low prepaid share (&lt;40%), RTO &gt; 25%, AOV declining, retargeting collapse, or ad fatigue.</li>
+<li>Decision maker engaged — CMO, Head of Growth, or D2C founder is in the room (or can be).</li>
 </ul>
 <h3>When NOT to pitch (or pitch cautiously)</h3>
 <ul>
-<li>Brand is mid-way through an acquisition / fundraise DD — they will park decisions. (Madras Sarees pattern)</li>
+<li><b>Monthly Meta spend &lt; ₹25L</b> AND no near-term plan to scale to ₹25L+. Disqualify.</li>
+<li>Brand is mid-way through an acquisition / fundraise DD — decisions will be parked. (Madras Sarees pattern)</li>
 <li>Brand is on a fully custom platform with thin dev bandwidth — flag integration complexity upfront. (Kuberbox pattern)</li>
 <li>Brand refuses any ad-account access — without access we can't audit, without audit we can't quote confidently. (Chidiyaa, Regal Shoes pattern)</li>
-<li>Monthly Meta spend &lt; ₹5L AND no plan to scale.</li>
+<li>Brand has no performance KPI ownership internally — no one to make decisions or commit to changes.</li>
 </ul>
-<h3>Reference customer roster (use freely)</h3>
-<p>Bombay Shaving Company, Palmonas, Fablestreet, Innovist, Enamor, Shop Unrush, Honasa, Aubia, Sassafras, Beastlife, Baby Forest, Miss Mosa, Solara, Trylo. <i>Always quote attributable numbers, not vague claims.</i></p>`
+<h3>Reference customer roster — by industry</h3>
+<p>Use the right reference for the right room. Quote attributable numbers, not vague claims.</p>
+<table>
+<tr><th>Industry</th><th>Reference brands</th></tr>
+<tr><td><b>Beauty &amp; Personal Care (BPC)</b></td><td>Bombay Shaving Company, Mcaffeine, Honasa, Aubia, Innovist, Baby Forest</td></tr>
+<tr><td><b>Apparel &amp; Fashion</b></td><td>Sassafras, Shapercult, Miss Mosa, Solara, Fablestreet</td></tr>
+<tr><td><b>Footwear</b></td><td>Superkicks (split workflow), Liberty Shoes, Regal Shoes, Doshi Group</td></tr>
+<tr><td><b>Innerwear &amp; Activewear</b></td><td>Trylo, Enamor, Beastlife</td></tr>
+<tr><td><b>Wellness &amp; Nutrition</b></td><td>Wellopia, Mylo, Doeraa</td></tr>
+<tr><td><b>Jewellery</b></td><td>Palmonas, Kuberbox</td></tr>
+<tr><td><b>Travel &amp; Bags</b></td><td>Miniwesst</td></tr>
+<tr><td><b>Sports / Athleisure</b></td><td>Li-Ning India, Shop Unrush</td></tr>
+</table>
+<blockquote>Match the reference to the prospect's vertical. A footwear founder cares about the Superkicks split-workflow story; a BPC founder wants the Mcaffeine new-customer acquisition numbers. Wrong reference = lost rapport.</blockquote>`
       }
     ],
     assessment: {
@@ -335,10 +369,10 @@ const CURRICULUM = [
         ], a: 1, why: "Locked language from 17 Apr Salesforce sync. Always say targeting, never attribution." },
         { q: "What is the typical EMQ score on Purchase events after KwikAds goes live?", opts: ["6.6","7.5","9.3","10.0"], a: 2, why: "Bottom-funnel events almost always land at 9.3/10." },
         { q: "Which of the three core purchase events should you optimise on for prepaid-only campaigns?", opts: ["purchase_new_customer","purchase_repeat_customer","purchase_prepaid","kp_identified"], a: 2, why: "purchase_prepaid fires only on prepaid transactions — zero RTO exposure, every conversion is paid revenue." },
-        { q: "A prospect spends ₹4L/month on Meta and has no plans to scale. What's the right routing call?", opts: [
-          "Lead with Agency model","Lead with SAAS","Qualify hard — likely too small","Offer a 2-week free trial immediately"
-        ], a: 2, why: "Routing heuristic: monthly spend < ₹5L = qualify hard. They are usually too small for the data layer to pay back." },
-        { q: "What is the typical SAAS pricing range?", opts: ["₹20K–30K/month","₹40K–50K/month","₹60K–70K/month","₹1L+/month"], a: 2, why: "₹60K–70K flat. Sassafras-grade accounts: ₹70K." },
+        { q: "A prospect spends ₹15L/month on Meta with no near-term plan to scale. What's the right routing call?", opts: [
+          "Lead with Agency","Lead with SAAS","Qualify hard or disqualify — below the ₹25L floor","Offer a 2-week free trial"
+        ], a: 2, why: "Hard floor is ₹25L/month. Below that, the engagement math doesn't pay back. Don't waste a sales slot." },
+        { q: "Default Agency offering for a prospect who has a trusted incumbent agency and ₹40L/month spend?", opts: ["Full-stack","Wallet-share split (20–30%)","Wallet-share split (40–50%)","SAAS"], a: 1, why: "When an incumbent is in place, lead with a wallet-share split (20–30%) on a single ad account mandated against ONE problem statement. Earn the share." },
         { q: "What's the standard integration time on a Shopify stack?", opts: ["~15 minutes","2 days","1 week","2 weeks"], a: 0, why: "~15 min on Shopify; data matures within 24 hours; EMQ moves in week 1." },
         { q: "Which of the following is NOT something KwikAds owns?", opts: [
           "Custom event signals into Meta","Audience enrichment","Creative production","ROAS-aligned execution (in Agency model)"
@@ -382,14 +416,26 @@ const CURRICULUM = [
       {
         id: "m2l1",
         title: "The KwikAds discovery framework",
-        body: `<h3>Three questions you ask in every call</h3>
+        body: `<h3>The three sizing questions you ask first</h3>
 <ol>
-<li><b>"What's your current monthly Meta spend, and is that growing?"</b> — sizing.</li>
+<li><b>"What's your current monthly Meta spend, and where is that headed in the next 1–2 quarters?"</b> — sizing + qualification (₹25L+ floor).</li>
 <li><b>"What ROAS / CAC are you running at — and what's your break-even?"</b> — pain quantum.</li>
-<li><b>"Is Meta managed in-house, by an agency, or a mix?"</b> — model routing.</li>
+<li><b>"Is Meta managed in-house, by an agency, or a mix?"</b> — model routing (full-stack vs wallet-share split).</li>
 </ol>
-<h3>The Pain Map</h3>
-<p>Once you have the three answers above, listen for one of five pains. Each maps directly to a KwikAds lever.</p>
+<h3>The deeper performance discovery (next 8 questions)</h3>
+<p>Once they pass the sizing bar, dig into the actual performance picture. You need ALL of these answers before you can recommend an offering tier or commit a target:</p>
+<table>
+<tr><th>Parameter</th><th>What you're asking</th><th>Why it matters</th></tr>
+<tr><td><b>AOV</b></td><td>"What's your average order value across Meta-attributed orders?"</td><td>Drives ROI math + AOV-filter signal applicability.</td></tr>
+<tr><td><b>Prepaid share</b></td><td>"What % of orders are prepaid vs COD?"</td><td>If &lt; 40%, <code>purchase_prepaid</code> is your lead lever.</td></tr>
+<tr><td><b>RTO rate</b></td><td>"What's your RTO % on COD shipments?"</td><td>If &gt; 25%, low-RTO-risk audience signal becomes the pitch.</td></tr>
+<tr><td><b>CAC trend</b></td><td>"How has new-customer CAC moved over the last 6 months?"</td><td>Rising CAC = enrichment story.</td></tr>
+<tr><td><b>CTR &amp; CPM</b></td><td>"Where are CTR and CPM trending?"</td><td>Flat CPM with rising CAC = CVR / creative-audience-fit problem.</td></tr>
+<tr><td><b>Problem statements</b></td><td>"If you had to pick the ONE thing about Meta that's keeping you up at night?"</td><td>Forces them to rank pains. The ONE thing is your Agency mandate.</td></tr>
+<tr><td><b>Objectives / goals</b></td><td>"What's the KPI your team has to hit this quarter?"</td><td>Aligns the variable component of your fee to their actual KPI.</td></tr>
+<tr><td><b>New-vs-repeat customer split</b></td><td>"What share of your Meta-driven orders are first-time buyers?"</td><td>Low new-customer share = <code>purchase_new_customer</code> + LAL story.</td></tr>
+</table>
+<h3>The Pain Map (1:1 with KwikAds levers)</h3>
 <table>
 <tr><th>Pain you hear</th><th>KwikAds lever</th></tr>
 <tr><td>"CAC is rising / scaling kills ROAS"</td><td>Server-side enrichment + new-customer event</td></tr>
@@ -397,9 +443,11 @@ const CURRICULUM = [
 <tr><td>"Repeat customers are most of our orders / can't acquire new"</td><td><code>purchase_new_customer</code> + LAL seeded on net-new</td></tr>
 <tr><td>"Retargeting collapsed / creative fatigue"</td><td>Audit flags it; Agency pod fixes refresh cadence</td></tr>
 <tr><td>"AOV is dropping"</td><td>AOV filter on purchase events to bias Meta toward higher-spend buyers</td></tr>
+<tr><td>"CPM is fine but CPA is up"</td><td>CVR problem → creative refresh + audience cleanup, Agency pod handles</td></tr>
+<tr><td>"CTR collapsed"</td><td>Creative fatigue or audience saturation → audit identifies, Agency executes refresh</td></tr>
 </table>
 <h3>What value selling actually means here</h3>
-<p>You are not selling "a tool". You are selling <b>the resolution of one named pain over a named timeline at a named cost</b>. If a rep walks out of a call without (a) a quantified pain, (b) a mapped lever, and (c) an audit booked, the call has no commercial value.</p>`
+<p>You are not selling "a tool" or "ROAS uplift in the abstract". You are selling <b>the resolution of ONE named pain over a named timeline at a named cost</b>, with a Specific KPI commitment in the variable fee. If a rep walks out of a call without (a) a quantified pain, (b) a mapped lever, (c) a numeric objective for the next 90 days, and (d) an audit booked, the call has no commercial value.</p>`
       },
       {
         id: "m2l2",
@@ -809,7 +857,164 @@ The AI will play the founder. They will push back. Stay in character. The sessio
         }
       ]
     }
-  }
+  },
+  /* ---------- MODULE 6 ---------- */
+  {
+    id: "m6",
+    title: "Claude AI for Sales Productivity",
+    tagline: "GoKwik gives you a Claude license. Use it to outwork the field.",
+    icon: "🤖",
+    lessons: [
+      {
+        id: "m6l1",
+        title: "Prospecting — account list to 3 ICP-matched contacts in 10 minutes",
+        body: `<h3>The setup</h3>
+<p>You have a Claude license through GoKwik. Connect <b>LinkedIn</b> and <b>Lusha</b> in Claude's connector library (Settings → Connectors). With both connected, Claude becomes your prospecting machine.</p>
+<h3>The 10-minute prospecting drill (run once per account)</h3>
+<ol>
+<li><b>Drop the account into Claude.</b> Paste the brand name + their website + a 1-line ICP statement (e.g. "Indian D2C BPC brand, ~₹40L/month Meta spend, prepaid share suspected low").</li>
+<li><b>Ask Claude to research the company.</b> Prompt: <code>"Research [Brand] on the web. Pull their (a) revenue/scale, (b) Meta ad activity from public pages, (c) any recent funding/announcements, (d) categories they sell, (e) any signals of paid-ad performance issues. Be concise."</code></li>
+<li><b>Pull the ICP-matched contacts via LinkedIn.</b> Prompt: <code>"Using the LinkedIn connector, find the 3 most relevant decision-makers at [Brand] for a Meta-ads engagement: CMO/Head of Growth/Marketing, Head of D2C/Performance, and Founder/CEO. Return their full names and current titles."</code></li>
+<li><b>Get phone numbers via Lusha.</b> Prompt: <code>"Using Lusha, retrieve verified mobile numbers and work emails for these 3 people."</code></li>
+<li><b>Personalise the outreach</b>. Ask Claude to draft a 4-line first-touch message tailored to the brand's vertical and the contact's role. Use the value-first one-liner from the playbook.</li>
+</ol>
+<h3>What "ICP-matched" means in practice</h3>
+<ul>
+<li><b>Always 3 contacts per account</b>: one decision-maker (CMO/CGO), one practitioner (Head of Performance/Growth), one champion (Founder or D2C lead).</li>
+<li><b>Match seniority to deal size</b>: ₹25–50L spend = practitioner-led; ₹50L–₹2Cr = CMO-led; ₹2Cr+ = founder-led.</li>
+<li><b>Never blast the same email to all 3 in parallel.</b> Sequence: champion first (warm intro), practitioner next (technical depth), decision-maker last (commercial close).</li>
+</ul>
+<h3>Hygiene — what the rep checks before sending</h3>
+<ul>
+<li>Verify Lusha numbers against LinkedIn current employer (people change jobs).</li>
+<li>Check the brand isn't already in CRM with a previous owner. Don't double-tap.</li>
+<li>Drop the 3 contacts + first-touch summary into the deal record before sending. No sending without trail.</li>
+</ul>`
+      },
+      {
+        id: "m6l2",
+        title: "Meeting prep + briefing managers in 5 minutes",
+        body: `<h3>The pre-meeting brief that wins the call</h3>
+<p>Before every external call, generate a 1-page brief in Claude. Share it with anyone from leadership who's joining (manager, sales VP, Sham, Rohan). Send it <b>at least 2 hours before the meeting</b>.</p>
+<h3>The brief structure (use this prompt verbatim)</h3>
+<blockquote><code>"Generate a meeting prep brief for my call with [Brand] at [time]. Use the following inputs: [paste any prior notes, audit highlights, deal stage]. Structure the brief as:<br/>
+1. Brand snapshot (1 sentence)<br/>
+2. Likely pain hypothesis (3 bullets, prioritized)<br/>
+3. Three discovery questions I'll lead with<br/>
+4. Recommended Agency offering (full-stack vs wallet-share split) and the rationale<br/>
+5. Variable KPI I'll commit to in the variable component<br/>
+6. Two reference customers from their vertical (BPC/Apparel/Footwear/etc) with attributable numbers<br/>
+7. Most likely 2 objections and my counter-responses<br/>
+8. The ask: what I want them to commit to by end of call (audit access, follow-up date, decision SLA)<br/>
+Keep it under 400 words."</code></blockquote>
+<h3>Looping in leadership</h3>
+<ul>
+<li>Forward the brief to the manager/leader joining the call <b>2+ hours before</b>. Don't make them ask.</li>
+<li>Add a 1-line context note: "Joining at minute 15 to address commercials" or "Joining if we hit pricing pushback".</li>
+<li>If the leader doesn't read the brief, don't escalate — your brief should be self-contained enough that they can join cold.</li>
+</ul>
+<h3>The 30-second post-meeting handoff</h3>
+<p>Within 5 minutes of the call ending, send the manager who joined a 3-bullet update via Slack/WhatsApp:</p>
+<blockquote><code>"[Brand] call done. Outcome: [audit booked / waiting on data / closed for follow-up]. Pain confirmed: [the one thing]. Risk: [biggest risk to closing]. Next step + when: [specific]."</code></blockquote>`
+      },
+      {
+        id: "m6l3",
+        title: "MOM emails within 12 hours — the discipline",
+        body: `<h3>Why 12 hours, not 24</h3>
+<p>Every external call gets a Minutes-of-Meeting email to the prospect within <b>12 hours</b>. No exceptions. The reason: prospect attention decays 50% every 24 hours. A MOM in 12h converts ~3x more next-step bookings than one in 48h (internal data, last 90 days).</p>
+<h3>The locked MOM structure</h3>
+<p>Every MOM has the same 5 sections, in this order:</p>
+<ol>
+<li><b>Subject</b>: <code>[Brand] &lt;&gt; GoKwik | Notes from today's call</code></li>
+<li><b>Discussion points</b> (3–5 bullets): What we covered.</li>
+<li><b>Problem statements identified</b>: The named pain(s), with the prospect's own quantified numbers (CAC ₹X, ROAS Y, prepaid Z%).</li>
+<li><b>Solutions we proposed</b>: The KwikAds lever per pain, in a table.</li>
+<li><b>Next steps + owner + date</b>: Audit access (their action), audit delivery (our action), readout call (calendared).</li>
+</ol>
+<h3>The Claude prompt for auto-generating the MOM</h3>
+<blockquote><code>"Generate a MOM email for my call with [Brand] today. Inputs: [paste meeting notes / Gemini transcript / your scribbled bullets]. Use the GoKwik 5-section structure: Subject, Discussion points, Problem statements (with their numbers), Solutions (table format mapping pain to lever), Next steps with owner and date. Tone: warm but commercial. Length: under 300 words. CC: include placeholders for [sankalp@, sham@, rohan@] based on Agency vs SAAS — Agency includes Rohan."</code></blockquote>
+<h3>The 12-hour rule in practice</h3>
+<ul>
+<li>Block 30 minutes on your calendar immediately AFTER every external call. Use it to write the MOM.</li>
+<li>If you can't write it in that 30-min slot for any reason, send a 3-line "thanks for the call, full notes by EOD" reply within the hour. Buy time, but don't go silent.</li>
+<li>Always BCC yourself + your manager. Creates a trail.</li>
+</ul>`
+      },
+      {
+        id: "m6l4",
+        title: "Value-first communication — Claude as your editor",
+        body: `<h3>The pre-send check (every external email, no exceptions)</h3>
+<p>Before clicking Send on any external email, paste the draft into Claude with this prompt:</p>
+<blockquote><code>"Review this email draft for the GoKwik KwikAds value-based selling approach. Specifically check:<br/>
+1. Does the FIRST sentence reference the prospect's specific pain or problem (not us, not our product)?<br/>
+2. Are claims quantified (real numbers, attributable references) or vague?<br/>
+3. Is there a ROAS commitment that should be in Agency-only language? (We do not commit ROAS in SAAS.)<br/>
+4. Does it use 'targeting' (not 'attribution')?<br/>
+5. Is the CC discipline correct (Sankalp + Sham always; Rohan added for Agency)?<br/>
+6. Is the next step + date clear?<br/>
+Suggest specific edits. Don't rewrite the whole email — surgical fixes only."</code></blockquote>
+<h3>The Three-Sentence Test (use mentally on every send)</h3>
+<ol>
+<li><b>What is the prospect's pain</b> — and is it named in their words?</li>
+<li><b>What's our specific lever for that pain</b> — and is it tied to a measurable KPI?</li>
+<li><b>What's the next concrete action</b> — with owner and date?</li>
+</ol>
+<p>If you can't answer all three after reading your own email, don't send it.</p>
+<h3>What value-first does NOT mean</h3>
+<ul>
+<li>NOT "long emails packed with case studies". Brevity beats density.</li>
+<li>NOT "ROAS uplift" promises in SaaS. Stay in your lane.</li>
+<li>NOT "industry trends" preamble. Skip it. Get to their pain in sentence 1.</li>
+</ul>`
+      },
+      {
+        id: "m6l5",
+        title: "Deal hygiene + win-loss analysis with Claude",
+        body: `<h3>The weekly deal hygiene drill (Sunday evening, 20 minutes)</h3>
+<p>Every Sunday, run this through Claude for each open deal in your pipeline:</p>
+<blockquote><code>"For deal [Brand], analyse the current state. Inputs: [paste recent emails, MOM, internal notes, latest call summary]. Score the deal on these 6 dimensions (1–5 each):<br/>
+1. Pain quantified? (with their numbers)<br/>
+2. Lever mapped? (specific KwikAds event/offering)<br/>
+3. Decision-maker engaged? (in the room or committed)<br/>
+4. Audit booked or delivered?<br/>
+5. Commercials shared with named numbers?<br/>
+6. Next step has owner + date?<br/>
+Return: total score / 30, the lowest dimension, the specific action this week to lift it, and a forecast probability of close in this quarter."</code></blockquote>
+<h3>What Claude returns and how to act on it</h3>
+<ul>
+<li><b>Score &gt; 25/30</b>: hot deal. Drive to close. Daily touch.</li>
+<li><b>Score 18–25</b>: working. Block weekly time + push the lowest dimension.</li>
+<li><b>Score 12–17</b>: at risk. Either escalate (loop in manager/Sham) or de-prioritise.</li>
+<li><b>Score &lt; 12</b>: dead. Mark as such; don't drag it on the forecast.</li>
+</ul>
+<h3>The win-loss analysis (every closed-out deal — won or lost)</h3>
+<p>When any deal closes (positive or negative), generate a 1-page post-mortem in Claude:</p>
+<blockquote><code>"Generate a win-loss summary for deal [Brand]. Inputs: [paste full deal history]. Cover: (1) what worked, (2) what didn't, (3) decisive moment, (4) which competitor (if lost), (5) one specific lesson I'll apply to the next deal in this vertical."</code></blockquote>
+<p>Forward the win-loss to your manager. Build a personal database. Patterns emerge after 5–10 deals — that's where the leap from "rep" to "value seller" happens.</p>
+<h3>Weekly forecast call inputs</h3>
+<p>Before every Monday forecast call, paste your full pipeline into Claude with the hygiene scores from Sunday. Ask: <code>"Sort by close probability this quarter, flag the 3 deals where my next-step is missing, and tell me the one deal I'm probably overweighting."</code> That's your forecast call talk track in 90 seconds.</p>`
+      }
+    ],
+    assessment: {
+      kind: "mixed",
+      title: "Assessment 6 — Claude AI Drills",
+      mcq: [
+        { q: "Within how many hours of an external call must the MOM email be sent?", opts: ["6","12","24","48"], a: 1, why: "12-hour rule. Prospect attention decays ~50% every 24 hours; 12h converts ~3x more next-steps than 48h." },
+        { q: "How many ICP-matched contacts should you pull per account during prospecting?", opts: ["1 (the founder)","2 (founder + CMO)","3 (decision-maker, practitioner, champion)","5+ to maximize coverage"], a: 2, why: "Always 3: champion (warm), practitioner (technical), decision-maker (commercial). Sequence them, don't blast in parallel." },
+        { q: "When should you forward the meeting prep brief to leadership joining the call?", opts: ["At call start","2+ hours before","Right after the call","Only if asked"], a: 1, why: "2+ hours before. Don't make leaders ask. Brief should be self-contained enough they can join cold." },
+        { q: "Pre-send check on emails — what should you NOT promise in SaaS communications?", opts: ["AOV uplift","Match-rate improvement","ROAS uplift","Prepaid share lift"], a: 2, why: "ROAS commitments live ONLY in Agency. SaaS pitches new-customer acquisition, AOV, prepaid share, and match-rate — not ROAS." },
+        { q: "Weekly deal hygiene scoring — what's the threshold below which you should escalate or de-prioritise?", opts: ["28/30","25/30","18/30","12/30"], a: 3, why: "<12/30 = dead deal. 12–17 = at risk, escalate or de-prioritise. >25 = drive to close." }
+      ],
+      open: [
+        {
+          id: "m6o1",
+          q: "You just finished a 30-min discovery call with a footwear D2C brand spending ₹38L/month on Meta. They have an incumbent agency. Pain confirmed: prepaid share is 28%. They want to think about it. Write the MOM email you'd send within 12 hours. Use the locked 5-section structure.",
+          rubric: "Must include: (1) subject in correct format with [Brand] <> GoKwik; (2) Discussion points 3-5 bullets; (3) Problem statements with their numbers (28% prepaid share, ₹38L spend); (4) Solutions table mapping prepaid pain to purchase_prepaid event + 20-30% wallet-share Agency offering (since incumbent exists); (5) Next steps with owner + date — audit access ask within X days, audit delivery in 36-48h, readout call calendared. Bonus: includes Sankalp + Sham + Rohan in CC since it's Agency."
+        }
+      ]
+    }
+  },
+
 ];
 
 /* ---------- 3. APP STATE ---------- */
@@ -986,14 +1191,15 @@ function paceFor(rep){
   const remaining = total - elapsed;
   const p = STATE.progress[rep.email] || {};
   const passed = CURRICULUM.filter(m => p[m.id] && p[m.id].status === "pass").length;
-  // Smooth expected curve with a 3-day grace period
-  // Day 1-3: 0 expected, Day 4-7: 1, Day 8-10: 2, Day 11-13: 3, Day 14: 5
+  // Smooth expected curve scaled to total modules (now 6)
+  // 3-day grace period; expectation ramps up across the 14-day window
+  const totalModules = CURRICULUM.length;
   let expected;
   if(elapsed <= 3) expected = 0;
-  else if(elapsed <= 7) expected = 1;
-  else if(elapsed <= 10) expected = 2;
-  else if(elapsed <= 13) expected = 3;
-  else expected = 5;
+  else if(elapsed <= 7) expected = Math.ceil(totalModules * 0.25);  // ~25% by end of W1
+  else if(elapsed <= 10) expected = Math.ceil(totalModules * 0.5);  // ~50% by day 10
+  else if(elapsed <= 13) expected = Math.ceil(totalModules * 0.75); // ~75% by day 13
+  else expected = totalModules;
   const onTrack = passed >= expected;
   let status = "ontrack", label = "On track";
   if(passed === CURRICULUM.length) { status = "done"; label = "Certified"; }
