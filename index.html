@@ -820,9 +820,9 @@ const STATE = {
   attempts: [],          // [{id,repEmail,moduleId,kind,score,maxScore,transcript,feedback,timestamp}]
   settings: {
     adminPassword: CONFIG.DEFAULT_ADMIN_PASSWORD,
-    apiKey: "",          // Anthropic or OpenAI key
-    aiProvider: "anthropic",  // "anthropic" | "openai" | "scripted"
-    aiModel: "claude-sonnet-4-5",
+    apiKey: "",          // Anthropic, OpenAI, or Gemini key
+    aiProvider: "gemini",  // "anthropic" | "openai" | "gemini" | "scripted"
+    aiModel: "gemini-1.5-flash",
     sheetUrl: CONFIG.APPS_SCRIPT_URL
   },
   route: { name: "login" },
@@ -905,6 +905,25 @@ async function callLLM(messages, systemPrompt){
       const d = await resp.json();
       if(d.content && d.content[0]) return d.content[0].text;
       return "AI error: " + JSON.stringify(d);
+    } else if(provider === "gemini"){
+      const model = STATE.settings.aiModel || "gemini-1.5-flash";
+      // Gemini API: convert chat messages to its format
+      const contents = messages.map(m => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{text: m.content}]
+      }));
+      const body = { contents };
+      if(systemPrompt) body.systemInstruction = { parts: [{text: systemPrompt}] };
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(body)
+      });
+      const d = await resp.json();
+      if(d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts){
+        return d.candidates[0].content.parts.map(p => p.text || "").join("");
+      }
+      return "AI error: " + JSON.stringify(d).slice(0, 400);
     } else { // openai
       const resp = await fetch("https://api.openai.com/v1/chat/completions", {
         method:"POST",
@@ -939,12 +958,23 @@ function scriptedFallback(messages, systemPrompt){
 }
 
 /* ---------- 5b. PACING HELPERS ---------- */
+function normalizeDate(d){
+  if(!d) return new Date().toISOString().slice(0,10);
+  // Already a Date object (Sheets returns Date objects via getValues)
+  if(d instanceof Date) return d.toISOString().slice(0,10);
+  // ISO string with timezone (e.g. "2026-05-04T18:30:00.000Z")
+  const s = String(d);
+  if(s.includes("T")) return new Date(s).toISOString().slice(0,10);
+  // Already YYYY-MM-DD
+  return s.slice(0,10);
+}
 function getStartDate(rep){
-  return (rep && (rep.trainingStartDate || rep.joinDate)) || new Date().toISOString().slice(0,10);
+  return normalizeDate(rep && (rep.trainingStartDate || rep.joinDate));
 }
 function daysSince(dateStr){
   if(!dateStr) return 0;
-  const d = new Date(dateStr+"T00:00:00");
+  const norm = normalizeDate(dateStr);
+  const d = new Date(norm+"T00:00:00");
   const now = new Date();
   const ms = now - d;
   return Math.max(0, Math.floor(ms / 86400000));
@@ -1660,17 +1690,19 @@ function renderAdminSettings(){
       <h3>AI grading & coaching</h3>
       <div class="field"><label class="label">AI provider</label>
         <select class="select" id="ai-prov">
+          <option value="gemini" ${s.aiProvider==="gemini"?"selected":""}>Google Gemini (free tier)</option>
           <option value="anthropic" ${s.aiProvider==="anthropic"?"selected":""}>Anthropic Claude</option>
           <option value="openai" ${s.aiProvider==="openai"?"selected":""}>OpenAI GPT</option>
           <option value="scripted" ${s.aiProvider==="scripted"?"selected":""}>Scripted (no API)</option>
         </select>
       </div>
       <div class="field"><label class="label">Model name</label>
-        <input class="input" id="ai-model" value="${s.aiModel||""}" placeholder="claude-sonnet-4-5 or gpt-4o-mini" />
+        <input class="input" id="ai-model" value="${s.aiModel||""}" placeholder="gemini-1.5-flash, claude-sonnet-4-5, or gpt-4o-mini" />
+        <div class="help">For Gemini: <code>gemini-1.5-flash</code> (free, fast) or <code>gemini-1.5-pro</code> (free with lower limits). For Claude: <code>claude-sonnet-4-5</code>. For OpenAI: <code>gpt-4o-mini</code>.</div>
       </div>
       <div class="field"><label class="label">API key</label>
-        <input class="input" id="ai-key" type="password" value="${s.apiKey||""}" placeholder="sk-..." />
-        <div class="help">Stored locally in your browser. The portal calls the provider directly from this page (CORS enabled for Anthropic browser keys; OpenAI works the same way). For team-wide deployment, host the index.html and reps will use the same key when admin sets it.</div>
+        <input class="input" id="ai-key" type="password" value="${s.apiKey||""}" placeholder="API key (sk-... or AIza...)" />
+        <div class="help">Stored only in your browser's localStorage. Get a free Gemini key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>. Anthropic: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a>.</div>
       </div>
     </div>
     <div class="card">
@@ -1699,7 +1731,7 @@ function renderAdminSettings(){
 }
 function saveSettings(){
   STATE.settings.aiProvider = document.getElementById("ai-prov").value;
-  STATE.settings.aiModel = document.getElementById("ai-model").value.trim() || (STATE.settings.aiProvider==="anthropic"?"claude-sonnet-4-5":"gpt-4o-mini");
+  STATE.settings.aiModel = document.getElementById("ai-model").value.trim() || ({anthropic:"claude-sonnet-4-5", openai:"gpt-4o-mini", gemini:"gemini-1.5-flash"}[STATE.settings.aiProvider] || "gemini-1.5-flash");
   STATE.settings.apiKey = document.getElementById("ai-key").value.trim();
   STATE.settings.sheetUrl = document.getElementById("sheet-url").value.trim();
   STATE.settings.adminPassword = document.getElementById("adm-pwd").value || STATE.settings.adminPassword;
