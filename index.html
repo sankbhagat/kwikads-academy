@@ -174,7 +174,7 @@ const CONFIG = {
   PASS_MARK: 70,
   // Org name shown in title bar
   ORG_NAME: "GoKwik · KwikAds",
-  VERSION: "1.2.0",
+  VERSION: "1.3.0",
   // 2-week training cadence
   TRAINING_DURATION_DAYS: 14,
   // Suggested weekly module split (soft schedule — no hard lockout)
@@ -538,16 +538,34 @@ const CURRICULUM = [
         }
       ],
       roleplay: {
-        id: "m2rp1",
-        title: "Role-play: discovery call with a D2C founder",
-        scenario: `You are about to enter a 30-min discovery call with the founder of a footwear D2C brand. Their public LinkedIn says revenue ~₹40 Cr/yr, Meta is run in-house, they recently posted about 'CAC keeps creeping up'. Your job:
+        id: "m2rp_rotating",
+        title: "Live role-play: discovery call (rotates between 4 scenarios)",
+        scenario: `Each time you start, the AI picks one of 4 D2C founder personas at random. Stay in character. The session ends when you ask for view-only ad-account access correctly, OR after 8 turns.
+
+Scenario rotation:
+A. Footwear founder (Anisha) — ₹40 Cr/yr, ₹18L/mo Meta, ROAS 2.7 flat
+B. BPC founder (Karan) — ₹80 Cr/yr, ₹52L/mo Meta, prepaid share 32%, scaling pain
+C. Apparel founder (Nilima) — ₹120 Cr/yr, ₹85L/mo Meta, ROAS dipped 3.7 → 2.4 in 60 days (Doshi-style)
+D. Nutrition founder (Rohit) — ₹25L/mo today, scaling to ₹1Cr/mo, diminishing returns kicking in (Proskii-style)
+
+Your job in EVERY scenario:
 1. Open with agenda.
-2. Run the three discovery questions.
-3. Map their pain to a KwikAds lever.
-4. Ask for view-only access + audit by end of call.
-The AI will play the founder. They will push back. Stay in character. The session ends when you ask for the audit, OR after 8 turns.`,
-        systemPrompt: `You are role-playing a D2C footwear founder named "Anisha" in a 30-min discovery call. You are mildly skeptical, a bit busy, give one thing away at a time. Real numbers when asked: ~₹40 Cr/yr revenue, Meta spend ₹18L/month, ROAS 2.7 (flat for 4 months, was 3.4 last festive), break-even ROAS is 2.0. CAC up from ₹620 to ₹780 in 6 months. Prepaid share 38% — you'd love it higher. Run Meta in-house with a 2-person team. You have heard "this audit thing" from 3 vendors before — you are tired of the pitch. You will give access ONLY if the rep specifies (a) view-only, (b) 36-48h turnaround, (c) names a roadmap deliverable, (d) doesn't promise targets upfront. If the rep promises a ROAS number before the audit, you push back hard. End the call only when the rep asks for ad-account access correctly OR after 8 of your turns. Keep replies 1-3 sentences, conversational. Do NOT break character. Do NOT volunteer numbers — make the rep ask. After your 8th reply or once they ask correctly, end with: [SCENE ENDS]`,
-        rubric: "Score 0-100 on: Agenda set upfront (10), all 3 discovery questions asked (30), pain correctly mapped to lever (15), did NOT quote a ROAS target before audit (15), asked for VIEW-ONLY access with 36–48h commitment (20), professional tone (10). Provide 3 specific coaching points."
+2. Run the 3 sizing questions + the 8 deeper performance parameters.
+3. Map their pain to the right KwikAds lever.
+4. Recommend the right Agency offering tier.
+5. Ask for view-only ad-account access + audit by end of call.`,
+        systemPrompt: `You are role-playing one of 4 D2C founders in a 30-min discovery call with a KwikAds sales rep. Pick ONE persona at random when the rep sends their first message and stay in that persona.
+
+PERSONA A — Anisha (footwear): ~₹40 Cr/yr, Meta ₹18L/month, ROAS 2.7 flat 4 months (was 3.4 last festive), break-even 2.0. CAC up ₹620 → ₹780. Prepaid share 38%. In-house 2-person team. Tired of vendor pitches.
+
+PERSONA B — Karan (BPC, BSC-style): ~₹80 Cr/yr, Meta ₹52L/month, prepaid share 32% (you want 50%+), RTO 28%. ROAS 3.1 but scaling kills it — every push to ₹70L drops ROAS to 2.4. Mixed model: 40% in-house, 60% an agency you've worked with for 3 years.
+
+PERSONA C — Nilima (apparel, Doshi-style): ~₹120 Cr/yr across multi-brand, Meta ₹85L/month aggregate. ROAS dipped from 3.7 to 2.4 in 60 days. CPM held flat. Frequency 4.8 on retargeting. Existing agency hasn't fixed it. You're frustrated.
+
+PERSONA D — Rohit (nutrition, Proskii-style): ~₹25L/month today, ambitious goal to ₹1Cr/month in 90 days. ROAS 2.9 at current spend, but every scaling experiment shows diminishing returns. New brand (3 months), in-house solo perf marketer.
+
+Behaviour rules (all personas): mildly skeptical, busy, give ONE number per turn, don't volunteer everything. You will grant ad-account access ONLY if the rep (a) specifies VIEW-ONLY, (b) commits 36-48h turnaround, (c) names a roadmap deliverable, (d) doesn't promise a ROAS number before the audit. If they promise targets before audit, push back. Keep replies 1-3 sentences, conversational. Do NOT break character. End with [SCENE ENDS] after your 8th reply or once the rep asks for access correctly.`,
+        rubric: "Score 0-100 on: Agenda set upfront (10), all 3 sizing + 4+ deep-dive performance questions asked AOV/prepaid/RTO/CAC/CTR/CPM/objectives (30), pain correctly mapped to lever (15), correctly recommended Agency offering tier full-stack vs wallet-share split based on persona's incumbent situation (15), did NOT quote ROAS before audit (10), asked for VIEW-ONLY access with 36-48h commitment + roadmap deliverable (20). Provide 3 specific coaching points and identify which persona was being played."
       }
     }
   },
@@ -621,8 +639,8 @@ The AI will play the founder. They will push back. Stay in character. The sessio
       title: "Assessment 3 — Demo Critique",
       mcq: [
         { q: "If a prospect's Purchase EMQ is already 9.0+, what should you do in the demo?", opts: [
-          "Skip EMQ entirely","Acknowledge it's strong, then point to AddToCart / InitiateCheckout EMQ gaps where the real leak usually sits","Tell them they don't need KwikAds","Show them a different customer's account"
-        ], a: 1, why: "Honesty + funnel-EMQ pivot. Miss Mosa-style." },
+          "Skip EMQ entirely","Acknowledge it's strong, then show how our data lifts Purchase EMQ from 9.0+ to 9.3+ — incremental bottom-funnel revenue from highest-intent buyers","Tell them they don't need KwikAds","Show them a different customer's account"
+        ], a: 1, why: "Bottom-funnel value play. Our enriched signals push Purchase EMQ from 9.0+ to 9.3+ — that delta is real revenue from highest-intent buyers, not just an algorithm score. (Miss Mosa, Sassafras pattern)" },
         { q: "Best response when a prospect says 'we have an agency we trust' in a demo?", opts: [
           "Push to displace the agency","Walk away","Propose a split workflow — keep agency on primary, KwikAds on a pilot account","Drop pricing 50%"
         ], a: 2, why: "Superkicks pattern. Reduce risk to zero, get a real test environment." },
@@ -705,7 +723,7 @@ The AI will play the founder. They will push back. Stay in character. The sessio
         title: "Top 8 product objections — technical answers",
         body: `<div class="objection-row"><div class="obj">"Our site is fully custom — pixel events are already flaky."</div><div class="ans">Good flag. We don't replace your pixel — we augment it with server-side custom events that don't depend on browser behaviour. For custom platforms, we do a 15-min scoping call with your dev team before we quote. If integration is heavier than typical, we flag it upfront. We've walked through this with Kuberbox.</div></div>
 <div class="objection-row"><div class="obj">"Will KwikAds events conflict with our existing pixel/CAPI events?"</div><div class="ans">No. Custom events run as additional events — Meta treats them as extra signals, not replacements. Your current campaigns continue to optimise on your current events. You can introduce KwikAds events gradually on new ad sets.</div></div>
-<div class="objection-row"><div class="obj">"Our EMQ on Purchase is already 9.0+ — there's nothing left to fix."</div><div class="ans">Purchase EMQ is end-of-funnel. The real leak is usually top + mid funnel: PageView, ViewContent, AddToCart, InitiateCheckout. Miss Mosa was 9.3 on Purchase but 6.2 on AddToCart and 7.21 on InitiateCheckout. That's the gap where Meta's learning suffers, and that's where we lift.</div></div>
+<div class="objection-row"><div class="obj">"Our EMQ on Purchase is already 9.0+ — there's nothing left to fix."</div><div class="ans">Strong starting point — and exactly where we add measurable bottom-funnel value. Our enriched server-side signals consistently push Purchase EMQ from 9.0+ to 9.3+. That delta on bottom-funnel match quality translates directly into incremental conversions from your highest-intent buyers — real revenue impact, not just an algorithm score. We've seen this pattern across Miss Mosa, Sassafras, and similar high-EMQ accounts.</div></div>
 <div class="objection-row"><div class="obj">"We've tried third-party tools before and EMQ didn't move."</div><div class="ans">Usually because those tools push custom audiences, not custom events. Meta treats them very differently — audiences are static lookalikes, events are live optimisation signals. Our server-side events are first-class signals to Meta's algorithm. We can show you the EMQ trajectory from Sassafras and Miss Mosa side-by-side.</div></div>
 <div class="objection-row"><div class="obj">"How much dev bandwidth do we really need?"</div><div class="ans">Shopify / standard stack: ~15 minutes — essentially a tag install and event mapping. Custom stack: 1–2 dev days plus a scoping call. Either way we walk you through it on a 5-minute onboarding call with our dashboard open.</div></div>
 <div class="objection-row"><div class="obj">"How do we measure if it's actually working?"</div><div class="ans">Three measurable outputs. (1) EMQ scores per event — visible in Meta Event Manager. (2) Match rates (email + phone) per event. (3) ROAS / CAC movement on ad sets optimised on KwikAds events vs control ad sets on standard events. We set up the test/control split during onboarding.</div></div>
@@ -1286,11 +1304,15 @@ function attachLogin(){ /* nothing extra */ }
 async function doLogin(mode){
   const email = (document.getElementById("li-email").value||"").trim().toLowerCase();
   if(!email || !/.+@.+\..+/.test(email)){ toast("Enter a valid email"); return; }
+  // Pull latest from Sheet BEFORE checking — so a fresh browser has the rep list
+  if(STATE.settings.sheetUrl){
+    toast("Checking your account...");
+    try { await loadFromSheet(); } catch(_){}
+  }
   if(mode==="admin"){
     const pwd = document.getElementById("li-pwd").value || "";
     if(pwd !== STATE.settings.adminPassword){ toast("Wrong admin password"); return; }
     STATE.user = { email, name: email.split("@")[0], role:"admin", segment:"-", joinDate:new Date().toISOString().slice(0,10) };
-    // ensure admin is in reps list for tracking
     if(!STATE.reps.find(r => r.email === email)){
       STATE.reps.push({email, name: email.split("@")[0], role:"admin", segment:"-", joinDate: STATE.user.joinDate, status:"active"});
     }
@@ -1301,8 +1323,6 @@ async function doLogin(mode){
     STATE.user = { ...rep, role: rep.role || "rep" };
   }
   saveLocal();
-  // try sync
-  if(STATE.settings.sheetUrl){ await loadFromSheet(); }
   navigate(STATE.user.role==="admin" ? "admin" : "dashboard");
 }
 
@@ -1426,31 +1446,62 @@ function renderModuleTile(m, prog, idx){
     <div class="foot">${status}<span>Open →</span></div>
   </div>`;
 }
+const DRILL_OBJECTIONS = [
+  // Pricing / cost
+  {q:"₹60K/month is steep for a signals tool.", k:"value math,trial,prepaid order ROI,base + variable in Agency"},
+  {q:"Your fee is more than what an in-house perf marketer would cost.", k:"in-house ramp 60-90 days,2-person pod,enriched data,Agency variable tied to ROAS"},
+  {q:"We don't have budget allocated for new tools this quarter.", k:"Agency variable only paid on outcome,wallet-share split,start with audit no-obligation"},
+  // Trust / competitor
+  {q:"Every agency promises ROAS uplift — why should we believe you?", k:"variable fee tied to KPI,Agency commits outcome SaaS doesn't,36-48h audit no obligation"},
+  {q:"We've tried two signals tools before — neither moved EMQ.", k:"custom events vs custom audiences,Meta first-class signals,Sassafras Miss Mosa EMQ trajectory"},
+  {q:"You're competing with 3 other vendors — why you?", k:"Meta partner,15K merchants 170Mn data pool,live flywheel not static upload"},
+  // Technical
+  {q:"Our EMQ on Purchase is 9.0+ already — nothing left to fix.", k:"lift Purchase EMQ from 9.0+ to 9.3+,bottom-funnel value,incremental revenue from highest-intent buyers,Miss Mosa Sassafras"},
+  {q:"We already run CAPI — what's the incremental delta from KwikAds?", k:"CAPI sees only your pixel,KwikAds adds 15K merchant first-party data,RTO flags prepaid history LTV propensity"},
+  {q:"Our site is fully custom — pixel events are flaky already.", k:"server-side custom events bypass pixel,15-min Shopify or 1-2 dev days custom,Kuberbox scoping"},
+  {q:"Will KwikAds events conflict with our existing pixel/CAPI?", k:"runs in parallel,additional events not replacements,gradual rollout new ad sets first"},
+  // Engagement model
+  {q:"We have an agency we trust — don't want to disrupt them.", k:"wallet-share split 20-30% or 40-50%,one ad account one problem statement,Superkicks pattern"},
+  {q:"We want to keep full control of the ad account — consultative only.", k:"Reginald pattern,collaborative model,KwikAds events + your team executes,SaaS data layer if no execution"},
+  {q:"We have in-house at 50% and agency at 50% — duplicacy is the real issue.", k:"split workflow on one ad account,problem-statement mandate,Sanfe pattern"},
+  // Timing / scale
+  {q:"We're mid-fundraise / DD — decisions are paused.", k:"Madras Sarees pattern,park commercials,share deck for internal socialise,re-engage post-DD"},
+  {q:"We're a new brand with very low traffic — 200-500 visitors a day.", k:"Gemsmantra pattern,traffic prerequisite,need volume for signals to compound,re-engage at 5K daily visitors"},
+  {q:"Our ROAS is already 3.5+ on a healthy spend — what changes?", k:"Outzidr pattern,not ROAS uplift in SaaS,prepaid share new-customer acquisition AOV expansion,Agency commits via variable"},
+  // Performance / audit triggers
+  {q:"What if it doesn't work — what's our recourse?", k:"36-48h audit no obligation,Agency variable only paid on KPI hit,exit clean any time"},
+  {q:"Our ROAS dipped from 3.7 to 2.4 in 2 months — is this even fixable?", k:"Doshi pattern,audit identifies CPM vs CVR,creative fatigue + audience saturation,3-month plan to 3x ROAS"},
+  {q:"We're scaling fast — diminishing returns are killing us.", k:"Proskii pattern,enrichment lets Meta find new optimisation surfaces,purchase_new_customer + LAL on net-new,broad enriched > narrow lookalike"},
+  {q:"Our ad frequency is 5+ on the main retargeting ad set.", k:"Reginald audit pattern,creative refresh cadence,5 new creatives weekly,Agency pod manages refresh"},
+  // Decision process
+  {q:"Let me discuss internally before moving forward.", k:"send overview + commercials + 2-3 case studies,offer 15-min call with CMO,timeline for decision call"},
+  {q:"We need validated case studies from our exact category before we move.", k:"24h to share 2-3 category-matched cases with attributable numbers,reference call with existing customer if needed"}
+];
+
 function dailyDrill(){
-  const objs = [
-    {q:"₹60K/month is steep for a signals tool.", k:"trial,2 weeks,prepaid order,ROI"},
-    {q:"We have an agency we trust — don't want to disrupt them.", k:"split workflow,SAAS,old account"},
-    {q:"Every agency promises ROAS uplift — why you?", k:"variable fee,audit,no obligation"},
-    {q:"Our EMQ on Purchase is 9.0+ already.", k:"top-funnel,AddToCart,InitiateCheckout,Miss Mosa"},
-    {q:"What if it doesn't work?", k:"audit first,no-obligation,roadmap"}
-  ];
-  const pick = objs[Math.floor(Math.random()*objs.length)];
+  const pick = DRILL_OBJECTIONS[Math.floor(Math.random() * DRILL_OBJECTIONS.length)];
+  // Stash on window so the button doesn't have to encode args (avoids apostrophe bugs)
+  window.__currentDrill = pick;
   const out = document.getElementById("drill-out");
   out.innerHTML = `
-    <div class="stripe stripe-info"><b>Prospect says:</b> "${pick.q}"</div>
+    <div class="stripe stripe-info"><b>Prospect says:</b> "${escapeHTML(pick.q)}"</div>
     <textarea id="drill-resp" class="textarea" placeholder="Type your response (3-4 sentences)..."></textarea>
-    <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="gradeDrill('${encodeURIComponent(pick.q)}','${pick.k}')">Grade my response</button>
+    <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="gradeDrillCurrent()">Grade my response</button>
     <div id="drill-grade" style="margin-top:8px"></div>`;
 }
-async function gradeDrill(q,k){
+function gradeDrillCurrent(){
+  const pick = window.__currentDrill;
+  if(!pick){ toast("Click 'Run today's drill' first"); return; }
+  return gradeDrill(pick.q, pick.k);
+}
+async function gradeDrill(q, k){
   const txt = document.getElementById("drill-resp").value.trim();
   if(!txt){ toast("Type something first"); return; }
   const el = document.getElementById("drill-grade");
   el.innerHTML = `<div class="msg-ai msg" style="max-width:100%"><span class="typing"><span></span><span></span><span></span></span> Grading...</div>`;
-  const sys = `You are a sales coach for KwikAds. The prospect's objection is: "${decodeURIComponent(q)}". Score the rep's response 0-100 against the playbook. Key concepts to look for: ${k}. Respond in this format:\n\n**Score: X/100**\n\n**What worked:**\n- bullet\n\n**What to fix:**\n- bullet\n\n**Stronger version (1-2 sentences):**\n"..."`;
-  const out = await callLLM([{role:"user",content:txt}], sys);
+  const sys = `You are a sales coach for KwikAds. The prospect's objection is: "${q}". Score the rep's response 0-100 against the playbook. Key concepts to look for: ${k}. Be specific and actionable. Respond in this format EXACTLY:\n\n**Score: X/100**\n\n**What worked:**\n- bullet\n\n**What to fix:**\n- bullet\n\n**Stronger version (2-3 sentences):**\n"..."`;
+  const out = await callLLM([{role:"user", content: txt}], sys);
   el.innerHTML = `<div class="msg msg-ai" style="max-width:100%;white-space:pre-wrap">${escapeHTML(out)}</div>`;
-  // log attempt
   recordAttempt({moduleId:"daily_drill", kind:"objection_drill", maxScore:100, score: extractScore(out), transcript:txt, feedback:out});
 }
 function extractScore(t){
