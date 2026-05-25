@@ -232,10 +232,13 @@ function loadState(){
       attempts: s.attempts || [],
       drillLog: s.drillLog || [],
       ai: Object.assign({provider:'anthropic', model:'claude-opus-4-7', key:''}, s.ai||{}),
+      // Cloud sync: trainee pastes manager's Apps Script URL once; every
+      // saveState() POSTs a debounced snapshot to it in the background.
+      sync: Object.assign({url:'', token:'ke-v2-sync-7nP3qW8mR2k', enabled:false, lastSyncedAt:'', lastError:''}, s.sync||{}),
       uiState: s.uiState || {},
       legacy: s.legacy || null
     }, s);
-  }catch(e){ return {rep:DEFAULT_REP, progress:{}, attempts:[], drillLog:[], ai:{provider:'anthropic',model:'claude-opus-4-7',key:''}, uiState:{}, legacy:null}; }
+  }catch(e){ return {rep:DEFAULT_REP, progress:{}, attempts:[], drillLog:[], ai:{provider:'anthropic',model:'claude-opus-4-7',key:''}, sync:{url:'',token:'ke-v2-sync-7nP3qW8mR2k',enabled:false,lastSyncedAt:'',lastError:''}, uiState:{}, legacy:null}; }
 }
 
 // ---------- V1 → V2 MIGRATION ----------
@@ -295,8 +298,70 @@ function migrateFromV1IfNeeded(){
   // Persist
   try{ saveState(); }catch(e){ console.warn('v1 migration save failed:', e); }
 }
-function saveState(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+function saveState(){
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  scheduleCloudSync();
+}
 function setAndSave(fn){ fn(state); saveState(); }
+
+// ---------- CLOUD SYNC ----------
+// Sends a debounced POST to the manager's Apps Script web app whenever local
+// state changes. Failures are stored in state.sync.lastError but never block
+// the trainee — the UI is offline-first.
+let _syncTimer = null;
+let _syncing = false;
+function scheduleCloudSync(){
+  if(!state.sync || !state.sync.enabled || !state.sync.url) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(runCloudSync, 1500); // debounce keystrokes / rapid clicks
+}
+async function runCloudSync(){
+  if(_syncing) { _syncTimer = setTimeout(runCloudSync, 1500); return; }
+  if(!state.sync || !state.sync.url || !state.sync.enabled) return;
+  _syncing = true;
+  const payload = { token: state.sync.token || '', email: (state.rep||{}).email||'', name: (state.rep||{}).name||'', state: state };
+  try{
+    // text/plain avoids CORS preflight against Apps Script
+    const r = await fetch(state.sync.url, { method:'POST', headers:{'content-type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) });
+    const j = await r.json().catch(()=>({}));
+    if(j && j.ok){
+      state.sync.lastSyncedAt = j.savedAt || new Date().toISOString();
+      state.sync.lastError = '';
+    } else {
+      state.sync.lastError = (j && j.error) || ('HTTP '+r.status);
+    }
+  }catch(e){ state.sync.lastError = String(e && e.message || e); }
+  finally{
+    _syncing = false;
+    // Persist sync status WITHOUT re-firing scheduleCloudSync to avoid a loop
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(_){}
+    // If a Cloud-sync settings panel is visible, refresh just that indicator
+    const ind = document.getElementById('syncStatus');
+    if(ind) ind.textContent = state.sync.lastError ? ('⚠ '+state.sync.lastError) : ('✓ synced '+new Date(state.sync.lastSyncedAt).toLocaleTimeString());
+  }
+}
+async function testCloudSync(){
+  const span = document.getElementById('syncStatus');
+  if(span) span.textContent = 'testing...';
+  state.sync.url = (document.getElementById('syncUrl').value||'').trim();
+  state.sync.token = (document.getElementById('syncToken').value||'').trim() || 'ke-v2-sync-7nP3qW8mR2k';
+  state.sync.enabled = true;
+  saveState();
+  await runCloudSync();
+  render();
+}
+function saveSyncSettings(){
+  state.sync.url = (document.getElementById('syncUrl').value||'').trim();
+  state.sync.token = (document.getElementById('syncToken').value||'').trim() || 'ke-v2-sync-7nP3qW8mR2k';
+  state.sync.enabled = !!state.sync.url;
+  saveState();
+  render();
+}
+function disableCloudSync(){
+  state.sync.enabled = false;
+  saveState();
+  render();
+}
 
 // ---------- CURRICULUM ----------
 // Anchored on real demo corpus (Apr-May 2026): Doshi, Reginald, Regal, Liberty, Doeraa, Wellopia,
@@ -2191,6 +2256,22 @@ function viewSettings(){
     <button class="btn ghost" onclick="document.getElementById('importFile').click()">Import JSON</button>
     <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
     <button class="btn bad" onclick="resetAll()">Reset everything</button>
+  </div>
+  </div>
+
+  <div class="card"><h3>Cloud sync (manager tracker)</h3>
+  <p class="muted">Paste the Apps Script URL Sankalp shared. Once turned on, every change you make here streams to his manager dashboard live. No weekly JSON exports needed.</p>
+  <div class="row">
+    <div class="col"><label>Apps Script URL</label><input id="syncUrl" value="${esc((state.sync||{}).url||'')}" placeholder="https://script.google.com/macros/s/AKfyc.../exec"></div>
+  </div>
+  <div class="row">
+    <div class="col"><label>Shared token</label><input id="syncToken" value="${esc((state.sync||{}).token||'ke-v2-sync-7nP3qW8mR2k')}"></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
+    <button class="btn" onclick="saveSyncSettings()">${(state.sync||{}).enabled?'Update':'Enable sync'}</button>
+    <button class="btn ghost" onclick="testCloudSync()">Test now</button>
+    ${(state.sync||{}).enabled?`<button class="btn ghost" onclick="disableCloudSync()">Disable</button>`:''}
+    <span id="syncStatus" class="muted" style="font-size:13px">${(state.sync||{}).lastError?'⚠ '+esc((state.sync||{}).lastError):((state.sync||{}).lastSyncedAt?'✓ last synced '+new Date((state.sync||{}).lastSyncedAt).toLocaleString():(state.sync||{}).enabled?'enabled — no sync yet':'disabled')}</span>
   </div>
   </div>
 

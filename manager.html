@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KwikAds Academy v2 — Manager Tracker</title>
+<style>
+:root{
+  --bg:#0b0f1a; --panel:#121829; --panel2:#1a2238; --line:#26304a;
+  --ink:#f3f6fb; --ink2:#aab4c8; --ink3:#6b7793;
+  --brand:#5b8def; --brand2:#3aa0ff; --accent:#ffb547;
+  --ok:#2dd4bf; --warn:#fbbf24; --bad:#fb7185; --good:#86efac;
+  --r:14px; --rs:10px;
+  --shadow:0 8px 28px rgba(0,0,0,.35);
+  --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.top h1{margin:0;font-size:22px;letter-spacing:.2px}
+.eyebrow{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600;font-size:13.5px;background:var(--brand);color:#fff;text-decoration:none}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:#1c2540;color:var(--ink)}
+.btn.bad{background:#3a1a26;color:var(--bad)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.card h3{margin:0 0 8px;font-size:15px;letter-spacing:.2px}
+.muted{color:var(--ink2)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.row{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:6px}
+label{font-size:12px;color:var(--ink2)}
+input,textarea,select{background:#0c1322;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:inherit}
+.stats{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px}
+.stat .lbl{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px}
+.stat .val{font-size:24px;font-weight:700;margin-top:4px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:10px 16px;border-radius:8px 8px 0 0;cursor:pointer;color:var(--ink2);font-size:13.5px;font-weight:600}
+.tab.active{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-bottom:1px solid var(--panel);margin-bottom:-1px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;background:#0d1426;position:sticky;top:0}
+tr:hover td{background:#11192c}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;letter-spacing:.3px;background:#1c2540;color:var(--ink2)}
+.tag.ok{background:rgba(45,212,191,.16);color:var(--good)}
+.tag.warn{background:rgba(251,191,36,.18);color:var(--warn)}
+.tag.bad{background:rgba(251,113,133,.18);color:var(--bad)}
+.tag.brand{background:rgba(91,141,239,.18);color:var(--brand2)}
+.heatcell{display:inline-block;width:46px;text-align:center;padding:4px 0;border-radius:6px;font-size:12px;font-weight:600;margin:0 2px}
+.h-pass{background:rgba(45,212,191,.18);color:var(--good)}
+.h-mid{background:rgba(251,191,36,.20);color:var(--warn)}
+.h-fail{background:rgba(251,113,133,.18);color:var(--bad)}
+.h-prog{background:rgba(91,141,239,.18);color:var(--brand2)}
+.h-none{background:#1a2238;color:var(--ink3)}
+.bigerr{background:rgba(251,113,133,.10);color:var(--bad);padding:12px;border-radius:8px;font-size:13px}
+.bigok{background:rgba(45,212,191,.10);color:var(--good);padding:8px 12px;border-radius:8px;font-size:13px;display:inline-block}
+.empty{text-align:center;padding:60px 20px;color:var(--ink3)}
+.empty h2{margin:0 0 8px;color:var(--ink2);font-size:18px}
+.attempt{padding:10px 0;border-bottom:1px solid var(--line)}
+.attempt .who{font-weight:600}
+.attempt .score{color:var(--brand2)}
+.attempt .fb{margin-top:6px;font-size:13px;color:var(--ink2);white-space:pre-wrap;max-height:6em;overflow:hidden}
+.repcard{background:#0d1426;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer}
+.repcard:hover{border-color:var(--brand)}
+.repcard h4{margin:0 0 4px;font-size:14px}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--brand);border-top-color:transparent;border-radius:50%;animation:spin .9s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.config{display:none}
+.config.open{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">KWIKADS ACADEMY v2 — LIVE TRACKER</div>
+      <h1>Manager dashboard</h1>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" onclick="document.getElementById('cfg').classList.toggle('open')">⚙ Settings</button>
+      <button class="btn ghost" onclick="refresh(true)" id="refreshBtn">↻ Refresh</button>
+      <button class="btn" onclick="exportCsv()">Export CSV</button>
+    </div>
+  </div>
+
+  <div id="cfg" class="card config">
+    <h3>Cloud sync config</h3>
+    <p class="muted" style="margin:6px 0 12px">Paste the Apps Script web-app URL (the /exec one Sankalp deployed). Saved in this browser's localStorage — no one else can read it from your screen.</p>
+    <div class="row">
+      <div class="col"><label>Apps Script URL</label><input id="cfgUrl" placeholder="https://script.google.com/macros/s/AKfyc.../exec"></div>
+      <div class="col"><label>Shared token</label><input id="cfgToken" placeholder="ke-v2-sync-7nP3qW8mR2k"></div>
+    </div>
+    <div class="row">
+      <div class="col"><label>Auto-refresh every (seconds)</label><input id="cfgInterval" type="number" min="10" value="30"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn" onclick="saveCfg()">Save & refresh</button>
+      <button class="btn ghost" onclick="document.getElementById('cfg').classList.remove('open')">Hide</button>
+    </div>
+  </div>
+
+  <div id="main"></div>
+</div>
+
+<script>
+const CFG_KEY = 'kwikads_academy_v2_manager';
+const DEFAULT_TOKEN = 'ke-v2-sync-7nP3qW8mR2k';
+let cfg = loadCfg();
+let data = null;
+let activeTab = 'overview';
+let activeRepEmail = null;
+let timer = null;
+
+function loadCfg(){
+  try{ return Object.assign({url:'', token:DEFAULT_TOKEN, interval:30}, JSON.parse(localStorage.getItem(CFG_KEY)||'{}')); }
+  catch(e){ return {url:'', token:DEFAULT_TOKEN, interval:30}; }
+}
+function saveCfg(){
+  cfg.url = (document.getElementById('cfgUrl').value||'').trim();
+  cfg.token = (document.getElementById('cfgToken').value||'').trim() || DEFAULT_TOKEN;
+  cfg.interval = Math.max(10, parseInt(document.getElementById('cfgInterval').value||'30',10));
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  document.getElementById('cfg').classList.remove('open');
+  refresh(true);
+}
+function fillCfg(){
+  document.getElementById('cfgUrl').value = cfg.url||'';
+  document.getElementById('cfgToken').value = cfg.token||DEFAULT_TOKEN;
+  document.getElementById('cfgInterval').value = cfg.interval||30;
+}
+
+async function refresh(showSpinner){
+  if(!cfg.url){
+    render();
+    return;
+  }
+  const btn = document.getElementById('refreshBtn');
+  if(showSpinner && btn) btn.innerHTML = '<span class="spinner"></span>Refreshing';
+  try{
+    const r = await fetch(cfg.url+'?token='+encodeURIComponent(cfg.token||DEFAULT_TOKEN)+'&t='+Date.now());
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||('HTTP '+r.status));
+    data = j;
+    render();
+  }catch(e){
+    data = {ok:false, error: String(e.message||e), reps:[], attempts:[]};
+    render();
+  }finally{
+    if(btn) btn.innerHTML = '↻ Refresh';
+  }
+  clearTimeout(timer);
+  if(cfg.interval) timer = setTimeout(()=>refresh(false), cfg.interval*1000);
+}
+
+function esc(s){ if(s===undefined||s===null) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pct(n){ return (typeof n === 'number') ? n+'%' : '—'; }
+
+function paceStatus(rep){
+  const day = rep.day || 0;
+  const passed = rep.modulesPassed || 0;
+  const lessons = rep.lessonsRead || 0;
+  if(passed >= 8) return {tag:'CERTIFIED', cls:'ok'};
+  if(day > 14 && passed < 8) return {tag:'LATE', cls:'bad'};
+  if(day > 14) return {tag:'LATE', cls:'bad'};
+  if(day >= 10 && passed < 4) return {tag:'AT RISK', cls:'bad'};
+  if(day >= 7 && passed < 2) return {tag:'BEHIND', cls:'warn'};
+  if(day >= 1 && passed === 0 && lessons === 0) return {tag:'NOT STARTED', cls:'warn'};
+  return {tag:'ON TRACK', cls:'brand'};
+}
+
+function render(){
+  const main = document.getElementById('main');
+  fillCfg();
+  if(!cfg.url){
+    main.innerHTML = `<div class="card empty">
+      <h2>Cloud sync not configured</h2>
+      <p>Open ⚙ Settings (top right), paste your Apps Script /exec URL, hit Save.</p>
+      <button class="btn" onclick="document.getElementById('cfg').classList.add('open')">Open Settings</button>
+    </div>`;
+    return;
+  }
+  if(!data){
+    main.innerHTML = `<div class="card"><span class="spinner"></span>Loading…</div>`;
+    return;
+  }
+  if(!data.ok){
+    main.innerHTML = `<div class="card"><div class="bigerr"><strong>Sync error:</strong> ${esc(data.error)}</div><p class="muted" style="margin-top:10px">Common fixes: (a) URL is the /exec one, not /edit; (b) you deployed Web App with "Anyone" access; (c) token in Apps Script matches token here.</p></div>`;
+    return;
+  }
+  const reps = data.reps || [];
+  // top stats
+  const totalReps = reps.length;
+  const totalPassed = reps.reduce((s,r)=>s+(r.modulesPassed||0),0);
+  const avgScore = (()=>{
+    const xs = reps.map(r=>r.avgScore).filter(x=>typeof x==='number');
+    return xs.length ? Math.round(xs.reduce((a,b)=>a+b,0)/xs.length) : '—';
+  })();
+  const onTrack = reps.filter(r=>paceStatus(r).tag==='ON TRACK').length;
+  const lastSync = reps.reduce((m,r)=>{ const t = new Date(r.lastSyncedAt).getTime(); return t>m?t:m; }, 0);
+  const lastSyncStr = lastSync ? new Date(lastSync).toLocaleString() : '—';
+
+  let html = `<div class="stats">
+    <div class="stat"><div class="lbl">Trainees synced</div><div class="val">${totalReps}</div></div>
+    <div class="stat"><div class="lbl">Modules passed (sum)</div><div class="val">${totalPassed}</div></div>
+    <div class="stat"><div class="lbl">Avg score</div><div class="val">${avgScore}${typeof avgScore==='number'?'%':''}</div></div>
+    <div class="stat"><div class="lbl">On track</div><div class="val">${onTrack}/${totalReps}</div></div>
+    <div class="stat"><div class="lbl">Last sync from any rep</div><div class="val" style="font-size:14px">${esc(lastSyncStr)}</div></div>
+  </div>`;
+
+  html += `<div class="tabs">
+    <div class="tab ${activeTab==='overview'?'active':''}" onclick="setTab('overview')">Overview</div>
+    <div class="tab ${activeTab==='modules'?'active':''}" onclick="setTab('modules')">Module heatmap</div>
+    <div class="tab ${activeTab==='attempts'?'active':''}" onclick="setTab('attempts')">Attempts feed</div>
+    <div class="tab ${activeTab==='reps'?'active':''}" onclick="setTab('reps')">Per-rep deep dive</div>
+  </div>`;
+
+  if(activeTab === 'overview'){
+    if(reps.length === 0){
+      html += `<div class="card empty"><h2>No trainee data yet</h2><p>Once a trainee opens the academy with cloud sync enabled, their progress will land here within a few seconds.</p></div>`;
+    } else {
+      html += `<div class="card" style="overflow:auto"><table>
+        <thead><tr><th>Name</th><th>Email</th><th>Day</th><th>Lessons</th><th>Modules</th><th>Avg score</th><th>Attempts</th><th>Drills</th><th>Status</th><th>Last sync</th></tr></thead>
+        <tbody>
+        ${reps.map(r=>{
+          const p = paceStatus(r);
+          return `<tr>
+            <td><strong>${esc(r.name||'(no name)')}</strong></td>
+            <td class="muted">${esc(r.email||'')}</td>
+            <td>${r.day||'—'}<span class="muted"> / 14</span></td>
+            <td>${r.lessonsRead||0}<span class="muted"> / 38</span></td>
+            <td>${r.modulesPassed||0}<span class="muted"> / 8</span></td>
+            <td>${pct(r.avgScore)}</td>
+            <td>${r.attempts||0}</td>
+            <td>${r.drills||0}</td>
+            <td><span class="tag ${p.cls}">${p.tag}</span></td>
+            <td class="muted" style="font-size:12px">${r.lastSyncedAt ? new Date(r.lastSyncedAt).toLocaleString() : '—'}</td>
+          </tr>`;
+        }).join('')}
+        </tbody></table></div>`;
+    }
+  }
+
+  if(activeTab === 'modules'){
+    const modules = ['M0','M1','M2','M3','M4','M5','M6','M7'];
+    if(reps.length === 0){
+      html += `<div class="card empty"><h2>No trainee data yet</h2></div>`;
+    } else {
+      html += `<div class="card" style="overflow:auto"><table>
+        <thead><tr><th>Trainee</th>${modules.map(m=>`<th>${m}</th>`).join('')}</tr></thead>
+        <tbody>${reps.map(r=>{
+          return `<tr><td><strong>${esc(r.name||r.email)}</strong></td>${modules.map(m=>{
+            const p = (r.state && r.state.progress && r.state.progress[m]) || {};
+            const score = typeof p.mcqPct === 'number' ? p.mcqPct : null;
+            const lessons = (p.lessonsRead||[]).length;
+            let cls = 'h-none', text = '—';
+            if(p.status==='pass' || (score!==null && score>=70)) { cls='h-pass'; text = score+'%'; }
+            else if(score!==null && score>=50) { cls='h-mid'; text = score+'%'; }
+            else if(score!==null) { cls='h-fail'; text = score+'%'; }
+            else if(lessons>0) { cls='h-prog'; text = lessons+'L'; }
+            return `<td><span class="heatcell ${cls}" title="${esc(r.name||'')} · ${m}">${text}</span></td>`;
+          }).join('')}</tr>`;
+        }).join('')}</tbody></table>
+        <p class="muted" style="font-size:12px;margin-top:10px">Cells: <span class="heatcell h-pass">85%</span> pass · <span class="heatcell h-mid">60%</span> mid · <span class="heatcell h-fail">40%</span> fail · <span class="heatcell h-prog">3L</span> lessons read · <span class="heatcell h-none">—</span> not started</p>
+      </div>`;
+    }
+  }
+
+  if(activeTab === 'attempts'){
+    const at = data.attempts || [];
+    if(at.length === 0){
+      html += `<div class="card empty"><h2>No attempts logged yet</h2><p>Open-text answers, AI feedback, drills, role-plays all show up here.</p></div>`;
+    } else {
+      html += `<div class="card">${at.map(a=>{
+        return `<div class="attempt">
+          <div><span class="who">${esc(a.repName||a.repEmail)}</span> · <span class="muted">${esc(a.kind||'attempt')}</span>${typeof a.score==='number'?` · <span class="score">${a.score}/${a.maxScore||100}</span>`:''} · <span class="muted" style="font-size:12px">${a.timestamp?new Date(a.timestamp).toLocaleString():''}</span></div>
+          ${a.feedback?`<div class="fb">${esc((a.feedback||'').slice(0,400))}${(a.feedback||'').length>400?'…':''}</div>`:''}
+          ${a.transcript?`<div class="fb" style="color:var(--ink3)">${esc((a.transcript||'').slice(0,300))}${(a.transcript||'').length>300?'…':''}</div>`:''}
+        </div>`;
+      }).join('')}</div>`;
+    }
+  }
+
+  if(activeTab === 'reps'){
+    if(reps.length === 0){
+      html += `<div class="card empty"><h2>No trainees yet</h2></div>`;
+    } else if(!activeRepEmail){
+      html += `<div class="card"><p class="muted">Click a trainee to see the full breakdown.</p>
+        ${reps.map(r=>{
+          const p = paceStatus(r);
+          return `<div class="repcard" onclick="selectRep('${esc(r.email)}')">
+            <h4>${esc(r.name||r.email)} <span class="tag ${p.cls}" style="margin-left:6px">${p.tag}</span></h4>
+            <span class="muted" style="font-size:12.5px">${esc(r.email)} · Day ${r.day||'—'}/14 · ${r.modulesPassed||0}/8 passed · ${pct(r.avgScore)} avg</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    } else {
+      const r = reps.find(x=>x.email===activeRepEmail);
+      if(!r){
+        html += `<div class="card"><button class="btn ghost" onclick="selectRep(null)">← Back</button><p class="muted">Rep not found.</p></div>`;
+      } else {
+        const modules = ['M0','M1','M2','M3','M4','M5','M6','M7'];
+        const moduleTitles = {M0:'The Value-Selling Spine',M1:'KwikAds Product Mastery',M2:'Discovery That Quantifies Pain',M3:'Demo Anatomy',M4:'Objection Mastery',M5:'Audit Storytelling',M6:'Closing Discipline',M7:'AI Productivity'};
+        const p = paceStatus(r);
+        html += `<div class="card">
+          <button class="btn ghost" onclick="selectRep(null)" style="margin-bottom:12px">← Back to all reps</button>
+          <h3 style="font-size:18px">${esc(r.name||r.email)} <span class="tag ${p.cls}" style="margin-left:8px">${p.tag}</span></h3>
+          <p class="muted">${esc(r.email)} · Day ${r.day||'—'}/14 · Last sync ${r.lastSyncedAt?new Date(r.lastSyncedAt).toLocaleString():'—'}</p>
+          <table style="margin-top:12px">
+            <thead><tr><th>Module</th><th>Lessons read</th><th>MCQ %</th><th>Status</th><th>Last attempt</th></tr></thead>
+            <tbody>${modules.map(m=>{
+              const mp = (r.state && r.state.progress && r.state.progress[m]) || {};
+              const score = typeof mp.mcqPct === 'number' ? mp.mcqPct+'%' : '—';
+              const status = mp.status==='pass' ? '<span class="tag ok">PASS</span>' : ((mp.lessonsRead||[]).length>0?'<span class="tag brand">IN PROGRESS</span>':'<span class="tag">NOT STARTED</span>');
+              return `<tr><td><strong>${m}</strong> · ${esc(moduleTitles[m]||'')}</td><td>${(mp.lessonsRead||[]).length}</td><td>${score}</td><td>${status}</td><td class="muted" style="font-size:12px">${mp.lastAttempt?new Date(mp.lastAttempt).toLocaleString():'—'}</td></tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>`;
+        const reps_attempts = (data.attempts||[]).filter(a=>a.repEmail===r.email);
+        if(reps_attempts.length){
+          html += `<div class="card"><h3>Attempts (${reps_attempts.length})</h3>${reps_attempts.slice(0,30).map(a=>{
+            return `<div class="attempt">
+              <div><span class="muted">${esc(a.kind||'attempt')}</span>${typeof a.score==='number'?` · <span class="score">${a.score}/${a.maxScore||100}</span>`:''} · <span class="muted" style="font-size:12px">${a.timestamp?new Date(a.timestamp).toLocaleString():''}</span></div>
+              ${a.feedback?`<div class="fb">${esc((a.feedback||'').slice(0,400))}${(a.feedback||'').length>400?'…':''}</div>`:''}
+            </div>`;
+          }).join('')}</div>`;
+        }
+      }
+    }
+  }
+
+  main.innerHTML = html;
+}
+
+function setTab(t){ activeTab = t; activeRepEmail = null; render(); }
+function selectRep(email){ activeRepEmail = email; render(); }
+
+function exportCsv(){
+  if(!data || !data.reps){ alert('No data to export.'); return; }
+  const modules = ['M0','M1','M2','M3','M4','M5','M6','M7'];
+  const headers = ['name','email','day','lessonsRead','modulesPassed','avgScore','attempts','drills','status','lastSyncedAt', ...modules.map(m=>m+'_score'), ...modules.map(m=>m+'_lessons'), ...modules.map(m=>m+'_status')];
+  const rows = (data.reps||[]).map(r=>{
+    const p = paceStatus(r);
+    const cells = [r.name||'', r.email||'', r.day||'', r.lessonsRead||0, r.modulesPassed||0, typeof r.avgScore==='number'?r.avgScore:'', r.attempts||0, r.drills||0, p.tag, r.lastSyncedAt||''];
+    modules.forEach(m=>{ const mp = (r.state && r.state.progress && r.state.progress[m]) || {}; cells.push(typeof mp.mcqPct==='number'?mp.mcqPct:''); });
+    modules.forEach(m=>{ const mp = (r.state && r.state.progress && r.state.progress[m]) || {}; cells.push((mp.lessonsRead||[]).length); });
+    modules.forEach(m=>{ const mp = (r.state && r.state.progress && r.state.progress[m]) || {}; cells.push(mp.status||''); });
+    return cells;
+  });
+  const csv = [headers, ...rows].map(row=>row.map(c=>{
+    const s = String(c==null?'':c);
+    return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kwikads-academy-v2-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+window.addEventListener('load', ()=>{
+  fillCfg();
+  if(!cfg.url){ document.getElementById('cfg').classList.add('open'); }
+  refresh(true);
+});
+</script>
+</body>
+</html>
