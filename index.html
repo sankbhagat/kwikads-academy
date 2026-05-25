@@ -244,8 +244,10 @@ function loadState(){
 // (curriculum changed), but we CAN preserve: rep info, AI key, module
 // pass/fail status, MCQ %, attempts log, drill log. Lessons get reset so
 // trainees re-read the new v2 framing — that's intentional, not a bug.
-const V1_TO_V2_MODULE_MAP = { m1:'M1', m2:'M2', m3:'M3', m4:'M4', m5:'M5', m6:'M6', m7:'M7' };
 function migrateFromV1IfNeeded(){
+  // Inlined so the const isn't in the temporal dead zone when this runs at
+  // script-init (auto-migration fires before any const declarations below).
+  const V1_TO_V2_MODULE_MAP = { m1:'M1', m2:'M2', m3:'M3', m4:'M4', m5:'M5', m6:'M6', m7:'M7' };
   if(state.legacy && state.legacy.v1MigratedAt) return; // already migrated
   if(Object.keys(state.progress||{}).length > 0) return; // user already started v2
   const raw = localStorage.getItem('kwikads_academy_v1');
