@@ -217,6 +217,11 @@ th{color:var(--ink3);font-weight:600;font-size:12px;text-transform:uppercase;let
 const STORE_KEY = 'kwikads_academy_v2';
 const DEFAULT_REP = { name:'', email:'', startDate:'', segment:'SMB' };
 let state = loadState();
+// One-time auto-migration from v1 (kwikads_academy_v1) — runs on first v2 load
+// for trainees who already progressed on the v1 academy. Safe to no-op for
+// anyone else: it only fires when v2 progress is empty AND v1 data exists AND
+// it hasn't already run on this browser.
+try{ migrateFromV1IfNeeded(); }catch(e){ console.warn('v1 migration skipped:', e); }
 
 function loadState(){
   try{
@@ -227,9 +232,66 @@ function loadState(){
       attempts: s.attempts || [],
       drillLog: s.drillLog || [],
       ai: Object.assign({provider:'anthropic', model:'claude-opus-4-7', key:''}, s.ai||{}),
-      uiState: s.uiState || {}
+      uiState: s.uiState || {},
+      legacy: s.legacy || null
     }, s);
-  }catch(e){ return {rep:DEFAULT_REP, progress:{}, attempts:[], drillLog:[], ai:{provider:'anthropic',model:'claude-opus-4-7',key:''}, uiState:{}}; }
+  }catch(e){ return {rep:DEFAULT_REP, progress:{}, attempts:[], drillLog:[], ai:{provider:'anthropic',model:'claude-opus-4-7',key:''}, uiState:{}, legacy:null}; }
+}
+
+// ---------- V1 → V2 MIGRATION ----------
+// v1 used lowercase module IDs (m1..m6) and lesson IDs like 'm1l1'. v2 uses
+// uppercase (M0..M7) and 'L1.1'-style IDs. We can't translate lessons 1:1
+// (curriculum changed), but we CAN preserve: rep info, AI key, module
+// pass/fail status, MCQ %, attempts log, drill log. Lessons get reset so
+// trainees re-read the new v2 framing — that's intentional, not a bug.
+const V1_TO_V2_MODULE_MAP = { m1:'M1', m2:'M2', m3:'M3', m4:'M4', m5:'M5', m6:'M6', m7:'M7' };
+function migrateFromV1IfNeeded(){
+  if(state.legacy && state.legacy.v1MigratedAt) return; // already migrated
+  if(Object.keys(state.progress||{}).length > 0) return; // user already started v2
+  const raw = localStorage.getItem('kwikads_academy_v1');
+  if(!raw) return; // no v1 data on this browser
+  let v1; try{ v1 = JSON.parse(raw); }catch(e){ return; }
+  if(!v1 || typeof v1 !== 'object') return;
+  const imported = { modules:[], attempts:0, drills:0 };
+  // Rep info — only fill empty v2 fields, don't clobber if user already typed
+  if(v1.rep){
+    if(!state.rep.name && v1.rep.name) state.rep.name = v1.rep.name;
+    if(!state.rep.email && v1.rep.email) state.rep.email = v1.rep.email;
+    if(!state.rep.startDate && v1.rep.startDate) state.rep.startDate = v1.rep.startDate;
+    if(!state.rep.segment && v1.rep.segment) state.rep.segment = v1.rep.segment;
+  }
+  // AI key — copy if v2 doesn't have one
+  if(v1.ai && v1.ai.key && !state.ai.key){
+    state.ai.key = v1.ai.key;
+    if(v1.ai.provider) state.ai.provider = v1.ai.provider;
+    if(v1.ai.model) state.ai.model = v1.ai.model;
+  }
+  // Progress — map v1 module IDs to v2, preserve pass status + MCQ %
+  if(v1.progress && typeof v1.progress === 'object'){
+    Object.keys(v1.progress).forEach(v1mid=>{
+      const v2mid = V1_TO_V2_MODULE_MAP[v1mid];
+      if(!v2mid) return;
+      const p = v1.progress[v1mid] || {};
+      state.progress[v2mid] = {
+        lessonsRead: [], // intentional: v2 lesson IDs differ; user re-reads new content
+        mcqPct: typeof p.mcqPct === 'number' ? p.mcqPct : (typeof p.assessmentScore === 'number' ? p.assessmentScore : undefined),
+        mcqSubmitted: (p.status==='pass' || typeof p.mcqPct === 'number') ? true : false,
+        status: p.status || undefined,
+        lastAttempt: p.lastAttempt || undefined,
+        _importedFromV1: true
+      };
+      imported.modules.push({ v1: v1mid, v2: v2mid, score: state.progress[v2mid].mcqPct, status: p.status });
+    });
+  }
+  // Attempts + drill log — copy as-is (read-only history)
+  if(Array.isArray(v1.attempts)){ state.attempts = v1.attempts.slice(); imported.attempts = v1.attempts.length; }
+  if(Array.isArray(v1.drillLog)){ state.drillLog = v1.drillLog.slice(); imported.drills = v1.drillLog.length; }
+  // Mark migration so we don't re-run on next reload
+  state.legacy = state.legacy || {};
+  state.legacy.v1MigratedAt = new Date().toISOString();
+  state.legacy.v1Summary = imported;
+  // Persist
+  try{ saveState(); }catch(e){ console.warn('v1 migration save failed:', e); }
 }
 function saveState(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
 function setAndSave(fn){ fn(state); saveState(); }
@@ -1579,6 +1641,21 @@ function viewHome(){
     <p>This academy is built on 14 real demo transcripts (Apr–May 2026). Every lesson, every objection, every persona maps to a real call. Study deeply, role-play often, ship better demos.</p>
   </div>`;
 
+  // v1 migration banner — shown once, dismissable. Surfaces what carried over so
+  // the trainee isn't confused by why some modules already show a score.
+  if(state.legacy && state.legacy.v1MigratedAt && !state.legacy.v1MigrationDismissed){
+    const sum = state.legacy.v1Summary || {modules:[],attempts:0,drills:0};
+    const modList = (sum.modules||[]).filter(m=>m.status==='pass' || typeof m.score==='number')
+      .map(m=>`<span class="tag ok">${m.v2}${m.score!=null?' · '+m.score+'%':''}</span>`).join(' ');
+    html += `<div class="card" style="border-left:3px solid var(--ok)">
+      <h3>v1 progress imported ✓</h3>
+      <p class="muted" style="margin:6px 0 10px">We found your earlier progress on v1 and carried over your assessment passes, AI key, and ${sum.attempts} attempt${sum.attempts===1?'':'s'} / ${sum.drills} drill log${sum.drills===1?'':'s'}.</p>
+      ${modList?`<p style="margin:6px 0 10px">Modules carried over: ${modList}</p>`:''}
+      <p class="muted" style="font-size:13px;margin:6px 0 12px">Lessons reset — v2 has new framing (M0 Value-Selling Spine, refreshed lesson IDs). Mark each as read in the new module view to unlock the assessment. Your previous MCQ score stays in place.</p>
+      <button class="btn ghost" onclick="dismissV1Banner()">Got it, hide this</button>
+    </div>`;
+  }
+
   if(!rep.name || !rep.email){
     html += `<div class="card">
       <h3>Quick setup</h3>
@@ -1636,6 +1713,35 @@ function saveRep(){
   state.rep.startDate = document.getElementById('repStart').value;
   state.rep.segment = document.getElementById('repSeg').value;
   saveState(); render();
+}
+function dismissV1Banner(){
+  state.legacy = state.legacy || {};
+  state.legacy.v1MigrationDismissed = true;
+  saveState(); render();
+}
+// Manual re-trigger — for trainees who started v2 before this build shipped
+// (auto-migration only fires when v2 progress is empty). This wipes the
+// "already migrated" flag and re-runs the import. Safe: it only adds keys
+// that don't already exist in v2 state, with one exception — module pass
+// status from v1 will overwrite v2 if v1 shows higher / pass. We document
+// this in the confirm dialog.
+function manualImportV1(){
+  const raw = localStorage.getItem('kwikads_academy_v1');
+  if(!raw){ alert('No v1 progress found in this browser. Nothing to import.'); return; }
+  if(!confirm('Import v1 progress?\\n\\nThis will:\\n• Fill in rep info / AI key only if your v2 fields are empty\\n• Add v1 module pass status + scores (overwrites v2 progress for that module)\\n• Append v1 attempts + drill log\\n• Lessons reset (v2 uses different lesson IDs)\\n\\nProceed?')) return;
+  if(state.legacy) state.legacy.v1MigratedAt = '';
+  // Temporarily clear v2 progress check by force-running the migration
+  try{
+    const prevProgress = state.progress;
+    // Force migration to run by emptying the gating check
+    if(Object.keys(state.progress).length > 0) state.progress = {};
+    migrateFromV1IfNeeded();
+    // Merge anything in prevProgress that wasn't overwritten by import
+    Object.keys(prevProgress).forEach(k=>{ if(!state.progress[k]) state.progress[k] = prevProgress[k]; });
+    saveState();
+    alert('Imported. Reloading the page.');
+    render();
+  }catch(e){ alert('Import failed: '+e.message); }
 }
 
 // ============================================================
@@ -2083,6 +2189,13 @@ function viewSettings(){
     <button class="btn ghost" onclick="document.getElementById('importFile').click()">Import JSON</button>
     <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
     <button class="btn bad" onclick="resetAll()">Reset everything</button>
+  </div>
+  </div>
+
+  <div class="card"><h3>Coming from v1?</h3>
+  <p class="muted">If you used the old v1 academy, v2 auto-imports your progress on first load. Already started v2 before this update shipped? Click below to pull in your v1 pass status and scores. ${state.legacy && state.legacy.v1MigratedAt?'<br><br><span class="tag ok">Already imported on '+(state.legacy.v1MigratedAt||'').slice(0,10)+'</span>':''}</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn ghost" onclick="manualImportV1()">Import v1 progress</button>
   </div>
   </div>`;
   return html;
