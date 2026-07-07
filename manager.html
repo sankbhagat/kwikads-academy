@@ -229,8 +229,8 @@ function render(){
             <td><strong>${esc(r.name||'(no name)')}</strong></td>
             <td class="muted">${esc(r.email||'')}</td>
             <td>${r.day||'—'}<span class="muted"> / 14</span></td>
-            <td>${r.lessonsRead||0}<span class="muted"> / 38</span></td>
-            <td>${r.modulesPassed||0}<span class="muted"> / 8</span></td>
+            <td>${r.lessonsRead||0}<span class="muted"> / 43</span></td>
+            <td>${r.modulesPassed||0}<span class="muted"> / 9</span></td>
             <td>${pct(r.avgScore)}</td>
             <td>${r.attempts||0}</td>
             <td>${r.drills||0}</td>
@@ -243,7 +243,7 @@ function render(){
   }
 
   if(activeTab === 'modules'){
-    const modules = ['M0','M1','M2','M3','M4','M5','M6','M7'];
+    const modules = ['M0','M1','M2','M3','M4','M5','M6','M7','M8'];
     if(reps.length === 0){
       html += `<div class="card empty"><h2>No trainee data yet</h2></div>`;
     } else {
@@ -291,7 +291,7 @@ function render(){
           const p = paceStatus(r);
           return `<div class="repcard" onclick="selectRep('${esc(r.email)}')">
             <h4>${esc(r.name||r.email)} <span class="tag ${p.cls}" style="margin-left:6px">${p.tag}</span></h4>
-            <span class="muted" style="font-size:12.5px">${esc(r.email)} · Day ${r.day||'—'}/14 · ${r.modulesPassed||0}/8 passed · ${pct(r.avgScore)} avg</span>
+            <span class="muted" style="font-size:12.5px">${esc(r.email)} · Day ${r.day||'—'}/14 · ${r.modulesPassed||0}/9 passed · ${pct(r.avgScore)} avg</span>
           </div>`;
         }).join('')}
       </div>`;
@@ -300,8 +300,8 @@ function render(){
       if(!r){
         html += `<div class="card"><button class="btn ghost" onclick="selectRep(null)">← Back</button><p class="muted">Rep not found.</p></div>`;
       } else {
-        const modules = ['M0','M1','M2','M3','M4','M5','M6','M7'];
-        const moduleTitles = {M0:'The Value-Selling Spine',M1:'KwikAds Product Mastery',M2:'Discovery That Quantifies Pain',M3:'Demo Anatomy',M4:'Objection Mastery',M5:'Audit Storytelling',M6:'Closing Discipline',M7:'AI Productivity'};
+        const modules = ['M0','M1','M2','M3','M4','M5','M6','M7','M8'];
+        const moduleTitles = {M0:'The Value-Selling Spine',M1:'KwikAds Product Mastery',M2:'Discovery That Quantifies Pain',M3:'Demo Anatomy',M4:'Objection Mastery',M5:'Audit Storytelling',M6:'Closing Discipline',M7:'AI Productivity',M8:'Creative Agent + June 2026 Refresh'};
         const p = paceStatus(r);
         html += `<div class="card">
           <button class="btn ghost" onclick="selectRep(null)" style="margin-bottom:12px">← Back to all reps</button>
@@ -338,7 +338,7 @@ function selectRep(email){ activeRepEmail = email; render(); }
 
 function exportCsv(){
   if(!data || !data.reps){ alert('No data to export.'); return; }
-  const modules = ['M0','M1','M2','M3','M4','M5','M6','M7'];
+  const modules = ['M0','M1','M2','M3','M4','M5','M6','M7','M8'];
   const headers = ['name','email','day','lessonsRead','modulesPassed','avgScore','attempts','drills','status','lastSyncedAt', ...modules.map(m=>m+'_score'), ...modules.map(m=>m+'_lessons'), ...modules.map(m=>m+'_status')];
   const rows = (data.reps||[]).map(r=>{
     const p = paceStatus(r);
